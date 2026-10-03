@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel Dog</title>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="play" aria-live="polite">
+    <div id="stage"><canvas id="cv" width="160" height="90"></canvas><div id="you"></div><button id="tb" aria-label="Change time of day"></button><button id="pb" aria-label="Change scene"></button></div>
+    <div id="dbox"><div id="name">Old Pup</div><div id="box"><span id="txt"></span><span id="arrow">▼</span></div></div>
+  </div>
+  <div id="row">
+    <input id="msg" placeholder="Say something..." autocomplete="off">
+    <button id="send">Send</button>
+    <button id="gear" aria-label="Settings">Setup</button>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <h3 style="margin-top:0">Setup</h3>
+  <label for="prov">AI provider</label>
+  <select id="prov"><option value="anthropic">Claude (Anthropic)</option><option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter</option><option value="custom">Custom (OpenAI-compatible)</option></select>
+  <label for="key">API key (stays in this browser; empty = demo replies)</label>
+  <input id="key" type="password" autocomplete="off">
+  <label for="model">Model name</label>
+  <input id="model">
+  <div id="baseWrap" hidden><label for="base">Base URL (e.g. http://localhost:11434/v1)</label><input id="base"></div>
+  <div class="g">
+    <div><label for="place">Place</label><select id="place"></select></div>
+    <div><label for="time">Time of day</label><select id="time"><option value="night">Night</option><option value="sunset">Sunset</option><option value="day">Day</option></select></div>
+    <div><label for="pos">Text box</label><select id="pos"><option value="below">Below the scene</option><option value="over">Over the scene</option></select></div>
+    <div><label for="ts">Text size</label><select id="ts"><option value="0.85">Small</option><option value="1">Normal</option><option value="1.25">Large</option></select></div>
+    <div><label for="spd">Typing speed</label><select id="spd"><option value="50">Slow</option><option value="26">Normal</option><option value="10">Fast</option><option value="0">Instant</option></select></div>
+    <div><label for="snd">Typing sound</label><select id="snd"><option value="0">Off</option><option value="1">On</option></select></div>
+    <div><label for="fur">Dog fur</label><select id="fur"><option value="tan">Tan</option><option value="grey">Grey</option><option value="black">Black</option><option value="cream">Cream</option></select></div>
+    <div><label for="len">Reply length</label><select id="len"><option value="short">Short</option><option value="medium">Medium</option><option value="long">Long</option></select></div>
+    <div><label for="pet">Character name</label><input id="pet"></div>
+    <div><label for="me">Your name</label><input id="me"></div>
+  </div>
+  <label for="prompt">Personality</label>
+  <textarea id="prompt" placeholder="Leave empty to use each scene's default personality"></textarea>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button id="ok">Save</button><button id="clear">Clear chat</button>
+  </div>
+</dialog>
+
+<script src="js/config.js"></script>
+<script src="js/art/core.js"></script>
+<script src="js/art/dog.js"></script>
+<script src="js/scenes/bed.js"></script>
+<script src="js/scenes/therapy.js"></script>
+<script src="js/scenes/camp.js"></script>
+<script src="js/dialogue.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
