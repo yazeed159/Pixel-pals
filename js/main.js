@@ -2,5 +2,5 @@
 if(!SCENES[cfg.place])cfg.place='bed';
 $('#place').innerHTML=Object.entries(SCENES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
 applyUI();
-setInterval(()=>{tick++;draw()},300);draw();
+setInterval(()=>{tick++;if(jolt>0)jolt--;if(moodT>0)moodT--;draw()},300);draw();
 greet();

@@ -3,19 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pixel Dog</title>
+<title>Pixel Companion</title>
+<meta name="description" content="A tiny pixel-art scene where you chat with an AI character.">
+<meta name="theme-color" content="#2a2140">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="app">
   <div id="play" aria-live="polite">
-    <div id="stage"><canvas id="cv" width="160" height="90"></canvas><div id="you"></div><button id="tb" aria-label="Change time of day"></button><button id="pb" aria-label="Change scene"></button></div>
+    <div id="stage"><canvas id="cv" width="160" height="90"></canvas><div id="you"></div><button id="tb" aria-label="Change time of day"></button><button id="pb" aria-label="Change scene"></button><button id="kb" aria-label="Change color mood"></button></div>
     <div id="dbox"><div id="name">Old Pup</div><div id="box"><span id="txt"></span><span id="arrow">▼</span></div></div>
   </div>
+  <div id="chat"></div>
+  <div id="qr" aria-label="Suggested replies"></div>
   <div id="row">
     <input id="msg" placeholder="Say something..." autocomplete="off">
     <button id="send">Send</button>
+  </div>
+  <div id="tools">
+    <button id="redo" aria-label="Redo the last reply">↻ Redo</button>
+    <button id="edit" aria-label="Edit your last message">✎ Edit</button>
+    <button id="logb" aria-label="Chat log">Log</button>
+    <button id="jrb" aria-label="Journal">Journal</button>
     <button id="gear" aria-label="Settings">Setup</button>
   </div>
 </div>
@@ -31,32 +44,98 @@
   <div id="baseWrap" hidden><label for="base">Base URL (e.g. http://localhost:11434/v1)</label><input id="base"></div>
   <div class="g">
     <div><label for="place">Place</label><select id="place"></select></div>
-    <div><label for="time">Time of day</label><select id="time"><option value="night">Night</option><option value="sunset">Sunset</option><option value="day">Day</option></select></div>
-    <div><label for="pos">Text box</label><select id="pos"><option value="below">Below the scene</option><option value="over">Over the scene</option></select></div>
-    <div><label for="ts">Text size</label><select id="ts"><option value="0.85">Small</option><option value="1">Normal</option><option value="1.25">Large</option></select></div>
-    <div><label for="spd">Typing speed</label><select id="spd"><option value="50">Slow</option><option value="26">Normal</option><option value="10">Fast</option><option value="0">Instant</option></select></div>
-    <div><label for="snd">Typing sound</label><select id="snd"><option value="0">Off</option><option value="1">On</option></select></div>
-    <div><label for="fur">Dog fur</label><select id="fur"><option value="tan">Tan</option><option value="grey">Grey</option><option value="black">Black</option><option value="cream">Cream</option></select></div>
-    <div><label for="len">Reply length</label><select id="len"><option value="short">Short</option><option value="medium">Medium</option><option value="long">Long</option></select></div>
-    <div><label for="pet">Character name</label><input id="pet"></div>
-    <div><label for="me">Your name</label><input id="me"></div>
+    <div><label for="cast">Character here</label><select id="cast"></select></div>
+    <div><label for="time">Time of day</label><select id="time"><option value="auto">Follow the clock</option><option value="dawn">Dawn</option><option value="day">Day</option><option value="sunset">Sunset</option><option value="dusk">Dusk</option><option value="night">Night</option></select></div>
+    <div><label for="weather">Weather</label><select id="weather"><option value="none">Clear</option><option value="rain">Rain</option><option value="snow">Snow</option></select></div>
+    <div><label for="pal">Colors in this place</label><select id="pal"><option value="">Natural</option><option value="warm">Warm</option><option value="cold">Cold</option><option value="muted">Muted</option></select></div>
+    <div><label for="style">Chat style</label><select id="style"><option value="box">Dialogue box</option><option value="bubbles">Chat bubbles</option></select></div>
   </div>
-  <label for="prompt">Personality</label>
-  <textarea id="prompt" placeholder="Leave empty to use each scene's default personality"></textarea>
-  <div style="display:flex;gap:8px;margin-top:14px">
-    <button id="ok">Save</button><button id="clear">Clear chat</button>
+  <div class="foot"><button id="chman" class="ghost" type="button">Create or edit your own characters…</button></div>
+  <details><summary>Memory &amp; journal</summary>
+    <div class="g">
+      <div><label for="carry">Long-term memory</label><select id="carry"><option value="all">Shared by all scenes</option><option value="scene">Separate per scene</option><option value="off">Off</option></select></div>
+      <div><label for="checkin">Daily check-in</label><select id="checkin"><option value="0">Off</option><option value="1">Ask "how was today?"</option></select></div>
+    </div>
+    <label for="memtxt">What the characters remember (written by the AI after long chats; you can edit it)</label>
+    <textarea id="memtxt" style="min-height:110px" placeholder="Nothing yet. After a longer chat, a short summary shows up here."></textarea>
+    <div class="foot"><button id="memnow" class="ghost" type="button">Summarize now</button><button id="memclr" class="ghost" type="button">Forget memory</button><span id="memst" role="status"></span></div>
+  </details>
+  <details><summary>More options</summary>
+    <div class="g">
+      <div><label for="fur">Dog fur</label><select id="fur"><option value="tan">Tan</option><option value="grey">Grey</option><option value="black">Black</option><option value="cream">Cream</option></select></div>
+      <div><label for="len">Reply length</label><select id="len"><option value="short">Brief</option><option value="medium">Natural</option><option value="long">Detailed</option></select></div>
+      <div><label for="pos">Text box</label><select id="pos"><option value="below">Below the scene</option><option value="over">Over the scene</option></select></div>
+      <div><label for="ts">Text size</label><select id="ts"><option value="0.85">Small</option><option value="1">Normal</option><option value="1.25">Large</option></select></div>
+      <div><label for="spd">Typing speed</label><select id="spd"><option value="50">Slow</option><option value="26">Normal</option><option value="10">Fast</option><option value="0">Instant</option></select></div>
+      <div><label for="snd">Typing sound</label><select id="snd"><option value="0">Off</option><option value="1">On</option></select></div>
+      <div><label for="amb">Ambient sound</label><select id="amb"><option value="0">Off</option><option value="1">On</option></select></div>
+      <div><label for="season">Seasons</label><select id="season"><option value="n">Snow in winter (north)</option><option value="s">Snow in winter (south)</option><option value="off">Off</option></select></div>
+      <div><label for="qrs">Quick replies</label><select id="qrs"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="pet">Character name</label><input id="pet"></div>
+      <div><label for="me">Your name</label><input id="me"></div>
+    </div>
+    <label for="about">About you (the character remembers this)</label>
+    <textarea id="about" style="min-height:70px" placeholder="You can also type /remember ... in the chat"></textarea>
+    <label for="prompt">Personality</label>
+    <textarea id="prompt" style="min-height:90px" placeholder="Leave empty to use each scene's default personality"></textarea>
+  </details>
+  <div class="foot"><button id="bak" class="ghost" type="button">Back up…</button><button id="rst" class="ghost" type="button">Restore…</button><input id="rstf" type="file" accept="application/json,.json" hidden></div>
+  <div class="foot"><button id="ok">Save</button><button id="clear" class="ghost">Clear chat</button><button id="wipe" class="ghost">Erase all</button></div>
+</dialog>
+
+<dialog id="logd">
+  <h3 style="margin-top:0">Chat log</h3>
+  <div id="log"></div>
+  <div style="display:flex;gap:8px;margin-top:14px"><button id="exp">Export .txt</button><button id="logx">Close</button></div>
+</dialog>
+
+<dialog id="chd">
+  <h3 style="margin-top:0">Your characters</h3>
+  <div id="chlist"></div>
+  <div id="chform" hidden>
+    <canvas id="chv" width="64" height="64" aria-label="Character preview"></canvas>
+    <div class="g">
+      <div><label for="chn">Name</label><input id="chn" maxlength="24"></div>
+      <div><label for="chs">Species</label><select id="chs"></select></div>
+      <div><label for="chc1">Fur color</label><input id="chc1" type="color"></div>
+      <div><label for="chc2">Belly &amp; accent color</label><input id="chc2" type="color"></div>
+    </div>
+    <label for="chp">Personality (who they are and how they talk)</label>
+    <textarea id="chp" style="min-height:80px" placeholder="a calm, curious otter who loves rainy days and asks good questions"></textarea>
+    <label for="chg">First line when you arrive (optional)</label>
+    <input id="chg" placeholder="*looks up* Oh, hi. Sit down.">
+    <div class="foot"><button id="chsave" type="button">Save character</button><button id="chdel" class="ghost" type="button">Delete</button></div>
   </div>
+  <div class="foot"><button id="chx" class="ghost" type="button">Close</button></div>
+</dialog>
+
+<dialog id="jrd">
+  <h3 style="margin-top:0">Journal</h3>
+  <div id="jrl"></div>
+  <label for="jrn">Add an entry</label>
+  <textarea id="jrn" style="min-height:70px" placeholder="Write anything. The characters can see your latest entries when the daily check-in is on."></textarea>
+  <div class="foot"><button id="jradd" type="button">Add</button><button id="jrexp" class="ghost" type="button">Export .txt</button><button id="jrx" class="ghost" type="button">Close</button></div>
 </dialog>
 
 <script src="js/config.js"></script>
 <script src="js/art/core.js"></script>
 <script src="js/art/dog.js"></script>
+<script src="js/art/chars.js"></script>
 <script src="js/scenes/bed.js"></script>
 <script src="js/scenes/therapy.js"></script>
 <script src="js/scenes/camp.js"></script>
+<script src="js/scenes/rooftop.js"></script>
+<script src="js/scenes/sea.js"></script>
+<script src="js/scenes/moon.js"></script>
+<script src="js/scenes/train.js"></script>
+<script src="js/scenes/diner.js"></script>
+<script src="js/scenes/library.js"></script>
+<script src="js/scenes/lighthouse.js"></script>
+<script src="js/scenes/kitchen.js"></script>
 <script src="js/dialogue.js"></script>
 <script src="js/chat.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/ambient.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

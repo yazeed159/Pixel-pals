@@ -26,6 +26,30 @@ dialog label{display:block;margin:12px 0 4px}
 dialog input,dialog textarea,dialog select{width:100%}
 dialog textarea{min-height:130px}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
-#tb,#pb{position:absolute;top:8px;left:8px;width:38px;height:38px;padding:0;font-size:20px;line-height:1;background:#1c1730cc;border:3px solid var(--cream);box-shadow:2px 2px 0 var(--ink)}
+#tb,#pb,#kb{position:absolute;top:8px;left:8px;width:38px;height:38px;padding:0;font-size:20px;line-height:1;background:#1c1730cc;border:3px solid var(--cream);box-shadow:2px 2px 0 var(--ink)}
 #pb{left:54px}
+#kb{left:100px}
 @media (prefers-reduced-motion:reduce){#arrow{animation:none}}
+#log{max-height:55vh;overflow:auto;white-space:pre-wrap;line-height:1.4}
+#log p{margin:0 0 10px}#log .user{color:var(--rose)}
+details summary{cursor:pointer;margin:14px 0 2px}
+.foot{display:flex;gap:8px;margin-top:14px}.foot #ok{flex:1}
+.ghost{background:transparent;color:var(--cream);box-shadow:none}
+#chat{display:none;flex-direction:column;gap:8px;max-height:36vh;overflow:auto;margin-top:14px}
+#app.bub #chat{display:flex}#app.bub #dbox{display:none}
+.b{max-width:82%;padding:8px 12px;border:3px solid var(--cream);font-size:calc(clamp(14px,2.2vw,20px)*var(--ts,1));line-height:1.35;white-space:pre-wrap;box-shadow:3px 3px 0 var(--ink)}
+.b.ai{align-self:flex-start;background:#1c1730f2}.b.user{align-self:flex-end;background:var(--cream);color:var(--ink)}
+
+#qr{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#qr:empty{display:none}
+.chip{background:var(--plum);color:var(--cream);font-weight:400;font-size:15px;padding:6px 12px;box-shadow:2px 2px 0 var(--ink)}
+#tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+#tools button{padding:6px 12px;font-size:14px}#tools #gear{margin-left:auto}
+#memst{align-self:center;font-size:14px}
+input[type=color]{height:44px;padding:2px}
+#chv{width:128px;height:128px;image-rendering:pixelated;display:block;margin:8px 0;background:#3b3358;border:3px solid var(--cream)}
+#chlist{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+#jrl{max-height:46vh;overflow:auto}
+.je{border:3px solid var(--cream);padding:8px 12px;margin-bottom:10px;white-space:pre-wrap;line-height:1.35}
+.je small{display:flex;justify-content:space-between;gap:8px;color:var(--rose);margin-bottom:4px}
+.je button{padding:0 8px;font-size:13px;box-shadow:none}
+.foot{flex-wrap:wrap}
