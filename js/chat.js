@@ -1,9 +1,8 @@
-/* Chat: demo replies, calls to each AI provider, sending / redoing / editing messages,
+/* Chat: calls to each AI provider, sending / redoing / editing messages,
    quick replies, long-term memory (summaries), the daily check-in and greetings. */
-const MOCK=["That sounds like a lot to carry. Which part is heaviest right now?","Most storms pass faster than they feel. What would make tonight a little easier?","I'm listening. Take your time.","You said that out loud, and that isn't easy. How does it feel now?"];
-const MOCKQ=[["The whole thing, really","Work, mostly","I'd rather not say"],["Some quiet","Someone to talk to","I don't know yet"],["Okay. Thank you","It's hard to put into words","Can we sit a while?"],["A little lighter","Still heavy","Tell me what you think"]];
 const STARTERS=["Hi.","Long day.","Just here to hang out."];
 let streamed=false,ckAsk=false,summing=false;
+const NOKEY='(I need an AI key to answer. Open Setup, under AI provider, and add one.)';
 const PICK={anthropic:d=>d.type==='content_block_delta'&&d.delta&&d.delta.text||'',gemini:d=>(d.candidates?.[0]?.content?.parts||[]).map(x=>x.text||'').join(''),oa:d=>d.choices?.[0]?.delta?.content||''};
 const demo=()=>!cfg.keys[cfg.provider]&&cfg.provider!=='custom';
 async function readStream(r,pick,onDelta){
@@ -25,7 +24,7 @@ async function complete(system,h,onDelta,maxTok=4096){
     headers['x-goog-api-key']=k;
     body={systemInstruction:{parts:[{text:system}]},contents:h.map(x=>({role:x.role==='user'?'user':'model',parts:[{text:x.content}]}))};
   }else{
-    url=({openai:'https://api.openai.com/v1',openrouter:'https://openrouter.ai/api/v1'}[p]||cfg.base.replace(/\/+$/,''))+'/chat/completions';
+    url=({openai:'https://api.openai.com/v1',openrouter:'https://openrouter.ai/api/v1',groq:'https://api.groq.com/openai/v1'}[p]||cfg.base.replace(/\/+$/,''))+'/chat/completions';
     if(k)headers.Authorization='Bearer '+k;
     body={model:m,messages:[{role:'system',content:system},...h]};
   }
@@ -39,8 +38,8 @@ async function complete(system,h,onDelta,maxTok=4096){
   return d.choices?.[0]?.message?.content||'...';
 }
 async function ask(onDelta){
-  if(demo()){await sleep(900);const i=Math.floor(Math.random()*MOCK.length);return MOCK[i]+(cfg.qr==='1'?' [[quick: '+MOCKQ[i].join(' | ')+']]':'')}
-  let h=hh().slice(-40).map(m=>({role:m.role,content:m.content})); while(h[0]&&h[0].role!=='user')h.shift();
+  if(demo()){const e=new Error(NOKEY);e.noKey=true;throw e} /* no canned replies: nothing is guessed about what was said */
+  let h=hh().slice(-60).map(m=>({role:m.role,content:m.content})); while(h[0]&&h[0].role!=='user')h.shift();
   return complete(sys(),h,onDelta,TOK[cfg.len]);
 }
 /* the model ends its reply with [[quick: a | b | c]]; split that off, and hide it while streaming */
@@ -48,7 +47,21 @@ function splitQ(t){
   const i=t.lastIndexOf('[[');if(i<0)return {text:t.trim(),quick:[]};
   const m=t.slice(i).match(/^\[\[\s*quick\s*:?\s*([^\]]*)/i);
   if(!m)return {text:t.trim(),quick:[]};
-  return {text:t.slice(0,i).trim(),quick:m[1].split('|').map(s=>s.trim()).filter(Boolean).slice(0,3)};
+  return {text:t.slice(0,i).trim(),quick:m[1].split('|').map(s=>s.trim()).filter(Boolean).slice(0,3).map(x=>x.slice(0,300))};
+}
+/* if a reply came without its options (or a line was spoken locally, like a nudge), ask once for them separately so they are always there */
+const QRSYS='You write suggested replies for a person chatting with a character, so they can tap instead of typing. From the conversation, write exactly three different things the person might plausibly say next, in first person. Each is one or two natural, complete sentences (not a few words) that responds to the specific thing the character just said or asked, using the details already mentioned. They must go in different directions: one that opens up or agrees, one that doubts, pushes back or jokes, one that asks the character something or moves on. Output only the three, one per line, with no numbering, quotes or labels.';
+async function fillQR(line){
+  if(cfg.qr!=='1'||demo()||qr.length||(typeof act!=='undefined'&&act&&act.strip))return;
+  const n=hh().length,place=cfg.place,c=hh().slice(-6).map(m=>(m.role==='user'?(cfg.me||'Person'):nm())+': '+m.content);
+  if(line&&!(c.length&&c[c.length-1].endsWith(line.slice(-40))))c.push(nm()+': '+line);
+  if(!c.length)return;
+  try{
+    const out=await complete(QRSYS,[{role:'user',content:c.join('\n')+'\n\nWrite the three options.'}],null,500);
+    if(place!==cfg.place||busy||qr.length||msg.value||hh().length!==n)return;
+    const L=out.split('\n').map(x=>x.replace(/^\s*(?:[-*•]|\d+[.)])?\s*["“]?/,'').replace(/["”]\s*$/,'').trim()).filter(x=>x.length>1).slice(0,3).map(x=>x.slice(0,300));
+    if(L.length){qr=L;if(!typing&&ci>=chunks.length-1)showQR()}
+  }catch(e){}
 }
 const vis=t=>{const i=t.lastIndexOf('[[');return (i>=0?t.slice(0,i):t.replace(/\[$/,'')).trimEnd()};
 function setMood(t){const l=t.toLowerCase();mood=/sorry|hard|heavy|lonely|hurt|tough|painful|sad/.test(l)?'sad':/tired|sleep|rest|yawn|cozy|drowsy/.test(l)?'sleepy':/haha|glad|wonderful|love|great|happy|proud|yay|lovely/.test(l)?'happy':'';moodT=mood?50:0}
@@ -61,7 +74,7 @@ const SUMSYS="You maintain a short memory file about a person who chats with com
 async function summarize(place,keep){
   if(summing||demo()||cfg.carry==='off')return false;
   const list=H[place]||[],pend=list.filter(m=>!m.m),n=pend.length-keep;if(n<=0)return false;
-  const batch=pend.slice(0,n),key=cfg.carry==='scene'?place:'*',sc=SCENES[place];
+  const batch=pend.slice(0,n),key=cfg.carry==='scene'?place:'*',sc=SCENES[place]||SCENES.bed;
   const who=((cfg.cast[place]&&charById(cfg.cast[place]))||{}).name||(place===cfg.place&&cfg.pet)||sc.name;
   summing=true;
   try{
@@ -95,11 +108,11 @@ async function respond(onFail){
   busy=thinking=true; clearInterval(timer); typing=talking=false; if(cfg.style==='bubbles')pend=bub('ai','...'); else txt.textContent='...'; arrow.style.visibility='hidden';
   try{
     streamed=false; const live=cfg.style==='bubbles'?pend:null;
-    const raw=await ask(live?(x=>{live.textContent=vis(x);thinking=false;talking=true}):undefined);
+    Face.begin('');const raw=await ask(live?(x=>{const v=vis(x);live.textContent=v;thinking=false;talking=true;Face.stream(v)}):undefined);
     const {text,quick}=splitQ(raw);
-    hh().push({role:'assistant',content:text,t:Date.now()}); thinking=false; setMood(text); qr=quick;
-    if(live&&streamed){live.textContent=text;talking=false;pend=null;txt=live}else say(text)}
-  catch(e){onFail&&onFail(); if(cfg.style==='bubbles'){renderChat()} thinking=false; say('Woof... something went wrong: '+e.message)}
+    hh().push({role:'assistant',content:text,t:Date.now()}); thinking=false; setMood(text); qr=quick; if(!quick.length)fillQR(text);
+    if(live&&streamed){live.textContent=text;talking=false;Face.end(text);pend=null;txt=live}else say(text)}
+  catch(e){onFail&&onFail(); if(cfg.style==='bubbles'){renderChat()} thinking=false; say(e&&e.noKey?e.message:'Woof... something went wrong: '+e.message)}
   busy=false; store();
   if(!typing&&ci>=chunks.length-1)showQR();
   if(unmemorized(cfg.place)>=30)summarize(cfg.place,10).then(ok=>ok&&refreshMemBox&&refreshMemBox());

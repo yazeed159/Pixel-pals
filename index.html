@@ -2,20 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pixel Companion</title>
 <meta name="description" content="A tiny pixel-art scene where you chat with an AI character.">
 <meta name="theme-color" content="#2a2140">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pixel Pals">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="app">
   <div id="play" aria-live="polite">
-    <div id="stage"><canvas id="cv" width="160" height="90"></canvas><div id="you"></div><button id="tb" aria-label="Change time of day"></button><button id="pb" aria-label="Change scene"></button><button id="kb" aria-label="Change color mood"></button></div>
+    <div id="stage"><canvas id="cv" width="160" height="90"></canvas><div id="you"></div><button id="tb" aria-label="Change time of day"></button><button id="pb" aria-label="Change scene"></button><button id="kb" aria-label="Change color mood"></button><button id="phb" aria-label="Photo mode">📷</button><div id="ftime" hidden></div></div>
     <div id="dbox"><div id="name">Old Pup</div><div id="box"><span id="txt"></span><span id="arrow">▼</span></div></div>
   </div>
   <div id="chat"></div>
@@ -27,17 +31,24 @@
   <div id="tools">
     <button id="redo" aria-label="Redo the last reply">↻ Redo</button>
     <button id="edit" aria-label="Edit your last message">✎ Edit</button>
+    <button id="actb" aria-label="Things to do together">Together</button>
+    <button id="sitb" aria-label="Just sit together, no chat" aria-pressed="false">🪑 Sit</button>
     <button id="logb" aria-label="Chat log">Log</button>
     <button id="jrb" aria-label="Journal">Journal</button>
+    <button id="ltb" aria-label="Letters">✉ Letters</button>
     <button id="gear" aria-label="Settings">Setup</button>
   </div>
 </div>
 
 <dialog id="dlg">
   <h3 style="margin-top:0">Setup</h3>
+  <div class="g">
+    <div><label for="lang">Language · اللغة · שפה</label><select id="lang"></select></div>
+    <div><label for="rlang">Replies in</label><select id="rlang"><option value="ui">The interface language</option><option value="match">Whatever language I write in</option></select></div>
+  </div>
   <label for="prov">AI provider</label>
-  <select id="prov"><option value="anthropic">Claude (Anthropic)</option><option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter</option><option value="custom">Custom (OpenAI-compatible)</option></select>
-  <label for="key">API key (stays in this browser; empty = demo replies)</label>
+  <select id="prov"><option value="anthropic">Claude (Anthropic)</option><option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter</option><option value="groq">Groq</option><option value="custom">Custom (OpenAI-compatible)</option></select>
+  <label for="key">API key (stays in this browser)</label>
   <input id="key" type="password" autocomplete="off">
   <label for="model">Model name</label>
   <input id="model">
@@ -45,7 +56,7 @@
   <div class="g">
     <div><label for="place">Place</label><select id="place"></select></div>
     <div><label for="cast">Character here</label><select id="cast"></select></div>
-    <div><label for="time">Time of day</label><select id="time"><option value="auto">Follow the clock</option><option value="dawn">Dawn</option><option value="day">Day</option><option value="sunset">Sunset</option><option value="dusk">Dusk</option><option value="night">Night</option></select></div>
+    <div><label for="time">Time of day</label><select id="time"><option value="auto">Follow the clock (gradual)</option><option value="cycle">Time-lapse (a day in 2 min)</option><option value="dawn">Dawn</option><option value="day">Day</option><option value="sunset">Sunset</option><option value="dusk">Dusk</option><option value="night">Night</option></select></div>
     <div><label for="weather">Weather</label><select id="weather"><option value="none">Clear</option><option value="rain">Rain</option><option value="snow">Snow</option></select></div>
     <div><label for="pal">Colors in this place</label><select id="pal"><option value="">Natural</option><option value="warm">Warm</option><option value="cold">Cold</option><option value="muted">Muted</option></select></div>
     <div><label for="style">Chat style</label><select id="style"><option value="box">Dialogue box</option><option value="bubbles">Chat bubbles</option></select></div>
@@ -60,13 +71,60 @@
     <textarea id="memtxt" style="min-height:110px" placeholder="Nothing yet. After a longer chat, a short summary shows up here."></textarea>
     <div class="foot"><button id="memnow" class="ghost" type="button">Summarize now</button><button id="memclr" class="ghost" type="button">Forget memory</button><span id="memst" role="status"></span></div>
   </details>
+  <details><summary>Closing the loop</summary>
+    <div class="g">
+      <div><label for="lpwrap">Wrap-up after a conversation</label><select id="lpwrap"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="lpweek">Weekly look-back</label><select id="lpweek"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="lpmile">Quiet milestones</label><select id="lpmile"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="lpbye">A sign-off when you leave</label><select id="lpbye"><option value="1">On</option><option value="0">Off</option></select></div>
+    </div>
+    <p class="hint">Wrap-ups and look-backs are written by your AI provider from that conversation. They stay on this device and go into backups. There are no scores or graphs.</p>
+    <div class="foot"><button id="lbopen" class="ghost" type="button">Open Looking back</button></div>
+  </details>
+  <details><summary>Pace &amp; motion</summary>
+    <div class="g">
+      <div><label for="motion">Motion</label><select id="motion"></select></div>
+      <div><label for="spd">Typing speed</label><select id="spd"><option value="90">Very slow</option><option value="50">Slow</option><option value="26">Normal</option><option value="10">Fast</option><option value="0">Instant</option></select></div>
+    </div>
+    <p class="hint">A static scene draws one still picture: no blinking, mouths, idle movement or visitors, and weather is frozen. Typing speed is separate, and Instant shows the whole reply at once.</p>
+  </details>
+  <details><summary>Look &amp; feel</summary>
+    <div class="g">
+      <div><label for="events">Seasonal events</label><select id="events"><option value="auto">On their dates</option><option value="off">Off</option><option value="newyear">Preview: New Year's fireworks</option><option value="halloween">Preview: Halloween</option></select></div>
+    </div>
+    <div class="g">
+      <div><label for="sun">Sky follows</label><select id="sun"><option value="0">Fixed hours</option><option value="1">Sunrise and sunset where I am</option></select></div>
+      <div><label for="sunloc">Where (latitude, longitude)</label><input id="sunloc" placeholder="30.0, 31.2" autocomplete="off" inputmode="text"></div>
+    </div>
+    <div class="foot"><button id="sunuse" class="ghost" type="button">Use my location</button></div>
+    <p class="hint" id="sunmsg" role="status"></p>
+    <p class="hint">Your coordinates are rounded to about 10 km, stay in this browser and are never sent to the AI. Use the clock button on the stage set to “Follow the clock” to see it.</p>
+    <div class="foot"><button id="bgman" class="ghost" type="button">Import your own scenes…</button></div>
+  </details>
+  <details><summary>Presence &amp; honesty</summary>
+    <div class="g">
+      <div><label for="nudge">Speak up after a silence</label><select id="nudge"><option value="0">Never</option><option value="2">After about 2 min</option><option value="5">After about 5 min</option><option value="10">After about 10 min</option></select></div>
+      <div><label for="honest">How they respond</label><select id="honest"><option value="0">Comforting</option><option value="1">Honest: push back when they disagree</option></select></div>
+      <div><label for="gossip">They talk to each other</label><select id="gossip"><option value="1">Yes (never from Therapy)</option><option value="0">No</option></select></div>
+    </div>
+  </details>
+  <details><summary>Visitors, moods &amp; rituals</summary>
+    <div class="g">
+      <div><label for="visitors">Visitors</label><select id="visitors"><option value="3">Often</option><option value="2">Now and then</option><option value="1">Rarely</option><option value="0">Off</option></select></div>
+      <div><label for="inner">Quiet moods (tired, restless)</label><select id="inner"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="ritual">Ritual</label><select id="ritual"><option value="">None</option><option value="tea">Evening tea</option><option value="coffee">Morning coffee</option><option value="goodnight">Goodnight</option><option value="custom">My own...</option></select></div>
+      <div><label for="ritualT">Ritual time</label><input id="ritualT" type="time"></div>
+    </div>
+    <div id="ritXw" hidden><label for="ritualX">Name your ritual (for example: our crossword)</label><input id="ritualX" maxlength="60"></div>
+    <p id="ritst" class="hint"></p>
+    <div class="foot"><button id="visnow" class="ghost" type="button">Preview a visitor</button></div>
+  </details>
   <details><summary>More options</summary>
     <div class="g">
       <div><label for="fur">Dog fur</label><select id="fur"><option value="tan">Tan</option><option value="grey">Grey</option><option value="black">Black</option><option value="cream">Cream</option></select></div>
       <div><label for="len">Reply length</label><select id="len"><option value="short">Brief</option><option value="medium">Natural</option><option value="long">Detailed</option></select></div>
       <div><label for="pos">Text box</label><select id="pos"><option value="below">Below the scene</option><option value="over">Over the scene</option></select></div>
       <div><label for="ts">Text size</label><select id="ts"><option value="0.85">Small</option><option value="1">Normal</option><option value="1.25">Large</option></select></div>
-      <div><label for="spd">Typing speed</label><select id="spd"><option value="50">Slow</option><option value="26">Normal</option><option value="10">Fast</option><option value="0">Instant</option></select></div>
       <div><label for="snd">Typing sound</label><select id="snd"><option value="0">Off</option><option value="1">On</option></select></div>
       <div><label for="amb">Ambient sound</label><select id="amb"><option value="0">Off</option><option value="1">On</option></select></div>
       <div><label for="season">Seasons</label><select id="season"><option value="n">Snow in winter (north)</option><option value="s">Snow in winter (south)</option><option value="off">Off</option></select></div>
@@ -79,7 +137,8 @@
     <label for="prompt">Personality</label>
     <textarea id="prompt" style="min-height:90px" placeholder="Leave empty to use each scene's default personality"></textarea>
   </details>
-  <div class="foot"><button id="bak" class="ghost" type="button">Back up…</button><button id="rst" class="ghost" type="button">Restore…</button><input id="rstf" type="file" accept="application/json,.json" hidden></div>
+  <div id="instrow" hidden><div class="foot"><button id="inst" type="button" hidden>Install app</button></div><p id="insthint" class="hint"></p></div>
+  <div class="foot"><button id="wagain" class="ghost" type="button">Show the welcome screen again</button><button id="bak" class="ghost" type="button">Back up…</button><button id="rst" class="ghost" type="button">Restore…</button><input id="rstf" type="file" accept="application/json,.json" hidden></div>
   <div class="foot"><button id="ok">Save</button><button id="clear" class="ghost">Clear chat</button><button id="wipe" class="ghost">Erase all</button></div>
 </dialog>
 
@@ -114,11 +173,123 @@
   <div id="jrl"></div>
   <label for="jrn">Add an entry</label>
   <textarea id="jrn" style="min-height:70px" placeholder="Write anything. The characters can see your latest entries when the daily check-in is on."></textarea>
-  <div class="foot"><button id="jradd" type="button">Add</button><button id="jrexp" class="ghost" type="button">Export .txt</button><button id="jrx" class="ghost" type="button">Close</button></div>
+  <div class="foot"><button id="jradd" type="button">Add</button><button id="lbb" class="ghost" type="button">Looking back</button><button id="jrexp" class="ghost" type="button">Export .txt</button><button id="jrx" class="ghost" type="button">Close</button></div>
+</dialog>
+
+<dialog id="lbd">
+  <h3 style="margin-top:0">Looking back</h3>
+  <div id="lbl"></div>
+  <div class="foot"><button id="lbexp" class="ghost" type="button">Export .txt</button><button id="lbx" type="button">Close</button></div>
+</dialog>
+
+<dialog id="phd">
+  <h3 style="margin-top:0">Photo</h3>
+  <canvas id="phv" width="640" height="360" style="width:100%;image-rendering:pixelated;border:3px solid var(--cream)"></canvas>
+  <div class="g" style="margin-top:10px">
+    <div><label for="phtext">Dialogue</label><select id="phtext"><option value="0">Scene only</option><option value="1">Scene with dialogue</option></select></div>
+    <div><label for="phsc">Size</label><select id="phsc"><option value="4">640 px wide</option><option value="8" selected>1280 px wide</option><option value="12">1920 px wide</option></select></div>
+  </div>
+  <div class="foot"><button id="phsave" type="button">Save image</button><button id="phshare" class="ghost" type="button">Share…</button><button id="phx" class="ghost" type="button">Close</button></div>
+</dialog>
+
+<dialog id="bgd">
+  <h3 style="margin-top:0">Your scenes</h3>
+  <div id="bglist"></div>
+  <h4 id="bgh">New scene</h4>
+  <div class="g">
+    <div><label for="bgname">Name</label><input id="bgname" maxlength="24" placeholder="My window"></div>
+    <div><label for="bgfile">Image (PNG, GIF, WebP)</label><input id="bgfile" type="file" accept="image/*"></div>
+    <div><label for="bgfit">Fit to 16:9</label><select id="bgfit"><option value="fill">Fill (crop the edges)</option><option value="fit">Fit (add bars)</option><option value="stretch">Stretch</option></select></div>
+    <div><label for="bgchar">Who is here</label><select id="bgchar"></select></div>
+    <div><label for="bgsize">Size</label><select id="bgsize"><option value="2">Small</option><option value="3" selected>Medium</option><option value="4">Large</option></select></div>
+    <div><label for="bgx">Left to right</label><input id="bgx" type="range" min="0" max="100" value="50"></div>
+    <div><label for="bgy">Up and down</label><input id="bgy" type="range" min="0" max="100" value="100"></div>
+    <div><label for="bgtint">Light</label><select id="bgtint"><option value="1">Follows the time of day</option><option value="0">Always as drawn</option></select></div>
+    <div><label for="bgout">Place</label><select id="bgout"><option value="0">Indoors</option><option value="1">Outdoors (snow in winter)</option></select></div>
+    <div style="grid-column:1/-1"><label for="bgset">Describe the place (the character will know it)</label><input id="bgset" maxlength="160" placeholder="in a tiny attic room with rain on the window"></div>
+  </div>
+  <canvas id="bgv" width="320" height="180" style="width:100%;max-width:480px;margin-top:10px;image-rendering:pixelated;border:3px solid var(--cream)"></canvas>
+  <div id="bgmsg" role="status"></div>
+  <div class="foot"><button id="bgdraw" class="ghost" type="button">Draw or generate art…</button><button id="bgshare" class="ghost" type="button">Share this scene…</button><button id="bgimp" class="ghost" type="button">Add a shared scene…</button><input id="bgimpf" type="file" accept=".json,application/json" hidden></div>
+  <div class="foot"><button id="bgsave" type="button">Save scene</button><button id="bgnew" class="ghost" type="button">New</button><button id="bgx2" class="ghost" type="button">Close</button></div>
+</dialog>
+
+<dialog id="edd">
+  <h3 style="margin-top:0">Scene editor</h3>
+  <div class="edbar" role="toolbar" aria-label="Drawing tools">
+    <button type="button" class="ghost edt on" data-t="pencil" aria-pressed="true">✏️ Pencil</button>
+    <button type="button" class="ghost edt" data-t="fill" aria-pressed="false">🪣 Fill</button>
+    <button type="button" class="ghost edt" data-t="line" aria-pressed="false">📏 Line</button>
+    <button type="button" class="ghost edt" data-t="rect" aria-pressed="false">▬ Box</button>
+    <button type="button" class="ghost edt" data-t="pick" aria-pressed="false">💧 Pick color</button>
+  </div>
+  <div class="edbar">
+    <select id="edsize" aria-label="Brush size"><option value="1">Brush 1 px</option><option value="2">Brush 2 px</option><option value="4">Brush 4 px</option></select>
+    <button type="button" class="ghost" id="edundo">Undo</button>
+    <button type="button" class="ghost" id="edclear">Fill all</button>
+  </div>
+  <div id="edpal" class="edpal" role="group" aria-label="Colors"></div>
+  <div class="edbar"><input id="edcol" type="color" value="#41a6f6" aria-label="Custom color"><label class="edchk"><input id="edshow" type="checkbox" checked> Show who is here</label></div>
+  <div class="edwrap"><canvas id="edc" width="160" height="90" aria-label="Scene canvas, 160 by 90 pixels"></canvas><canvas id="edo" width="320" height="180" aria-hidden="true"></canvas></div>
+  <details><summary>AI scene art</summary>
+    <label for="edai">Describe a place</label>
+    <textarea id="edai" maxlength="200" style="min-height:64px" placeholder="a cozy treehouse at dusk with lanterns and a rope bridge"></textarea>
+    <div class="foot"><button id="edgen" type="button">Generate</button></div>
+    <div class="g">
+      <div><label for="edn">Colors</label><select id="edn"><option value="6">6 (very clean)</option><option value="8">8</option><option value="12" selected>12</option><option value="16">16</option><option value="24">24 (detailed)</option></select></div>
+      <div><label for="edsm">Smoothing</label><select id="edsm"><option value="0">None</option><option value="1" selected>Light</option><option value="2">Medium</option><option value="3">Strong</option></select></div>
+    </div>
+    <p class="hint">The AI paints a rough picture and it is cleaned up here: reduced to a few colors and specks smoothed away. Quality varies, so try again or adjust, then touch it up by hand. Changing these two redoes the picture from the AI's original, so do hand touch-ups last. It needs an API key in Setup.</p>
+  </details>
+  <div id="edmsg" role="status"></div>
+  <div class="foot"><button id="eddone" type="button">Use this picture</button><button id="edcancel" class="ghost" type="button">Cancel</button></div>
+</dialog>
+
+<dialog id="actd">
+  <h3 style="margin-top:0">Together</h3>
+  <div id="actst" role="status"></div>
+  <h4>Reflect</h4>
+  <div class="acts"><button data-a="journal" type="button">Journal question</button></div>
+  <h4>Slow down</h4>
+  <div class="acts"><button data-a="breathe" type="button">Breathing</button><button data-a="ground" type="button">Grounding (5-4-3-2-1)</button></div>
+  <h4>Stories</h4>
+  <div class="acts"><button data-a="tell" type="button">Tell me a story</button><button data-a="write" type="button">Write one together</button></div>
+  <h4>Focus</h4>
+  <div class="g">
+    <div><label for="fdur">Work / break</label><select id="fdur"><option value="25/5">25 / 5 min</option><option value="50/10">50 / 10 min</option><option value="15/3">15 / 3 min</option><option value="90/15">90 / 15 min</option></select></div>
+    <div><label for="fsty">Beside you</label><select id="fsty"><option value="work">Works too</option><option value="sit">Sits quietly</option></select></div>
+  </div>
+  <div class="acts" style="margin-top:10px"><button data-a="focus" type="button">Start focus</button><button data-a="stopfocus" id="stopf" class="ghost" type="button" hidden>Stop focus</button></div>
+  <h4>Games</h4>
+  <div class="acts"><button data-a="riddle" type="button">Riddle</button><button data-a="words" type="button">Word chain</button><button data-a="qguess" type="button">20 questions: you guess</button><button data-a="qthink" type="button">20 questions: I guess</button></div>
+  <h4>Company</h4>
+  <div class="g"><div style="grid-column:1/-1"><label for="duo">Who joins for the two-character scene</label><select id="duo"></select></div></div>
+  <div class="acts" style="margin-top:10px"><button data-b="duo" type="button">Listen in on two characters</button><button data-b="rough" type="button">Their rough day (you listen)</button><button data-b="dream" type="button">Last night's dream</button><button data-b="letter" type="button">Write a letter…</button></div>
+  <div class="foot"><button id="stopa" data-a="stopact" class="ghost" type="button" hidden>Stop current activity</button><button id="actx" class="ghost" type="button">Close</button></div>
+</dialog>
+
+<dialog id="ltd">
+  <h3 style="margin-top:0">Letters</h3>
+  <div id="ltl"></div>
+  <label for="ltt" id="ltlab">Write a letter</label>
+  <textarea id="ltt" style="min-height:120px" placeholder="Take your time. A reply comes the next morning, and it will be longer than a chat message."></textarea>
+  <div class="foot"><button id="ltsend" type="button">Send</button><button id="ltnow" class="ghost" type="button" hidden>Skip the wait</button><button id="ltx" class="ghost" type="button">Close</button></div>
+</dialog>
+
+<dialog id="wlc" aria-labelledby="wlct">
+  <h3 id="wlct" style="margin-top:0">Welcome to Pixel Pals</h3>
+  <h4>Scenes</h4>
+  <p>Tap the scene button in the top corner to visit another place. Tap the picture to move the dialogue on, and tap props or characters to see them react.</p>
+  <h4>Your API key</h4>
+  <p>Replies come from an AI provider you choose. Open Setup, pick one and paste your key. Without a key the characters cannot answer yet.</p>
+  <h4>Your chats</h4>
+  <p>Chats, key and settings are saved only on this device. Your messages go to the AI provider you pick, to get replies, and nowhere else.</p>
+  <div class="foot"><button id="wgo" type="button">Start</button><button id="wset" class="ghost" type="button">Open Setup</button></div>
 </dialog>
 
 <script src="js/config.js"></script>
 <script src="js/art/core.js"></script>
+<script src="js/art/face.js"></script>
 <script src="js/art/dog.js"></script>
 <script src="js/art/chars.js"></script>
 <script src="js/scenes/bed.js"></script>
@@ -126,16 +297,31 @@
 <script src="js/scenes/camp.js"></script>
 <script src="js/scenes/rooftop.js"></script>
 <script src="js/scenes/sea.js"></script>
-<script src="js/scenes/moon.js"></script>
 <script src="js/scenes/train.js"></script>
 <script src="js/scenes/diner.js"></script>
 <script src="js/scenes/library.js"></script>
 <script src="js/scenes/lighthouse.js"></script>
 <script src="js/scenes/kitchen.js"></script>
+<script src="js/scenes/trading.js"></script>
 <script src="js/dialogue.js"></script>
 <script src="js/chat.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ambient.js"></script>
+<script src="js/behavior.js"></script>
+<script src="js/together.js"></script>
+<script src="js/company.js"></script>
+<script src="js/closing.js"></script>
+<script src="js/handoff.js"></script>
+<script src="js/look.js"></script>
+<script src="js/sun.js"></script>
+<script src="js/backgrounds.js"></script>
+<script src="js/sceneeditor.js"></script>
+<script src="js/life.js"></script>
+<script src="js/pace.js"></script>
+<script src="js/i18n-data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/welcome.js"></script>
+<script src="js/pwa.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /* Scene: Campfire with a fox. Draws on the 160x90 canvas with px(x,y,w,h,color); s = time-of-day palette. */
 function drawCamp(s){
-  const SK='#e8b894',DK='#2b1d2e',OR='#e8803a',CR='#f3e3c8',blink=tick%11===0,open=talking&&tick%2;
-  const C={night:['#1f3a3a','#12281f','#1a2347'],sunset:['#4a4a3a','#2a3a2a','#7a4a6a'],day:['#5a9a5a','#3a7a4a','#6aa0b8'],dawn:['#6a8a6a','#3a5a4a','#7a6a8a'],dusk:['#2f4a4a','#1a3228','#352a5a']}[TM]||['#1f3a3a','#12281f','#1a2347'];
+  const SK='#e8b894',DK='#2b1d2e',OR='#e8803a',CR='#f3e3c8',blink=Face.blink();
+  const C=byTime({night:['#1f3a3a','#12281f','#1a2347'],sunset:['#4a4a3a','#2a3a2a','#7a4a6a'],day:['#5a9a5a','#3a7a4a','#6aa0b8'],dawn:['#6a8a6a','#3a5a4a','#7a6a8a'],dusk:['#2f4a4a','#1a3228','#352a5a']});
   skyfill(0,0,160,58,s);px(0,46,160,12,'#ffffff18');
   if(stars())for(let i=0;i<16;i++)px((i*37+11)%160,(i*23+5)%38,1,1,(i+tick)%5?'#fff':s.sky);
   px(118,10,6,6,s.moon);px(119,9,4,8,s.moon);px(117,11,8,4,s.moon);
@@ -13,6 +13,7 @@ function drawCamp(s){
   for(let i=0;i<=20;i++)px(134-i,50+i,2*i+1,1,i%7===0?'#b85a74':'#d9798f');px(130,62,8,10,'#1a1224');
   [[48,48,64,40],[56,54,48,30],[64,60,32,22]].forEach(g=>{ctx.fillStyle=`rgba(${s.glow},${stars()?.06:.03})`;ctx.fillRect(...g)});
   px(60,62,40,6,'#5a3a2a');
+  CH.b();
   if(PC)drawChar(PC,64,30,2);else{
   px(94+(tick%2),50,8,14,OR);px(96+(tick%2),46,6,6,CR);
   px(70,46,20,20,OR);px(75,48,10,14,CR);px(70,46,20,3,'#d9798f');px(74,49,4,7,'#d9798f');
@@ -21,8 +22,9 @@ function drawCamp(s){
   px(70,20,2,2,OR);px(69,22,4,3,OR);px(68,25,6,6,OR);px(70,26,2,4,'#c85a3a');
   px(88,20,2,2,OR);px(87,22,4,3,OR);px(86,25,6,6,OR);px(88,26,2,4,'#c85a3a');
   px(73,blink?35:34,2,blink?1:2,DK);px(85,blink?35:34,2,blink?1:2,DK);
-  px(78,43,4,open?3:1,open?'#7a2f3a':DK);
+  Face.mouth(px,77,43,{w:6,lip:DK,maxH:3});
   }
+  CH.e();
   if(thinking){for(let i=0;i<=tick%3;i++)px(96+i*5,16,3,3,'#f3e3c8')}
   const a=(tick%3)*2,b=((tick+1)%3)*2,c=((tick+2)%3)*2;
   px(66,76,28,4,'#5a3a2a');px(68,74,8,3,'#6d4a36');px(84,74,8,3,'#6d4a36');
@@ -37,7 +39,7 @@ function drawCamp(s){
   px(28,78,10,8,SK);px(32,72,9,8,CR);px(41,74,2,4,CR);px(35,68-(tick%2),1,3,'#ffffff66');
 }
 SCENES.camp={label:"Campfire with a fox",icon:"🔥",name:"Rusty",outdoor:true,setting:"sitting across a campfire from them, under an open sky",
-  prompt:"You are {pet}, a weathered, even-tempered fox sitting across a campfire from the person, under an open sky. Speak simply and honestly, like someone who has traveled a lot and has nothing to prove. Ask one question at a time and don't lecture. Use an action in asterisks only occasionally.",
+  prompt:"You are {pet}, a weathered, even-tempered fox sitting across a campfire from the person, under an open sky. Speak simply and honestly, like someone who has traveled a lot and has nothing to prove. Don't lecture. Use an action in asterisks only occasionally.",
   greet:"*adds a log to the fire* Evening. Sit, get warm. What's on your mind?",
   back:"*glances up from the flames* Back by the fire. Good.",
   hot:[{r:[66,18,28,46],say:["*looks up* Hm?","*a nod* Go on."]},{r:[66,60,28,20],say:["*the fire pops and sparks rise*","*he adds another log*"]}],

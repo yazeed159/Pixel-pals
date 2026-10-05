@@ -3,17 +3,17 @@ let txt=$('#txt'),pend=null;const arrow=$('#arrow'),you=$('#you'),msg=$('#msg'),
 let chunks=[],ci=0,typing=false,timer,full='',busy=false;
 function split(t){
   t=t.trim(); const out=[]; let cur='';
-  for(const s of t.split(/(?<=[.!?*])\s+/)){
-    if(cur&&(cur+' '+s).length>150){out.push(cur);cur=s}else cur=cur?cur+' '+s:s;
+  for(const s of t.split(/(?<=[.!?؟…*])\s+/)){
+    if(cur&&(cur+' '+s).length>260){out.push(cur);cur=s}else cur=cur?cur+' '+s:s;
   } if(cur)out.push(cur); return out.length?out:['...'];
 }
 function show(){
-  full=chunks[ci]; let i=0; typing=talking=true; clearInterval(timer); arrow.style.visibility='hidden'; txt.textContent='';
+  full=chunks[ci]; let i=0; if(txt.id==='txt')$('#box').dir=dirOf(full); typing=talking=true; Face.begin(full); clearInterval(timer); arrow.style.visibility='hidden'; txt.textContent='';
   const sp=+cfg.spd; if(!sp){finish();return}
-  timer=setInterval(()=>{txt.textContent=full.slice(0,++i);if(i%2===0)blip();if(i>=full.length)finish()},sp);
+  timer=setInterval(()=>{Face.feed(full[i],i);txt.textContent=full.slice(0,++i);if(i%2===0)blip();if(i>=full.length)finish()},sp);
 }
 function finish(){
-  clearInterval(timer); typing=talking=false; txt.textContent=full;
+  clearInterval(timer); typing=talking=false; Face.end(full); txt.textContent=full;
   arrow.style.visibility=ci<chunks.length-1?'visible':'hidden';
   if(ci>=chunks.length-1)showQR();
 }
@@ -26,7 +26,7 @@ let ac;function blip(){if(cfg.snd!=='1')return;try{ac=ac||new AudioContext();con
 function say(t){you.style.display='none';
   if(cfg.style==='bubbles'){chunks=[t.trim()||'...'];txt=pend||bub('ai','');pend=null}else{txt=$('#txt');chunks=split(t)}
   ci=0;show()}
-function bub(r,t){const d=document.createElement('div');d.className='b '+r;d.textContent=t;chat.append(d);return d}
+function bub(r,t){const d=document.createElement('div');d.className='b '+r;d.dir='auto';d.textContent=t;chat.append(d);return d}
 function renderChat(){chat.textContent='';pend=null;if(cfg.style==='bubbles')hh().forEach(m=>bub(m.role==='user'?'user':'ai',m.content))}
 new MutationObserver(()=>{chat.scrollTop=chat.scrollHeight}).observe(chat,{childList:true,subtree:true,characterData:true});
 $('#play').addEventListener('click',()=>{
@@ -38,6 +38,6 @@ $('#stage').addEventListener('click',e=>{
   if(typing||busy||e.target.tagName==='BUTTON')return;
   const r=$('#cv').getBoundingClientRect(),x=(e.clientX-r.left)/r.width*160,y=(e.clientY-r.top)/r.height*90;
   const h=(SCENES[cfg.place].hot||[]).find(h=>x>=h.r[0]&&x<=h.r[0]+h.r[2]&&y>=h.r[1]&&y<=h.r[1]+h.r[3]);
-  if(!h)return; e.stopPropagation(); jolt=6; jx=h.r[0]+(h.r[2]>>1)-2; jy=h.r[1];
+  if(!h)return; e.stopPropagation(); jolt=still()?0:6; jx=h.r[0]+(h.r[2]>>1)-2; jy=h.r[1];
   say(h.say[Math.floor(Math.random()*h.say.length)]);
 });

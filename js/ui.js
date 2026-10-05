@@ -1,6 +1,6 @@
 /* Interface: settings dialog, stage buttons, character creator, journal, chat log, backup and restore. */
 const dlg=$('#dlg');
-const FIELDS=['place','time','weather','style','fur','pos','ts','spd','snd','amb','len','pet','me','season','carry','checkin'];
+const FIELDS=['place','time','weather','style','fur','pos','ts','spd','snd','amb','len','pet','me','season','carry','checkin','motion','lang','rlang','sun'];
 let dr={cast:{},pals:{}},dp=cfg.place,memShown='*';
 function applyUI(){$('#dbox').className=cfg.pos==='over'?'over':'';document.documentElement.style.setProperty('--ts',cfg.ts);$('#name').textContent=nm();$('#tb').textContent=TI[cfg.time]||'🕒';$('#pb').textContent=SCENES[cfg.place].icon;$('#kb').textContent=PI[cfg.pals[cfg.place]||''];$('#app').classList.toggle('bub',cfg.style==='bubbles')}
 let shown=cfg.provider;
@@ -37,7 +37,7 @@ $('#ok').onclick=()=>{
   if(cfg.place!==pp||cfg.style!==ps||(cfg.cast[cfg.place]||'')!==prevCast)greet();
   ambient()};
 $('#clear').onclick=()=>{hh().length=0;store();you.style.display='none';dlg.close();greet()};
-$('#wipe').onclick=()=>{if(confirm('Delete your API keys, settings, journal and all chats from this browser?')){localStorage.clear();location.reload()}};
+$('#wipe').onclick=()=>{if(confirm(T('Delete your API keys, settings, journal and all chats from this browser?'))){localStorage.clear();location.reload()}};
 
 /* memory box in Setup */
 function refreshMemBox(){if(dlg.open&&memShown===memKey())$('#memtxt').value=cfg.mem[memShown]||''}
@@ -49,7 +49,7 @@ $('#memnow').onclick=async()=>{
 $('#memclr').onclick=()=>{$('#memtxt').value='';$('#memst').textContent='Cleared. Press Save to keep that.'};
 
 /* time of day / scene / color mood buttons on the stage */
-const NT={auto:'dawn',dawn:'day',day:'sunset',sunset:'dusk',dusk:'night',night:'auto'};
+const NT={auto:'dawn',dawn:'day',day:'sunset',sunset:'dusk',dusk:'night',night:'cycle',cycle:'auto'};
 $('#tb').onclick=e=>{e.stopPropagation();cfg.time=NT[cfg.time]||'auto';store();applyUI();draw()};
 $('#pb').onclick=e=>{e.stopPropagation();const old=cfg.place,k=Object.keys(SCENES);cfg.place=k[(k.indexOf(cfg.place)+1)%k.length];leaveScene(old);store();applyUI();draw();greet()};
 $('#kb').onclick=e=>{e.stopPropagation();const o=['','warm','cold','muted'],n=o[(o.indexOf(cfg.pals[cfg.place]||'')+1)%o.length];if(n)cfg.pals[cfg.place]=n;else delete cfg.pals[cfg.place];store();applyUI();draw()};
@@ -85,14 +85,14 @@ const jrd=$('#jrd');
 function jrRender(){
   const L=$('#jrl');L.textContent='';if(!J.length){L.textContent='Nothing yet.';return}
   J.forEach((e,i)=>{const d=document.createElement('div'),h=document.createElement('small'),sp=document.createElement('span'),del=document.createElement('button'),p=document.createElement('div');d.className='je';
-    sp.textContent=e.d+(e.who?' · '+e.who:'');del.type='button';del.textContent='Delete';del.onclick=()=>{if(confirm('Delete this entry?')){J.splice(i,1);store();jrRender()}};
-    h.append(sp,del);p.textContent=e.text;d.append(h,p);L.append(d)});
+    sp.textContent=e.d+(e.who?' · '+e.who:'');del.type='button';del.textContent='Delete';del.onclick=()=>{if(confirm(T('Delete this entry?'))){J.splice(i,1);store();jrRender()}};
+    h.append(sp,del);p.textContent=e.text;if(e.q){const q=document.createElement('div');q.textContent=e.q;q.style.cssText='opacity:.7;font-style:italic;margin-bottom:4px';d.append(h,q,p)}else d.append(h,p);L.append(d)});
 }
 $('#jrb').onclick=()=>{jrRender();jrd.showModal()};
 $('#jrx').onclick=()=>jrd.close();
 $('#jradd').onclick=()=>{const t=$('#jrn').value.trim();if(!t)return;J.unshift({d:today(),t:Date.now(),text:t,who:'',place:cfg.place});$('#jrn').value='';store();jrRender()};
 function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-$('#jrexp').onclick=()=>download('pixel-journal.txt',new Blob([J.map(e=>e.d+(e.who?' ('+e.who+')':'')+'\n'+e.text).join('\n\n')||'Nothing yet.'],{type:'text/plain'}));
+$('#jrexp').onclick=()=>download('pixel-journal.txt',new Blob([J.map(e=>e.d+(e.who?' ('+e.who+')':'')+'\n'+(e.q?e.q+'\n':'')+e.text).join('\n\n')||'Nothing yet.'],{type:'text/plain'}));
 
 /* ---- chat log ---- */
 const logd=$('#logd'),who=m=>m.role==='user'?(cfg.me||'You'):nm();

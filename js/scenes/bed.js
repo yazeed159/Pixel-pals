@@ -14,7 +14,7 @@ function drawBed(s){
   for(let y=45;y<80;y++){const t=(y-45)/35,w=Math.round(6+16*t),c=Math.round(22*t);px((70-c-w/2)|0,y,w,1,LEG);px((90+c-w/2)|0,y,w,1,LEG)}
   px(66,64,28,3,'#6a4aa8');
   const dp=[[0,0],[-2,0],[2,0],[0,2],[-2,2]][held(40,0,5)]; /* idle: every so often the dog shifts to a new spot */
-  if(PC)drawChar(PC,64+dp[0],34+dp[1],2,{dots:true});else dog(64+dp[0],34+dp[1]);
+  CH.b();if(PC)drawChar(PC,64+dp[0],34+dp[1],2,{dots:true});else dog(64+dp[0],34+dp[1]);CH.e();
   for(let y=78;y<90;y++){const hw=30+(y-78)*4;px(80-hw,y,hw*2,1,PJ)}
   px(60,78,40,2,'#8fb0f0');
   const h=tick%2;
@@ -24,7 +24,7 @@ function drawBed(s){
   px(52,71,10,7,SK);
 }
 SCENES.bed={label:"In bed, first-person view",icon:"🛏️",name:"Old Pup",win:[111,9,34,20],setting:"lying in bed beside them late at night, being petted",
-  prompt:"You are {pet}, an old, calm dog lying next to the person in bed late at night, being petted. Quiet, steady and warm, like a late-night talk with someone who has known you a long time. Speak plainly. Listen first. Ask one question at a time and don't lecture. Use an action in asterisks only occasionally.",
+  prompt:"You are {pet}, an old, calm dog lying next to the person in bed late at night, being petted. Quiet, steady and warm, like a late-night talk with someone who has known you a long time. Listen first, but also share your own thoughts. Don't lecture. Use an action in asterisks only occasionally.",
   greet:"*settles in beside you* It's late. How was your day, really?",
   back:"*lifts his head* There you are.",
   hot:[{r:[64,34,32,32],say:["*leans into your hand*","*a long, slow breath*","*thumps his tail once*"]}],

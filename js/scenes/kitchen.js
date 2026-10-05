@@ -1,6 +1,6 @@
 /* Scene: A quiet kitchen late at night with a rabbit. Draws with px(x,y,w,h,color); s = time-of-day palette. */
 function drawKitchen(s){
-  const open=talking&&tick%2,stir=ev(30,8,2)>=0; /* idle: stirs the mug, ears twitch */
+  const stir=ev(30,8,2)>=0; /* idle: stirs the mug, ears twitch */
   px(0,0,160,64,'#6a7e8e');for(let y=0;y<64;y+=8)px(0,y,160,1,'#5c707f');for(let x=0;x<160;x+=8)px(x,0,1,64,'#5c707f');
   px(0,40,160,24,'#7f9aa6');for(let y=40;y<64;y+=6)px(0,y,160,1,'#6d8894');for(let x=0;x<160;x+=6)px(x,40,1,24,'#6d8894');
   /* window with a herb on the sill */
@@ -22,9 +22,11 @@ function drawKitchen(s){
   [[56,16,52,50],[62,24,40,40]].forEach(g=>{ctx.fillStyle=`rgba(${s.glow},.06)`;ctx.fillRect(...g)});
   /* the rabbit */
   const rb={species:'rabbit',c1:'#e8dcd0',c2:'#fff4ec'};
+  CH.b();
   if(PC)drawChar(PC,64,30,2);
   else{drawChar(rb,64,30,2);
     px(70,52,20,12,'#d9798f');px(72,52,3,4,'#e8dcd0');px(85,52,3,4,'#e8dcd0');px(76,56,8,3,'#c0607a')}   /* apron */
+  CH.e();
   /* table with two mugs and cookies */
   px(30,64,100,5,'#9a6a3a');px(30,64,100,1,'#b88a52');px(34,69,92,3,'#7a5028');px(36,72,5,18,'#7a5028');px(119,72,5,18,'#7a5028');
   px(94,58,10,7,'#e8c46a');px(104,60,3,4,'#e8c46a');px(95,58,8,2,'#4a2a1a');

@@ -8,7 +8,7 @@ const SPR={
   fox:{g:mir(["........","..dd....","..dbd...","..bbbbbb",".bbbbbbb",".bbbebbb",".bwbbbbb","..wwbbbn","..wwwwww","...wwwww","....bwww","...bbbbb","..bbbwww","..bbbwww","..bbbbbb","..ddbb.."]),mouth:[7,8],ear:3,tail:'fox'},
   rabbit:{g:mir(["....bb..","....bb..","....bp..","....bp..","....bbbb","...bbbbb","...bbebb","...bbbbn","...bbwww","....bbww","....bbbb","...bbbbb","..bbbwww","..bbbwww","..bbbbbb","..wwbb.."]),mouth:[7,8],ear:4,tail:'rabbit'},
   bear:{g:mir(["........","..bb....",".bbbb...",".bpbbbbb",".bbbbbbb",".bbbebbb",".bbbbbbb","..bbbwww","..bbwwwn","..bbwwww","...bbbww","...bbbbb","..bbbwww","..bbbwww","..bbbbbb","..bbbb.."]),mouth:[7,9],tail:'bear'},
-  owl:{g:mir(["........","..d.....","..dd....","..bbbbbb",".bbbbbbb",".bwwwwbb",".bweewbb",".bwwwwby",".bbbbbby","..bbbbbb","...bbbbb","...bbwww","..bbwwbw","..bbwwwb","..bbbwww","...yy..."]),eb:'w',tail:'none'}
+  owl:{beak:8,g:mir(["........","..d.....","..dd....","..bbbbbb",".bbbbbbb",".bwwwwbb",".bweewbb",".bwwwwby",".bbbbbby","..bbbbbb","...bbbbb","...bbwww","..bbwwbw","..bbwwwb","..bbbwww","...yy..."]),eb:'w',tail:'none'}
 };
 const shade=(h,f=.66)=>'#'+hex(h).map(v=>Math.round(v*f).toString(16).padStart(2,'0')).join('');
 const cpal=c=>({b:c.c1,d:c.sh||shade(c.c1),w:c.c2,p:'#e89aa8',y:'#e8b84a',e:'#2b1d2e',n:'#2b1d2e',o:'#2b1d2e'});
@@ -16,13 +16,17 @@ const idleLook=()=>{const r=ev(23,6,4);return r<0?[0,0]:[[1,0],[-1,0],[0,-1],[1,
 
 /* paint a character onto any 2d context. o: look [dx,dy], maxRow (draw only the top rows), noTail */
 function paint(g,c,X,Y,k,o={}){
-  const S=SPR[c.species]||SPR.dog,P=cpal(c),R=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)},
-    blink=tick%11===0,open=talking&&tick%2,lk=o.look||idleLook(),flick=ev(31,4,9)>=0,wag=tick%2,mr=o.maxRow||16,eb=P[S.eb||'b'];
+  const S=SPR[c.species]||SPR.dog,P=cpal(c),R=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)},sd=o.seed||0,
+    ph=Face.phase(sd),blink=ph===2,half=ph===1,st=Face.state(sd),lk=o.look||Face.gaze(sd)||idleLook(),flick=ev(31,4,9)>=0,wag=tick%2,mr=o.maxRow||16,eb=P[S.eb||'b'],q=k/2,
+    bo=S.beak&&st.v&&V_OPEN[st.v]?Math.max(1,Math.round(V_OPEN[st.v]*(st.amp||1)*q)):S.beak&&st.e&&/^(laugh|yawn|o|grin)$/.test(st.e)?Math.round(q*2):0;
   S.g.forEach((row,j)=>{if(j>=mr)return;[...row].forEach((ch,i)=>{if(ch==='.')return;
+    if(S.beak&&j===S.beak&&ch==='y'&&bo)return; /* the lower beak is drawn below, dropped open */
     const dx=(S.ear&&j<S.ear&&i>=8&&flick)?1:0;
     R(X+(i+dx)*k,Y+j*k,k,k,ch==='e'?eb:(P[ch]||P.b))})});
-  if(!blink)S.g.forEach((row,j)=>{if(j>=mr)return;[...row].forEach((ch,i)=>{if(ch==='e')R(X+(i+lk[0])*k,Y+(j+lk[1])*k,k,k,P.e)})});
-  if(open&&S.mouth&&mr>S.mouth[1])R(X+S.mouth[0]*k,Y+S.mouth[1]*k,2*k,k,'#7a2f3a');
+  const lid=blink?0:half||st.e==='laugh'||st.e==='grin'?1:2; /* 0 shut, 1 half, 2 open */
+  if(lid)S.g.forEach((row,j)=>{if(j>=mr)return;[...row].forEach((ch,i)=>{if(ch==='e'){const h=lid===1?Math.max(1,k>>1):k;R(X+(i+lk[0])*k,Y+(j+lk[1])*k+k-h,k,h,P.e)}})});
+  if(S.beak&&bo&&mr>S.beak){R(X+7*k,Y+S.beak*k,2*k,bo,'#5a2a30');R(X+7*k,Y+S.beak*k+bo,2*k,k,P.y)}
+  else if(S.mouth&&mr>S.mouth[1]+1)Face.mouth(R,X+8*k-3*q,Y+S.mouth[1]*k+q,{w:6,q,seed:sd,maxH:3,lip:P.e,inn:'#7a2f3a',soft:1,st});
   if(o.noTail||mr<16)return;
   const t=S.tail,sh=P.d;
   if(t==='dog'){R(X+14*k,Y+(wag?11:13)*k,k,2*k,sh);R(X+15*k,Y+(wag?9:12)*k,k,3*k,sh)}
@@ -31,8 +35,9 @@ function paint(g,c,X,Y,k,o={}){
   else if(t==='rabbit'){R(X+14*k,Y+13*k,2*k,2*k,P.w)}
   else if(t==='bear'){R(X+14*k,Y+13*k,k,k,sh)}
 }
+const V_OPEN={A:2,E:1.4,I:1,O:2,U:1.4,K:1,L:1,F:.6,S:.6}; /* how far the owl's beak drops, per mouth shape, in half-cells */
 function drawChar(c,X,Y,k=2,o={}){
-  paint(ctx,c,X,Y,k,o);
+  paint(ctx,c,X+(CH.on?CH.dx:0),Y+(CH.on?CH.dy:0),k,o);
   if(o.dots&&thinking){for(let i=0;i<=tick%3;i++)px(X+18*k+i*Math.round(2.5*k),Y-3*k,Math.round(1.5*k),Math.round(1.5*k),'#f3e3c8')}
 }
 /* a round glass helmet / bubble drawn over a head (moon base, underwater) */

@@ -1,7 +1,7 @@
 /* Scene: A quiet library with a bear librarian. Draws with px(x,y,w,h,color); s = time-of-day palette. */
 const BOOKC=['#a83a4a','#3a6aa8','#4a8a5a','#d9a45a','#7a4aa8','#c8c0a0','#3a8a8a','#b8603a'];
 function drawLibrary(s){
-  const open=talking&&tick%2,pg=ev(34,5,4),adj=ev(46,6,17)>=0; /* idle: turns a page, pushes up his glasses */
+  const pg=ev(34,5,4),adj=ev(46,6,17)>=0; /* idle: turns a page, pushes up his glasses */
   px(0,0,160,62,'#3a2619');for(let x=0;x<160;x+=10)px(x,0,1,62,'#321f14');
   /* bookcases */
   const case_=(x0,w)=>{px(x0,4,w,60,'#4a3020');for(let r=0;r<4;r++){const y=6+r*14;px(x0+1,y,w-2,13,'#2a1810');let x=x0+2;for(let i=0;x<x0+w-4;i++){const bw=2+((i*5+r*3)%3),bh=7+((i*7+r)%5);px(x,y+13-bh,bw,bh,BOOKC[(i*3+r*2)%8]);x+=bw+(i%6===0?2:0)}px(x0,y+13,w,2,'#5a3a28')}};
@@ -16,6 +16,7 @@ function drawLibrary(s){
   px(160-18,6,2,62,'#8a6a42');px(160-10,6,2,62,'#8a6a42');for(let y=12;y<64;y+=9)px(142,y,10,2,'#8a6a42');
   /* the bear librarian */
   const bear={species:'bear',c1:'#7a4e34',c2:'#d8b890'};
+  CH.b();
   if(PC)drawChar(PC,64,30,2);
   else{drawChar(bear,64,30,2);
     const g='#e8c46a',yy=adj?-1:0;                                  /* round glasses */
@@ -23,6 +24,7 @@ function drawLibrary(s){
     px(83,40+yy,7,1,g);px(83,46+yy,7,1,g);px(83,40+yy,1,7,g);px(89,40+yy,1,7,g);px(77,43+yy,6,1,g);
     px(70,54,20,6,'#4a6a4a');px(76,54,8,6,'#f3e3c8')}                /* cardigan + shirt */
   if(adj)px(90,38,5,6,PC?'#d8b890':'#d8b890'); /* paw up to the glasses */
+  CH.e();
   /* the desk, a lamp, an open book */
   px(36,60,92,5,'#6a4a2a');px(36,60,92,1,'#8a6a42');px(40,65,84,14,'#5a3a22');px(44,68,32,8,'#4a2e1a');px(84,68,32,8,'#4a2e1a');px(60,71,4,2,'#c8a050');px(100,71,4,2,'#c8a050');
   px(54,54,26,6,'#f3e3c8');px(80,54,26,6,'#ece0c0');px(79,53,2,8,'#a83a4a');px(56,56,20,1,'#b8a888');px(56,58,18,1,'#b8a888');px(84,56,18,1,'#b8a888');px(84,58,14,1,'#b8a888');

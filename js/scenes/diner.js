@@ -1,6 +1,6 @@
 /* Scene: A diner at 3am. Night-shift owl behind the counter. Draws with px(x,y,w,h,color); s = time-of-day palette. */
 function drawDiner(s){
-  const open=talking&&tick%2,flick=tick%9===0,pour=ev(38,6,8)>=0; /* idle: the owl tops up your coffee */
+  const flick=tick%9===0,pour=ev(38,6,8)>=0; /* idle: the owl tops up your coffee */
   /* tiled back wall */
   px(0,0,160,56,'#2c6a72');for(let y=0;y<56;y+=6)px(0,y,160,1,'#265b62');for(let x=0;x<160;x+=8)px(x,0,1,56,'#265b62');
   px(0,40,160,16,'#8a2f3a');px(0,40,160,1,'#c9c0b0');
@@ -20,10 +20,12 @@ function drawDiner(s){
   px(115,42,8,5,'#d9a45a');px(125,42,8,5,'#c94a5a');px(135,42,8,5,'#e8c46a');px(115,49,8,5,'#a85a3a');px(125,49,8,5,'#d9a45a');px(135,49,8,5,'#c94a5a');
   /* the owl waitress */
   const owl={species:'owl',c1:'#a07a4e',c2:'#f0dcb4'};
+  CH.b();
   if(PC)drawChar(PC,64,24,2);
   else{drawChar(owl,64,24,2);
     px(69,26,22,4,'#f3e3c8');px(69,29,22,1,'#d94a5a');px(76,24,8,3,'#f3e3c8');  /* paper cap */
     px(72,48,16,3,'#d9798f');px(75,52,6,3,'#fff');px(76,53,2,1,'#d94a5a')}       /* collar + name tag */
+  CH.e();
   /* coffee pot she is holding */
   const py=pour?44+(tick%2):46,pxx=pour?92:100;
   px(pxx,py,8,12,'#2b1d2e');px(pxx+1,py+3,6,8,'#6a3a22');px(pxx+8,py+2,2,8,'#2b1d2e');px(pxx-1,py-2,10,2,'#9aa0b0');

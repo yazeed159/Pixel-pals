@@ -9,15 +9,34 @@ dawn:{wall:'#7d6a8e',w2:'#705e82',floor:'#8a6a62',f2:'#7a5c56',sky:'#f2a0b0',hz:
 dusk:{wall:'#443a68',w2:'#3b3260',floor:'#614558',f2:'#553b4c',sky:'#3a2a6a',hz:'#c0587a',moon:'#e8d8f0',glow:'255,170,130'}};
 let tick=0, talking=false, thinking=false, jolt=0, jx=0, jy=0, mood='', moodT=0;
 let TM='night', PC=null; /* TM = the time of day being drawn now; PC = custom character cast in this scene (or null) */
-const px=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)};
+/* Posture: scenes call CH.b() before and CH.e() after drawing their character; life.js sets dx/dy (slumped, fidgeting). */
+const CH={on:0,dx:0,dy:0,b(){if(typeof lifeBehind==='function')lifeBehind();CH.on=1},e(){CH.on=0}};
+const px=(x,y,w,h,c)=>{ctx.fillStyle=c;if(CH.on){x+=CH.dx;y+=CH.dy}ctx.fillRect(x,y,w,h)};
+const rpx=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)};
 const SCENES={};
 
-/* ---- time of day ---- */
+/* ---- time of day ----
+   Auto follows the clock continuously: the palettes below are the look at their peak hour, and in between the sky and
+   everything tied to it blends smoothly (KF = [hour, palette]). 'cycle' plays a whole day in two minutes. */
+const KF=[[0,'night'],[4.5,'night'],[6,'dawn'],[8,'day'],[16.5,'day'],[18,'sunset'],[19.5,'dusk'],[21.5,'night'],[24,'night']];
+const DL={night:0,dusk:.2,sunset:.45,dawn:.6,day:1}; /* how bright each preset is */
+let BL={ka:'night',kb:'night',t:0},CURPAL=SC.night,DAYF=0; /* current blend, blended palette, 0 (night) to 1 (day) */
+const ease=t=>t*t*(3-2*t);
+function blendPal(a,b,t){const o={};for(const k in a){if(k==='glow'){const A=a.glow.split(',').map(Number),B=b.glow.split(',').map(Number);o.glow=A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')}else o[k]=mix(a[k],b[k],t)}return o}
+function setBlend(ka,kb,t){BL={ka,kb,t};CURPAL=t<=0||ka===kb?SC[ka]:blendPal(SC[ka],SC[kb],t);DAYF=DL[ka]+(DL[kb]-DL[ka])*t;return t<.5?ka:kb}
 function resolveTime(){
-  if(cfg.time!=='auto')return SC[cfg.time]?cfg.time:'night';
-  const h=new Date().getHours();
-  return h>=5&&h<7?'dawn':h>=7&&h<17?'day':h>=17&&h<19?'sunset':h>=19&&h<21?'dusk':'night';
+  if(cfg.time==='auto'||cfg.time==='cycle'){
+    const d=new Date(),h=cfg.time==='cycle'&&!still()?(Date.now()%12e4)/12e4*24:d.getHours()+d.getMinutes()/60+d.getSeconds()/3600;
+    const K=(typeof sunKF==='function'&&sunKF())||KF; /* real sunrise/sunset when set up in Setup, else the fixed hours */
+    for(let i=1;i<K.length;i++)if(h<=K[i][0]){const a=K[i-1][0],b=K[i][0];return setBlend(K[i-1][1],K[i][1],b>a?ease((h-a)/(b-a)):0)}
+    return setBlend('night','night',0);
+  }
+  const k=SC[cfg.time]?cfg.time:'night';return setBlend(k,k,0);
 }
+/* for scenes with their own per-time tables: byTime({day:..., night:...}) blends colors (or arrays of colors) between presets */
+const isHex=c=>typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c);
+function byTime(o){const a=o[BL.ka]||o.night,b=o[BL.kb]||o.night,t=BL.t,m=(x,y)=>isHex(x)&&isHex(y)?mix(x,y,t):(t<.5?x:y);return Array.isArray(a)?a.map((x,i)=>m(x,b[i])):m(a,b)}
+const byDay=(night,day)=>mix(night,day,DAYF);
 const stars=()=>TM==='night'||TM==='dusk';
 const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const mix=(a,b,t)=>{const A=hex(a),B=hex(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')};
@@ -47,7 +66,7 @@ function tint(){
   ctx.restore();
 }
 
-function draw(){TM=resolveTime();PC=occ();const s=SC[TM]||SC.night;(SCENES[cfg.place]||SCENES.bed).draw(s);tint();fx()}
+function draw(){TM=resolveTime();PC=occ();CH.on=0;if(typeof lifePose==='function')lifePose();if(typeof facePose==='function')facePose();const s=CURPAL;(SCENES[cfg.place]||SCENES.bed).draw(s);CH.on=0;if(typeof lifeOver==='function')lifeOver(s);tint();fx()}
 function fx(){if(jolt>0){const y=jy-(6-jolt)*2,c='#f3e3c8aa';px(jx,y,1,1,c);px(jx+3,y+2,1,1,c);px(jx-2,y+3,1,1,c)}if(moodT>0&&mood){const h=(SCENES[cfg.place].hot||[])[0];if(h){const x=h.r[0]+h.r[2]-2,y=h.r[1]+2,t=tick%4;
     if(mood==='happy'){px(x,y,1,1,t<2?'#f3e3c8':'#f3e3c855')}
     else if(mood==='sad'){px(x-12,y+8+t*3,1,2,'#7ab8ff');px(x-11,y+9+t*3,1,1,'#7ab8ff')}

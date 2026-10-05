@@ -1,6 +1,6 @@
 /* Scene: Therapy session. Draws on the 160x90 canvas with px(x,y,w,h,color); s = time-of-day palette. */
 function drawTherapy(s){
-  const SK='#e8b894',DK='#2b1d2e',blink=tick%11===0,open=talking&&tick%2,wr=ev(32,8,6)>=0; /* idle: the therapist jots a note */
+  const SK='#e8b894',DK='#2b1d2e',blink=Face.blink(),wr=ev(32,8,6)>=0; /* idle: the therapist jots a note */
   px(0,0,160,58,s.wall);for(let x=0;x<160;x+=8)px(x,0,1,58,s.w2);
   px(0,58,160,32,s.floor);for(let y=62;y<90;y+=6)px(0,y,160,1,s.f2);px(0,56,160,3,'#2a2140');
   px(8,8,38,50,'#5a3a2a');px(10,10,34,46,'#3a2619');
@@ -20,7 +20,7 @@ function drawTherapy(s){
   px(77,36,6,3,SK);px(73,26,14,12,SK);px(72,22,16,6,'#4a3a3a');px(71,25,3,10,'#4a3a3a');px(86,25,3,10,'#4a3a3a');
   px(74,30,5,3,DK);px(75,31,3,1,SK);px(81,30,5,3,DK);px(82,31,3,1,SK);px(79,31,2,1,DK);
   if(!blink){px(76+(wr?1:0),31,1,1,DK);px(83+(wr?1:0),31,1,1,DK)}
-  px(77,35,6,1,'#b5655a');if(open)px(78,35,4,2,'#7a2f3a');
+  Face.mouth(px,77,35,{w:6,lip:'#b5655a',maxH:3});
   }
   if(thinking){for(let i=0;i<=tick%3;i++)px(92+i*5,18,3,3,'#f3e3c8')}
   px(52,76,56,4,'#5a3a2a');px(56,80,4,6,'#5a3a2a');px(100,80,4,6,'#5a3a2a');
@@ -28,7 +28,7 @@ function drawTherapy(s){
   px(0,64,16,26,'#6a5aa0');px(144,64,16,26,'#6a5aa0');px(16,80,128,10,'#5a4a90');px(16,80,128,1,'#7a6ab8');
 }
 SCENES.therapy={label:"Therapy session",icon:"🛋️",name:"Dr. Sage",win:[115,13,32,26],setting:"in a quiet therapy office, with the person on the couch and you in the armchair across from them",
-  prompt:"You are {pet}, a calm, attentive therapist in a quiet office, in a session with the person on the couch. Listen closely, reflect back what you hear, and ask one open question at a time. Never lecture or diagnose. You are an AI character for reflection and conversation, not a licensed clinician; if the person seems to be in crisis or mentions hurting themselves, respond with care and encourage them to reach out to a local crisis line or someone they trust.",
+  prompt:"You are {pet}, a calm, attentive therapist in a quiet office, in a session with the person on the couch. Listen closely, reflect back what you hear, and ask a question when it helps. Never lecture or diagnose. You are an AI character for reflection and conversation, not a licensed clinician; if the person seems to be in crisis or mentions hurting themselves, respond with care and encourage them to reach out to a local crisis line or someone they trust.",
   greet:"Come in, sit wherever is comfortable. We can start anywhere. How are you doing today?",
   back:"Welcome back. Where would you like to pick up?",
   hot:[{r:[60,22,40,50],say:["Yes? I'm listening.","*nods* Take your time.","We can slow down if you like."]}],
