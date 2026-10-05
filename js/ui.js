@@ -1,6 +1,6 @@
 /* Interface: settings dialog, stage buttons, character creator, journal, chat log, backup and restore. */
 const dlg=$('#dlg');
-const FIELDS=['place','time','weather','style','fur','pos','ts','spd','snd','amb','len','pet','me','season','carry','checkin','motion','lang','rlang','sun','fb','saver','ctx'];
+const FIELDS=['place','time','weather','style','fur','pos','ts','spd','snd','amb','len','pet','me','season','carry','checkin','motion','lang','rlang','sun','fb','ctx'];
 let dr={cast:{},pals:{}},dp=cfg.place,memShown='*';
 function applyUI(){$('#dbox').className=cfg.pos==='over'?'over':'';document.documentElement.style.setProperty('--ts',cfg.ts);$('#name').textContent=nm();$('#tb').textContent=TI[cfg.time]||'🕒';$('#pb').textContent=SCENES[cfg.place].icon;$('#kb').textContent=PI[cfg.pals[cfg.place]||''];$('#phb').textContent='📷';[['tb','Time'],['pb','Scene'],['kb','Colors'],['phb','Photo']].forEach(([i,l])=>$('#'+i).dataset.l=T(l));$('#app').classList.toggle('bub',cfg.style==='bubbles')}
 let shown=cfg.provider;
@@ -58,7 +58,6 @@ $('#memclr').onclick=()=>{$('#memtxt').value='';$('#memst').textContent='Cleared
 /* time of day / scene / color mood buttons on the stage */
 const NT={auto:'dawn',dawn:'day',day:'sunset',sunset:'dusk',dusk:'night',night:'cycle',cycle:'auto'};
 $('#tb').onclick=e=>{e.stopPropagation();cfg.time=NT[cfg.time]||'auto';store();applyUI();draw()};
-$('#pb').onclick=e=>{e.stopPropagation();const old=cfg.place,k=Object.keys(SCENES);cfg.place=k[(k.indexOf(cfg.place)+1)%k.length];leaveScene(old);store();applyUI();draw();greet()};
 $('#kb').onclick=e=>{e.stopPropagation();const o=['','warm','cold','muted'],n=o[(o.indexOf(cfg.pals[cfg.place]||'')+1)%o.length];if(n)cfg.pals[cfg.place]=n;else delete cfg.pals[cfg.place];store();applyUI();draw()};
 
 /* ---- create your own characters ---- */

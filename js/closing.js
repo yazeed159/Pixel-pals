@@ -14,8 +14,8 @@ const LP=cfg.loop;
 LP.n=LP.n||0;LP.first=LP.first||0;LP.last=LP.last||0;
 ['wraps','weeks','pend','shown'].forEach(k=>{if(!Array.isArray(LP[k]))LP[k]=[]});
 if(!LP.open||typeof LP.open!=='object')LP.open={};
-['lpwrap','lpweek','lpmile','lpbye'].forEach(k=>{if(cfg[k]!=='0')cfg[k]='1'});
-FIELDS.push('lpwrap','lpweek','lpmile','lpbye');
+['lpmile','lpbye'].forEach(k=>{if(cfg[k]!=='0')cfg[k]='1'});
+FIELDS.push('lpmile','lpbye');
 const GAP=30*60*1000,MIN=60*1000;
 const dayStr=t=>new Date(t).toLocaleDateString('en-CA');
 const shortD=s=>new Date(/^\d{4}-\d\d-\d\d$/.test(s)?s+'T00:00:00':s).toLocaleDateString([],{month:'short',day:'numeric'});
@@ -49,8 +49,7 @@ const _leave=leaveScene;
 leaveScene=function(p){queueWrap(p);return _leave(p)};
 function queueWrap(p){
   const s=LP.open[p];if(!s)return;delete LP.open[p];
-  if(cfg.lpwrap==='1'&&cfg.saver!=='1'&&s.u>=2&&!demo())LP.pend.push({place:p,from:s.from,to:s.to,who:s.who});
-  store();setTimeout(processPend,50);
+  LP.pend=[];store();
 }
 
 /* ---------- 1. wrap-up ---------- */
@@ -63,7 +62,7 @@ async function wrapText(j,msgs){
 }
 let wrapping=false;
 async function processPend(){
-  if(wrapping||!LP.pend.length)return;wrapping=true;
+  if(wrapping||!LP.pend.length)return;LP.pend=[];store();return;wrapping=true;
   try{
     while(LP.pend.length){
       const j=LP.pend[0],msgs=(H[j.place]||[]).filter(m=>m.t>=j.from-1000&&m.t<=j.to+5*MIN);
@@ -83,7 +82,7 @@ const WEEKSYS="You write a short, quiet look-back at a person's week, from one-l
 const mondayOf=t=>{const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d};
 let weeking=false;
 async function weeklyCheck(){
-  if(cfg.lpweek!=='1'||cfg.saver==='1'||demo()||weeking||wrapping)return;
+  return;
   const mon=mondayOf(Date.now());
   for(let k=1;k<=2;k++){
     const a=new Date(mon);a.setDate(a.getDate()-7*k);const b=new Date(a);b.setDate(b.getDate()+7);const key=dayStr(a);
@@ -126,7 +125,7 @@ const _gl=greetLine;
 greetLine=function(){
   let g=_gl();const m=milestone();
   if(m)g+=' '+m;
-  else{const w=unseenWeek();if(w&&!w.told&&cfg.lpweek==='1'){w.told=1;store();g+=' '+WEEKNOTE}}
+  else{const w=unseenWeek();if(w&&!w.told){w.told=1;store();g+=' '+WEEKNOTE}}
   return g;
 };
 

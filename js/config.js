@@ -8,7 +8,7 @@ const TOK={short:4096,medium:4096,long:4096};
 const TI={cycle:'⏳',auto:'🕒',dawn:'🌅',day:'☀️',sunset:'🌇',dusk:'🌆',night:'🌙'};
 const PI={'':'🎨',warm:'🔥',cold:'❄️',muted:'🌫️'};
 const DEF={provider:'anthropic',keys:{},models:{},base:'',place:'bed',time:'auto',pos:'below',ts:'1',spd:'26',snd:'0',fur:'tan',len:'medium',pet:'',me:'',weather:'none',about:'',style:'box',amb:'0',
-prompt:'',fb:'1',saver:'0',ctx:'lean',ki:{},season:'n',carry:'all',mem:{},qr:'1',checkin:'0',ckDone:'',cast:{},pals:{},chars:[]};
+prompt:'',fb:'1',ctx:'lean',ki:{},season:'n',carry:'all',mem:{},qr:'1',checkin:'0',ckDone:'',cast:{},pals:{},chars:[]};
 let cfg={...DEF,ki:{},keys:{},models:{},mem:{},cast:{},pals:{},chars:[]}; try{Object.assign(cfg,JSON.parse(localStorage.pdCfg||'{}'))}catch(e){}
 if(cfg.key){cfg.keys.anthropic=cfg.key;delete cfg.key}
 if(cfg.model){cfg.models.anthropic=cfg.model;delete cfg.model}

@@ -162,7 +162,7 @@ Free plans cap requests (for example 20 a day on one Gemini model). Setup > AI p
 - **Several keys:** paste as many as you like, one per line. Each request starts with the key that worked last. If it is rate limited the next key takes over on the same request, with the same conversation, so nothing is lost. A limited key rests (the time Google or the provider asks for, 45 minutes for a daily quota, 6 hours for a refused key) and is skipped until then, even after a reload. Short per-minute limits with no other key left are simply waited out (up to 15 seconds).
 - **Backup models:** put several models after commas (`gemini-3.5-flash-lite, gemini-2.5-flash-lite, gemini-2.5-flash`). Free limits are counted per key and per model, so a second model on the same key is extra quota. Order is best model first across all keys, then the backups.
 - **If every key is limited:** the app can fall back to your other providers that have keys (Groq's free plan is generous). Turn off with *Stop and tell me*.
-- **Save requests:** skips the optional background calls (the separate quick-replies call, conversation wrap-ups and weekly look-backs). Chat replies and memory still work.
+- **Fewer requests:** the app never makes the optional background calls (a separate quick-replies call, conversation wrap-ups, weekly look-backs). Chat replies, quick replies inside the reply, and memory still work.
 - The line under the key box shows how many keys and models there are, which are resting and for how long, and the last switch. *Try resting keys again* clears the rests. Keys from different Google accounts or projects each have their own quota; several keys from the same project share one.
 
 ## Groq (Setup > AI provider)

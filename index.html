@@ -58,7 +58,6 @@
   <div class="g">
     <div><label for="fb">If every key is limited</label><select id="fb"><option value="1">Use my other providers that have keys</option><option value="0">Stop and tell me</option></select></div>
     <div><label for="ctx">Conversation sent each time</label><select id="ctx"><option value="lean">Lean: recent messages, the rest as memory (fewest tokens)</option><option value="normal">Normal: about 40 recent messages</option><option value="full">Everything: up to 60 messages</option></select></div>
-    <div><label for="saver">Save requests</label><select id="saver"><option value="0">Off</option><option value="1">On: skip extra background AI calls</option></select></div>
   </div>
   <div id="baseWrap" hidden><label for="base">Base URL (e.g. http://localhost:11434/v1)</label><input id="base"></div>
   <div class="g">
@@ -81,12 +80,10 @@
   </details>
   <details><summary>Closing the loop</summary>
     <div class="g">
-      <div><label for="lpwrap">Wrap-up after a conversation</label><select id="lpwrap"><option value="1">On</option><option value="0">Off</option></select></div>
-      <div><label for="lpweek">Weekly look-back</label><select id="lpweek"><option value="1">On</option><option value="0">Off</option></select></div>
       <div><label for="lpmile">Quiet milestones</label><select id="lpmile"><option value="1">On</option><option value="0">Off</option></select></div>
       <div><label for="lpbye">A sign-off when you leave</label><select id="lpbye"><option value="1">On</option><option value="0">Off</option></select></div>
     </div>
-    <p class="hint">Wrap-ups and look-backs are written by your AI provider from that conversation. They stay on this device and go into backups. There are no scores or graphs.</p>
+    <p class="hint">Earlier wrap-ups and look-backs stay on this device and go into backups. No new ones are written, so they use no AI requests. There are no scores or graphs.</p>
     <div class="foot"><button id="lbopen" class="ghost" type="button">Open Looking back</button></div>
   </details>
   <details><summary>Pace &amp; motion</summary>
@@ -148,6 +145,12 @@
   <div id="instrow" hidden><div class="foot"><button id="inst" type="button" hidden>Install app</button></div><p id="insthint" class="hint"></p></div>
   <div class="foot"><button id="wagain" class="ghost" type="button">Show the welcome screen again</button><button id="bak" class="ghost" type="button">Back up…</button><button id="rst" class="ghost" type="button">Restore…</button><input id="rstf" type="file" accept="application/json,.json" hidden></div>
   <div class="foot"><button id="ok">Save</button><button id="clear" class="ghost">Clear chat</button><button id="wipe" class="ghost">Erase all</button></div>
+</dialog>
+
+<dialog id="spd" aria-label="Choose a scene">
+  <h3 style="margin-top:0">Where to?</h3>
+  <div id="spgrid"></div>
+  <div style="display:flex;gap:8px;margin-top:14px"><button id="spx" type="button">Close</button></div>
 </dialog>
 
 <dialog id="logd">
@@ -323,6 +326,7 @@
 <script src="js/backgrounds.js"></script>
 <script src="js/sceneeditor.js"></script>
 <script src="js/life.js"></script>
+<script src="js/scenepicker.js"></script>
 <script src="js/pace.js"></script>
 <script src="js/i18n-data.js"></script>
 <script src="js/i18n.js"></script>

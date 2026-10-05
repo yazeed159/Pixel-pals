@@ -133,20 +133,8 @@ function splitQ(t){
   if(!m)return {text:t.trim(),quick:[]};
   return {text:t.slice(0,i).trim(),quick:m[1].split('|').map(s=>s.trim()).filter(Boolean).slice(0,3).map(x=>x.slice(0,300))};
 }
-/* if a reply came without its options (or a line was spoken locally, like a nudge), ask once for them separately so they are always there */
-const QRSYS='You write suggested replies for a person chatting with a character, so they can tap instead of typing. From the conversation, write exactly three different things the person might plausibly say next, in first person. Each is one or two natural, complete sentences (not a few words) that responds to the specific thing the character just said or asked, using the details already mentioned. They must go in different directions: one that opens up or agrees, one that doubts, pushes back or jokes, one that asks the character something or moves on. Output only the three, one per line, with no numbering, quotes or labels.';
-async function fillQR(line){
-  if(cfg.qr!=='1'||cfg.saver==='1'||demo()||qr.length||(typeof act!=='undefined'&&act&&act.strip))return;
-  const n=hh().length,place=cfg.place,c=hh().slice(-6).map(m=>(m.role==='user'?(cfg.me||'Person'):nm())+': '+m.content);
-  if(line&&!(c.length&&c[c.length-1].endsWith(line.slice(-40))))c.push(nm()+': '+line);
-  if(!c.length)return;
-  try{
-    const out=await complete(QRSYS,[{role:'user',content:c.join('\n')+'\n\nWrite the three options.'}],null,500);
-    if(place!==cfg.place||busy||qr.length||msg.value||hh().length!==n)return;
-    const L=out.split('\n').map(x=>x.replace(/^\s*(?:[-*•]|\d+[.)])?\s*["“]?/,'').replace(/["”]\s*$/,'').trim()).filter(x=>x.length>1).slice(0,3).map(x=>x.slice(0,300));
-    if(L.length){qr=L;if(!typing&&ci>=chunks.length-1)showQR()}
-  }catch(e){}
-}
+/* the options come inside the reply itself; there is no separate call for them (it would cost an extra request) */
+function fillQR(){}
 const vis=t=>{const i=t.lastIndexOf('[[');return (i>=0?t.slice(0,i):t.replace(/\[$/,'')).trimEnd()};
 function setMood(t){const l=t.toLowerCase();mood=/sorry|hard|heavy|lonely|hurt|tough|painful|sad/.test(l)?'sad':/tired|sleep|rest|yawn|cozy|drowsy/.test(l)?'sleepy':/haha|glad|wonderful|love|great|happy|proud|yay|lovely/.test(l)?'happy':'';moodT=mood?50:0}
 
