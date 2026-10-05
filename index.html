@@ -49,10 +49,17 @@
   </div>
   <label for="prov">AI provider</label>
   <select id="prov"><option value="anthropic">Claude (Anthropic)</option><option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter</option><option value="groq">Groq</option><option value="custom">Custom (OpenAI-compatible)</option></select>
-  <label for="key">API key (stays in this browser)</label>
-  <input id="key" type="password" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other">
-  <label for="model">Model name</label>
-  <input id="model">
+  <label for="key">API keys (stay in this browser). Add several, one per line: when one hits its limit, the next one takes over and the conversation carries on</label>
+  <textarea id="key" class="secret" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other" placeholder="key 1&#10;key 2&#10;key 3"></textarea>
+  <div class="foot"><button id="keyshow" class="ghost" type="button">Show keys</button><button id="keyclr" class="ghost" type="button">Try resting keys again</button></div>
+  <p id="keyst" class="hint" role="status"></p>
+  <label for="model">Model name. Add backup models after commas (each model has its own free limit)</label>
+  <input id="model" placeholder="gemini-3.5-flash-lite, gemini-2.5-flash-lite, gemini-2.5-flash">
+  <div class="g">
+    <div><label for="fb">If every key is limited</label><select id="fb"><option value="1">Use my other providers that have keys</option><option value="0">Stop and tell me</option></select></div>
+    <div><label for="ctx">Conversation sent each time</label><select id="ctx"><option value="lean">Lean: recent messages, the rest as memory (fewest tokens)</option><option value="normal">Normal: about 40 recent messages</option><option value="full">Everything: up to 60 messages</option></select></div>
+    <div><label for="saver">Save requests</label><select id="saver"><option value="0">Off</option><option value="1">On: skip extra background AI calls</option></select></div>
+  </div>
   <div id="baseWrap" hidden><label for="base">Base URL (e.g. http://localhost:11434/v1)</label><input id="base"></div>
   <div class="g">
     <div><label for="place">Place</label><select id="place"></select></div>

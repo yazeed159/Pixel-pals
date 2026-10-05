@@ -1,12 +1,19 @@
 /* Interface: settings dialog, stage buttons, character creator, journal, chat log, backup and restore. */
 const dlg=$('#dlg');
-const FIELDS=['place','time','weather','style','fur','pos','ts','spd','snd','amb','len','pet','me','season','carry','checkin','motion','lang','rlang','sun'];
+const FIELDS=['place','time','weather','style','fur','pos','ts','spd','snd','amb','len','pet','me','season','carry','checkin','motion','lang','rlang','sun','fb','saver','ctx'];
 let dr={cast:{},pals:{}},dp=cfg.place,memShown='*';
 function applyUI(){$('#dbox').className=cfg.pos==='over'?'over':'';document.documentElement.style.setProperty('--ts',cfg.ts);$('#name').textContent=nm();$('#tb').textContent=TI[cfg.time]||'🕒';$('#pb').textContent=SCENES[cfg.place].icon;$('#kb').textContent=PI[cfg.pals[cfg.place]||''];$('#phb').textContent='📷';[['tb','Time'],['pb','Scene'],['kb','Colors'],['phb','Photo']].forEach(([i,l])=>$('#'+i).dataset.l=T(l));$('#app').classList.toggle('bub',cfg.style==='bubbles')}
 let shown=cfg.provider;
-function loadFields(){const p=$('#prov').value;$('#key').value=cfg.keys[p]||'';$('#model').value=cfg.models[p]||MODELS[p];$('#base').value=cfg.base;$('#baseWrap').hidden=p!=='custom'}
-function stash(){const p=shown;cfg.keys[p]=$('#key').value.trim();cfg.models[p]=$('#model').value.trim()||MODELS[p];cfg.base=$('#base').value.trim()}
+const keyList2=v=>String(v||'').split(/[\s,;]+/).filter(Boolean);
+function keyStatus(){const p=shown,ks=keyList2($('#key').value),ms=String($('#model').value||MODELS[p]||'').split(/[,\n]+/).map(x=>x.trim()).filter(Boolean);
+  let resting=0,soon=0;ks.forEach(k=>ms.forEach(m=>{const w=rest(p,k,m);if(w>0){resting++;soon=soon?Math.min(soon,w):w}}));
+  $('#keyst').textContent=(ks.length?ks.length+(ks.length>1?' keys':' key')+' x '+ms.length+(ms.length>1?' models':' model'):'No key yet')+(resting?'. '+resting+' resting (back in about '+(soon>90e3?Math.ceil(soon/60e3)+' min':Math.ceil(soon/1000)+' s')+')':'')+(keyNote?'. '+keyNote.replace(/\.$/,''):'')+'.'}
+function loadFields(){const p=$('#prov').value;$('#key').value=cfg.keys[p]||'';$('#model').value=cfg.models[p]||MODELS[p];$('#base').value=cfg.base;$('#baseWrap').hidden=p!=='custom';keyStatus()}
+function stash(){const p=shown;cfg.keys[p]=keyList2($('#key').value).join('\n');cfg.models[p]=$('#model').value.trim()||MODELS[p];cfg.base=$('#base').value.trim()}
 $('#prov').onchange=()=>{stash();shown=$('#prov').value;loadFields()};
+$('#key').addEventListener('input',keyStatus);$('#model').addEventListener('input',keyStatus);
+$('#keyshow').onclick=()=>{const k=$('#key');k.classList.toggle('secret');$('#keyshow').textContent=k.classList.contains('secret')?'Show keys':'Hide keys'};
+$('#keyclr').onclick=()=>{COOL={};try{localStorage.removeItem('pdCool')}catch(e){}keyNote='';keyStatus()};
 
 /* who plays the scene: the scene's own character, one of yours, or a ready-made one */
 function fillCast(place,cur){

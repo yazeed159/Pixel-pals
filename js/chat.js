@@ -11,9 +11,34 @@ async function readStream(r,pick,onDelta){
     for(const l of lines){if(!l.startsWith('data:'))continue;const j=l.slice(5).trim();if(!j||j==='[DONE]')continue;try{const t=pick(JSON.parse(j));if(t){all+=t;onDelta(all)}}catch(e){}}}
   return all;
 }
-/* one call to whichever provider is set up. h = [{role, content}] starting with a user message */
-async function complete(system,h,onDelta,maxTok=4096){
-  const p=cfg.provider,k=cfg.keys[p]||'',m=cfg.models[p]||MODELS[p];
+/* ---- several keys and backup models, with automatic failover ----
+   Each provider can hold many keys (one per line in Setup) and a list of models (comma separated). A "slot" is one key with one model.
+   Free-tier limits are counted per key AND per model, so when a slot is rate limited it rests for a while and the next slot takes over
+   on the same request, with the same conversation. If every slot of the chosen provider is resting, the other providers that have
+   keys are tried (unless turned off in Setup). The resting times are kept in localStorage so a reload does not hit a dead key again. */
+const keyList=p=>String(cfg.keys[p]||'').split(/[\s,;]+/).filter(Boolean);
+const modelList=p=>String(cfg.models[p]||MODELS[p]||'').split(/[,\n]+/).map(x=>x.trim()).filter(Boolean);
+let COOL={};try{COOL=JSON.parse(localStorage.getItem('pdCool')||'{}')}catch(e){}
+const sid=(p,k,m)=>p+'|'+k.slice(-10)+'|'+m;
+const rest=(p,k,m)=>Math.max(0,(COOL[sid(p,k,m)]||0)-Date.now());
+function rested(p,k,m,ms){COOL[sid(p,k,m)]=Date.now()+ms;for(const x in COOL)if(COOL[x]<Date.now())delete COOL[x];try{localStorage.setItem('pdCool',JSON.stringify(COOL))}catch(e){}}
+const nap=ms=>new Promise(r=>setTimeout(r,ms));
+let keyNote=''; /* what the last failover did, shown in Setup */
+function limitInfo(r,d,status,msg){
+  const raw=msg+' '+JSON.stringify(d||{});
+  const limit=status===429||status===503||status===529||/quota|rate.?limit|resource.?exhausted|too many requests|overloaded|capacity/i.test(raw);
+  const bad=!limit&&(status===401||status===403||/api key not valid|invalid api.?key|incorrect api key|api key.*(expired|invalid)|permission.?denied/i.test(raw));
+  let ms=60e3;
+  const ra=Number(r.headers&&r.headers.get&&r.headers.get('retry-after'));
+  const m=/retry (?:in|after) ([\d.]+)\s*s/i.exec(raw);
+  if(ra>0)ms=ra*1000;else if(m)ms=Math.ceil(Number(m[1])*1000)+1000;
+  if(/PerDay|per day|daily|RPD/i.test(raw))ms=Math.max(ms,45*60e3); /* a daily quota will not come back in a minute */
+  if(status===503||status===529)ms=Math.min(ms,20e3);
+  if(bad)ms=6*3600e3;
+  return {limit,bad,ms:Math.min(ms,6*3600e3)};
+}
+/* one call to one key and one model */
+async function callOnce(p,k,m,system,h,onDelta,maxTok){
   let url,headers={'content-type':'application/json'},body;
   if(p==='anthropic'){
     url='https://api.anthropic.com/v1/messages';
@@ -32,14 +57,73 @@ async function complete(system,h,onDelta,maxTok=4096){
   const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
   if(onDelta&&r.ok&&r.body){streamed=true;return (await readStream(r,PICK[p]||PICK.oa,onDelta))||'...'}
   const d=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error(d.error?.message||(typeof d.error==='string'?d.error:'HTTP '+r.status));
+  if(!r.ok){
+    const msg=d.error?.message||(typeof d.error==='string'?d.error:'')||('HTTP '+r.status);
+    const e=new Error(msg);Object.assign(e,limitInfo(r,d,r.status,msg));throw e;
+  }
   if(p==='anthropic')return d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
   if(p==='gemini')return (d.candidates?.[0]?.content?.parts||[]).map(x=>x.text||'').join('')||'...';
   return d.choices?.[0]?.message?.content||'...';
 }
+const slotsOf=p=>{const ks=keyList(p),ms=modelList(p);if(p==='custom'&&!ks.length)ks.push('');
+  const o=[];ms.forEach(m=>ks.forEach(k=>o.push([k,m])));return o}; /* best model first, across all keys, then the backup models */
+/* one call to whichever provider is set up. h = [{role, content}] starting with a user message */
+async function complete(system,h,onDelta,maxTok=4096){
+  const order=[cfg.provider,...(cfg.fb==='0'?[]:Object.keys(MODELS).filter(p=>p!==cfg.provider&&p!=='custom'&&keyList(p).length))];
+  let firstErr=null;
+  for(let pass=0;pass<2;pass++){
+    let soonest=Infinity,tried=0;
+    for(const p of order){
+      const slots=slotsOf(p),pref=(cfg.ki&&cfg.ki[p])||0;
+      const start=slots.length?pref%slots.length:0;
+      for(let n=0;n<slots.length;n++){
+        const i=(start+n)%slots.length,[k,m]=slots[i],w=rest(p,k,m);
+        if(w>0){soonest=Math.min(soonest,w);continue}
+        tried++;
+        try{
+          const out=await callOnce(p,k,m,system,h,onDelta,maxTok);
+          (cfg.ki=cfg.ki||{})[p]=i;
+          if(n||p!==cfg.provider)keyNote='Switched to '+(p!==cfg.provider?p+' ':'')+'key '+(keyList(p).indexOf(k)+1)+(modelList(p).length>1?' with '+m:'')+' because the first one was limited.';
+          return out;
+        }catch(e){
+          if(e.limit||e.bad){rested(p,k,m,e.ms);firstErr=firstErr||e;if(e.limit)soonest=Math.min(soonest,e.ms);continue}
+          throw e; /* a real problem (no network, a bad request): do not burn through the other keys */
+        }
+      }
+    }
+    if(pass===0&&soonest<=15e3&&Number.isFinite(soonest)){await nap(soonest+300);firstErr=null;continue} /* a short rest: just wait it out */
+    if(!tried&&!firstErr){ /* everything is already resting from earlier */
+      const e=new Error('All your keys are resting after hitting their limits. Try again in about '+Math.max(1,Math.ceil(soonest/1000))+' seconds'+(soonest>120e3?' (about '+Math.ceil(soonest/60e3)+' minutes)':'')+'. Adding more keys or backup models in Setup helps.');
+      throw e;
+    }
+    break;
+  }
+  const n=order.reduce((a,p)=>a+slotsOf(p).length,0);
+  const e=new Error((firstErr&&firstErr.bad&&!firstErr.limit?'The key was refused: ':'Every key hit its limit ('+n+' tried). ')+(firstErr?firstErr.message.slice(0,160):'')+' Add more keys or backup models in Setup, or wait a bit.');
+  throw e;
+}
+/* ---- how much of the chat is sent with each reply ----
+   Sending the whole chat every time costs a lot of tokens, and free plans count tokens as well as requests. Only the recent part is sent
+   (Setup > Conversation sent each time). What falls out of that window is folded into the long-term memory summary instead, in one
+   batch once at least 6 messages have dropped out (so it costs one extra call every several messages, not one per message). */
+const CTXS={lean:{n:20,chars:7000},normal:{n:40,chars:20000},full:{n:60,chars:1e9}};
+function ctxWindow(list){
+  const c=CTXS[cfg.ctx]||CTXS.lean;let chars=0,from=list.length;
+  while(from>0&&list.length-from<c.n){const L=String(list[from-1].content||'').length;if(list.length-from>=4&&chars+L>c.chars)break;chars+=L;from--}
+  return {from};
+}
+function trimOld(place,list,from){
+  if(cfg.carry==='off'||demo()||summing)return;
+  const dropped=list.slice(0,from).filter(m=>!m.m).length;
+  if(dropped<6)return;
+  const pend=list.filter(m=>!m.m).length;
+  summarize(place,pend-dropped).then(ok=>ok&&typeof refreshMemBox==='function'&&refreshMemBox());
+}
 async function ask(onDelta){
   if(demo()){const e=new Error(NOKEY);e.noKey=true;throw e} /* no canned replies: nothing is guessed about what was said */
-  let h=hh().slice(-60).map(m=>({role:m.role,content:m.content})); while(h[0]&&h[0].role!=='user')h.shift();
+  const list=hh(),{from}=ctxWindow(list);
+  let h=list.slice(from).map(m=>({role:m.role,content:m.content})); while(h[0]&&h[0].role!=='user')h.shift();
+  trimOld(cfg.place,list,from);
   return complete(sys(),h,onDelta,TOK[cfg.len]);
 }
 /* the model ends its reply with [[quick: a | b | c]]; split that off, and hide it while streaming */
@@ -52,7 +136,7 @@ function splitQ(t){
 /* if a reply came without its options (or a line was spoken locally, like a nudge), ask once for them separately so they are always there */
 const QRSYS='You write suggested replies for a person chatting with a character, so they can tap instead of typing. From the conversation, write exactly three different things the person might plausibly say next, in first person. Each is one or two natural, complete sentences (not a few words) that responds to the specific thing the character just said or asked, using the details already mentioned. They must go in different directions: one that opens up or agrees, one that doubts, pushes back or jokes, one that asks the character something or moves on. Output only the three, one per line, with no numbering, quotes or labels.';
 async function fillQR(line){
-  if(cfg.qr!=='1'||demo()||qr.length||(typeof act!=='undefined'&&act&&act.strip))return;
+  if(cfg.qr!=='1'||cfg.saver==='1'||demo()||qr.length||(typeof act!=='undefined'&&act&&act.strip))return;
   const n=hh().length,place=cfg.place,c=hh().slice(-6).map(m=>(m.role==='user'?(cfg.me||'Person'):nm())+': '+m.content);
   if(line&&!(c.length&&c[c.length-1].endsWith(line.slice(-40))))c.push(nm()+': '+line);
   if(!c.length)return;

@@ -114,3 +114,5 @@ dialog select{text-overflow:ellipsis}
   #tb{left:5px}#pb{left:51px}#kb{left:97px}#phb{left:143px}#ftime{top:50px;left:5px}
   html[dir=rtl] #tb{right:5px}html[dir=rtl] #pb{right:51px}html[dir=rtl] #kb{right:97px}html[dir=rtl] #phb{right:143px}html[dir=rtl] #ftime{right:5px}
 }
+
+dialog textarea.secret{min-height:70px;-webkit-text-security:disc;text-security:disc;font-family:ui-monospace,monospace}

@@ -49,7 +49,7 @@ const _leave=leaveScene;
 leaveScene=function(p){queueWrap(p);return _leave(p)};
 function queueWrap(p){
   const s=LP.open[p];if(!s)return;delete LP.open[p];
-  if(cfg.lpwrap==='1'&&s.u>=2&&!demo())LP.pend.push({place:p,from:s.from,to:s.to,who:s.who});
+  if(cfg.lpwrap==='1'&&cfg.saver!=='1'&&s.u>=2&&!demo())LP.pend.push({place:p,from:s.from,to:s.to,who:s.who});
   store();setTimeout(processPend,50);
 }
 
@@ -83,7 +83,7 @@ const WEEKSYS="You write a short, quiet look-back at a person's week, from one-l
 const mondayOf=t=>{const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d};
 let weeking=false;
 async function weeklyCheck(){
-  if(cfg.lpweek!=='1'||demo()||weeking||wrapping)return;
+  if(cfg.lpweek!=='1'||cfg.saver==='1'||demo()||weeking||wrapping)return;
   const mon=mondayOf(Date.now());
   for(let k=1;k<=2;k++){
     const a=new Date(mon);a.setDate(a.getDate()-7*k);const b=new Date(a);b.setDate(b.getDate()+7);const key=dayStr(a);
