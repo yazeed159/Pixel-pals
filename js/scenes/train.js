@@ -29,7 +29,7 @@ function drawTrain(s){
   px(46,64,10,4,'#f3e3c8');px(48,60-(tick%2),1,3,'#ffffff66');const sp=gesture('sip');
   if(sp<0)px(104,64,10,4,'#7a9ad8');
   else{const cx=[104,103,100,96,91,86,84,84,84,88,95,102,104][sp],cy=[64,60,54,48,44,41,40,40,40,44,52,62,64][sp];
-    limb(94,62,cx+10,cy+2,3,PC?PC.c1:F);px(cx,cy,9,5,'#7a9ad8');px(cx+9,cy+1,2,3,'#7a9ad8');px(cx,cy,9,1,'#a8bfe8');
+    arm(93,60,cx+10,cy+2,2,PC?PC.c1:F,PC?PC.c1:'#2b3a7a');px(cx,cy,9,5,'#7a9ad8');px(cx+9,cy+1,2,3,'#7a9ad8');px(cx,cy,9,1,'#a8bfe8');
     if(sp>3&&sp<9)px(cx+3+(tick%2),cy-3,1,2,'#ffffff77')}
   if(wt>=0){const W=[[88,56],[88,52],[88,48],[88,46],[88,46],[88,46],[88,46],[88,46],[88,48],[88,52],[88,56],[88,58]][wt]; /* idle: checks a pocket watch */
     limb(72,52,W[0],W[1],1,'#e8c46a');px(W[0]-2,W[1]-2,6,6,'#e8c46a');px(W[0]-1,W[1]-1,4,4,'#f3efe6');px(W[0],W[1]-1,1,2,DK);px(W[0],W[1],2,1,DK);px(W[0]+3,W[1]+2,4,4,PC?PC.c1:F)}

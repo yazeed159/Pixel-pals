@@ -26,10 +26,10 @@ function drawTherapy(s){
   px(52,76,56,4,'#5a3a2a');px(56,80,4,6,'#5a3a2a');px(100,80,4,6,'#5a3a2a');
   px(60,71,10,5,'#7a9ad8');px(63,69,4,2,'#fff');if(sp<0){px(90,71,6,5,'#f3e3c8');px(96,72,2,3,'#f3e3c8')}
   else{const mx=[90,90,89,87,84,82,80,80,80,84,88,90,90][sp],my=[71,66,58,50,42,36,35,35,35,42,52,64,71][sp];
-    limb(93,56,mx+5,my+3,3,PC?PC.c1:SK);px(mx,my,6,5,'#f3e3c8');px(mx+6,my+1,2,3,'#f3e3c8');px(mx,my,6,1,'#b8a888');
+    arm(93,58,mx+5,my+3,2,PC?PC.c1:SK);px(mx,my,6,5,'#f3e3c8');px(mx+6,my+1,2,3,'#f3e3c8');px(mx,my,6,1,'#b8a888');
     if(sp>3&&sp<9)px(mx+2+(tick%2),my-3,1,2,'#ffffff77')}
   if(ts>=0){const up=[0,1,3,5,6,6,6,5,3,1,0,0][ts]; /* idle: offers a tissue */
-    limb(66,57,64,Math.max(62,67-(up>>1)),3,PC?PC.c1:SK);px(63,69-up,4,2+up,'#fff');px(63,69-up,4,1,'#dfe6f4');px(62,66-up,6,4,PC?PC.c1:SK)}
+    arm(66,58,64,Math.max(62,67-(up>>1)),2,PC?PC.c1:SK);px(63,69-up,4,2+up,'#fff');px(63,69-up,4,1,'#dfe6f4');px(62,66-up,6,4,PC?PC.c1:SK)}
   px(0,64,16,26,'#6a5aa0');px(144,64,16,26,'#6a5aa0');px(16,80,128,10,'#5a4a90');px(16,80,128,1,'#7a6ab8');
 }
 SCENES.therapy={label:"Therapy session",icon:"🛋️",name:"Dr. Sage",win:[115,13,32,26],setting:"in a quiet therapy office, with the person on the couch and you in the armchair across from them",

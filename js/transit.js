@@ -54,16 +54,21 @@ function dim(D,keep,pool){
 function cover(c){if(c<=0)return;if(c>=1){rpx(0,0,160,90,'#07050f');return}dither(()=>c);if(c>.8){ctx.fillStyle='rgba(7,5,15,'+((c-.8)/.2).toFixed(2)+')';ctx.fillRect(0,0,160,90)}}
 function samp(p){const d=ctx.getImageData(p[0],p[1],1,1).data;return '#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('')}
 function limbR(x0,y0,x1,y1,w,c,w1=w){const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++){const q=Math.round(w+(w1-w)*i/n);rpx(Math.round(x0+(x1-x0)*i/n)-(q>>1),Math.round(y0+(y1-y0)*i/n)-(q>>1),q,q,c)}}
+/* an arm with a shoulder cap and an elbow (see arm() in gestures.js), drawn in the transition layer */
+function armR(sx,sy,hx,hy,w,c,sl,o){const[ex,ey]=armElbow(sx,sy,hx,hy),u=sl||c;
+  limbR(sx,sy,ex,ey,w+3,o);limbR(ex,ey,hx,hy,w+2,o);limbR(sx,sy,ex,ey,w+1,u);limbR(ex,ey,hx,hy,w,c);rpx(sx-w,sy-w,w*2+1,w*2+1,u)}
 /* the character waves: a raised arm swinging side to side. a = {s:[shoulder x,y], up:[how far the paw rises: dx,dy]}; t = 0..1 */
 function wave(a,t){
   if(t<=0||t>=1||!TX.col)return;
   const k=ease(cl(Math.min(t*5,(1-t)*5))),sw=Math.round(Math.sin(t*Math.PI*7)*3*k);
-  const sx=a.s[0],sy=a.s[1],hx=Math.round(sx+a.up[0]*k)+sw,hy=Math.round(sy+a.up[1]*k),o=shade(TX.col.sl,.5);
-  limbR(sx,sy,hx,hy,5,o);limbR(sx,sy,hx,hy,3,TX.col.sl);
-  rpx(hx-2,hy-3,5,5,o);rpx(hx-1,hy-2,3,3,TX.col.pw);
+  const pc=TX.col.pw||TX.col.sl; /* the arm is the character's own fur, not their clothes */
+  const sx=a.s[0],sy=a.s[1],hx=Math.round(sx+a.up[0]*k)+sw,hy=Math.round(sy+a.up[1]*k),o=shade(pc,.5);
+  armR(sx,sy,hx,hy,2,pc,pc,o); /* the character's own arm: shoulder, elbow, forearm */
+  rpx(hx-2,hy-3,5,5,o);rpx(hx-1,hy-2,3,3,mix(pc,'#ffffff',.3));
 }
 /* your own arm reaching in from the bottom corner to the lamp (first-person bed scene): e = how far it has reached, 0..1 */
 function reach(from,to,e){
+  TX.hl=e>0?1:0; /* bed.js hides the resting left arm and hand while this one reaches: it is the same arm */
   if(e<=0||!TX.col)return;
   const hx=Math.round(from[0]+(to[0]-from[0])*e),hy=Math.round(from[1]+(to[1]-from[1])*e),o=shade(TX.col.sl,.5),sk=TX.col.pw;
   limbR(from[0],from[1],hx,hy,15,o,10);limbR(from[0],from[1],hx,hy,13,TX.col.sl,8);
@@ -97,8 +102,8 @@ function lampSpec(o){
 const fire=[78,72];
 const TXS={
   bed:lampSpec({reach:1,from:[-4,94],lamp:[21,31],bulb:[14,17,14,9],keep:[[110,9,36,22,.55]],col:{sl:[80,88],pw:[57,66]}}),
-  library:lampSpec({arm:{s:[93,47],up:[8,-14]},lamp:[105,39],bulb:[98,34,15,9],keep:[[66,12,28,28,.5]],col:{sl:[88,38],pw:null}}),
-  kitchen:lampSpec({arm:{s:[88,57],up:[7,-16]},lamp:[80,14],bulb:[74,10,14,5],keep:[[94,10,36,30,.55]],col:{sl:[84,60],pw:[76,44]}}),
+  library:lampSpec({arm:{s:[88,54],up:[10,-16]},lamp:[105,39],bulb:[98,34,15,9],keep:[[66,12,28,28,.5]],col:{sl:[88,38],pw:null}}),
+  kitchen:lampSpec({arm:{s:[88,55],up:[8,-14]},lamp:[80,14],bulb:[74,10,14,5],keep:[[94,10,36,30,.55]],col:{sl:[84,60],pw:[76,44]}}),
 
   /* camp: the fox waves, banks the fire to embers and smoke; on arrival a log goes on and the fire flares */
   camp:{col:{sl:[73,52],pw:[80,56]},t0:{out:.03,in:.58},snd:{out:[[.4,'sizzle']],in:[[.3,'thud'],[.33,'pop'],[.37,'pop'],[.42,'pop']]},

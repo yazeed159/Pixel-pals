@@ -13,12 +13,12 @@ FIELDS.push('react');
 /* where each default character is: at = top-left of its 32x32 sprite, mo = its mouth, fur = arm color, c2 = lighter paw, idle = what it may do alone */
 const RXA={
   kitchen:{at:[64,30],mo:[77,47],fur:'#e8dcd0',c2:'#fff4ec',idle:['doze','hum']},
-  therapy:{at:[64,34],mo:[77,35],fur:'#e8b894',c2:'#f4cdb0',idle:[]},
+  therapy:{at:[64,34],mo:[77,35],fur:'#e8b894',c2:'#f4cdb0',idle:[],nowave:1},
   camp:{at:[64,30],mo:[77,43],fur:'#e8803a',c2:'#f3e3c8',idle:['doze','hum']},
-  train:{at:[64,36],mo:[77,41],fur:'#e8d3a8',c2:'#f6e8c8',idle:['doze','hum']},
+  train:{at:[64,36],mo:[77,41],fur:'#e8d3a8',c2:'#f6e8c8',sl:'#2b3a7a',idle:['doze','hum']},
   diner:{at:[64,24],mo:[77,40],fur:'#a07a4e',c2:'#f0dcb4',idle:['doze','hum']},
   library:{at:[64,30],mo:[77,49],fur:'#7a4e34',c2:'#d8b890',idle:['doze','hum']},
-  lighthouse:{at:[88,34],mo:[101,53],fur:'#8a8a98',c2:'#eae4d4',idle:['doze','hum']},
+  lighthouse:{at:[88,34],mo:[101,53],fur:'#8a8a98',c2:'#eae4d4',sl:'#e8b840',idle:['doze','hum']},
   rooftop:{at:[64,34],mo:[77,37],fur:'#e0904c',c2:'#f6ead4',idle:['doze','hum']},
   bed:{at:[64,34],mo:[80,50],fur:'#c98f56',c2:'#f3e3c8',idle:['doze'],nowave:1}
 };
@@ -68,14 +68,14 @@ function rxOver(){
   CH.on=0;
   if(rxAlive()&&RX.name==='wave'&&!A.nowave){
     const t=n-RX.t0,L=RX.len,up=Math.max(0,Math.min(1,t/350,(L-t)/350)),sw=Math.round(Math.sin(t/110)*3*up);
-    const sx=ox+27+dx,sy=oy+30+dy,hx=ox+36+sw+dx,hy=Math.round(oy+30-20*up)+dy;
-    limb(sx-1,sy-1,hx-1,hy-1,5,ol);limb(sx,sy,hx,hy,3,fur);
+    const sx=ox+23+dx,sy=oy+24+dy,hx=ox+32+sw+dx,hy=Math.round(oy+22-14*up)+dy;
+    arm(sx,sy,hx,hy,2,fur,A.sl,ol); /* the character's own arm, from the shoulder, with an elbow */
     px(hx-3,hy-4,8,8,ol);px(hx-2,hy-3,6,6,fur);px(hx-1,hy-2,4,4,lt);
   }
-  if(rxAlive()&&RX.name==='yawn'){
+  if(rxAlive()&&RX.name==='yawn'&&!A.nowave){
     const t=n-RX.t0,L=RX.len,pr=Math.max(0,Math.min(1,t/(L*.25),(L-t)/(L*.25)));
-    const x=Math.round(rxLerp(ox+25,mx,pr))+dx,y=Math.round(rxLerp(oy+36,my-1,pr))+dy;
-    limb(ox+25+dx-1,oy+32+dy-1,x-1,y,5,ol);limb(ox+25+dx,oy+32+dy,x,y+1,3,fur);
+    const x=Math.round(rxLerp(ox+25,mx+3,pr))+dx,y=Math.round(rxLerp(oy+30,my,pr))+dy;
+    arm(ox+23+dx,oy+24+dy,x,y,2,fur,A.sl,ol); /* the same arm, paw up to the mouth */
     px(x-1,y-1,8,6,ol);px(x,y,6,4,fur);
   }
   if(RX.idle==='hum'){

@@ -91,9 +91,10 @@ function drawBed(s){
   const hand=(x,y,rt)=>{px(x+1,y+6,7,4,SK);px(x,y,9,7,SK);px(x,y,9,1,SKH);px(x,y+6,9,1,SK2);const tx=rt?x-3:x+8;px(tx,y+2,4,4,SK);px(tx,y+5,4,1,SK2);
     px(x,y-4,2,4,SK);px(x+2,y-5,2,5,SK);px(x+4,y-5,2,5,SK);px(x+6,y-4,2,4,SK);px(x+2,y-5,1,5,SKH);px(x+4,y-5,1,5,SKH);
     for(const fx of [2,4,6])px(x+fx,y-3,1,3,SK2);px(x+7,y-4,1,4,SK2)};
-  blob([[6,92,9],[26,83,8],[44,76,6.5],[54,72,5.5]],PJ,PJH,PJ2);
+  const armAway=typeof TX!=='undefined'&&TX.on&&TX.hl; /* switching the lamp: this same left arm is the one reaching, so it is not also resting by the dog */
+  if(!armAway){blob([[6,92,9],[26,83,8],[44,76,6.5],[54,72,5.5]],PJ,PJH,PJ2);
   px(48,70,12,2,SH);px(48,70,12,1,SH3);
-  hand(53,62+pt,0);
+  hand(53,62+pt,0)}
   const wig=[0,1,2,1][tick%4];
   blob([[154,92,9],[134,83,8],[116,74,6.5],[104,68,5.5]],PJ,PJH,PJ2);
   px(98+wig,66,12,2,SH);px(98+wig,66,12,1,SH3);

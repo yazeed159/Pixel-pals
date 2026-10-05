@@ -20,5 +20,20 @@ const gesture=n=>GS.name===n&&GS.pl===cfg.place?tick-GS.t:-1;
 const hello=()=>quietMotion()||GS.pl!==cfg.place||tick-GS.at>7?-1:tick-GS.at;
 function gestPose(){gestStep();const h=hello();if(h>=0)CH.dy+=[-3,-4,-2,0,-1,0,0,0][h];const sc=SCENES[cfg.place]||{};if(GS.name&&sc.gp&&GS.pl===cfg.place)CH.dy+=sc.gp(GS.name,tick-GS.t)||0} /* sc.gp(name,frame) can move the character, e.g. a yawn or a purr */ /* a small hello hop */
 function gestOver(){const h=hello();if(h>=0&&h<4){ctx.fillStyle='rgba(10,8,24,'+[.55,.35,.18,.08][h]+')';ctx.fillRect(0,0,160,90)}} /* the scene fades in */
+/* An ARM, not a stick: a shoulder cap sitting on the body, an upper arm that bends at an elbow (down and away from the body), and a forearm to the hand.
+   Everything is drawn in the character's own colors so it reads as part of them. c = arm color, sl = sleeve/clothing color for the upper arm (default c),
+   ol = outline color (optional). The caller draws the hand/paw/prop at (hx,hy). Returns the elbow point. */
+function armElbow(sx,sy,hx,hy){
+  const dx=hx-sx,dy=hy-sy,L=Math.hypot(dx,dy)||1,out=sx>=80?1:-1,bend=Math.min(5,Math.max(1,L*.22));
+  let nx=-dy/L,ny=dx/L; if(ny*1+nx*out*.6<-ny*1-nx*out*.6){nx=-nx;ny=-ny}
+  return[Math.round((sx+hx)/2+nx*bend),Math.round((sy+hy)/2+ny*bend)];
+}
+function arm(sx,sy,hx,hy,w,c,sl,ol){
+  const[ex,ey]=armElbow(sx,sy,hx,hy),u=sl||c;
+  if(ol){limb(sx,sy,ex,ey,w+3,ol);limb(ex,ey,hx,hy,w+2,ol);px(sx-w-1,sy-w-1,w*2+3,w*2+3,ol)}
+  limb(sx,sy,ex,ey,w+1,u);limb(ex,ey,hx,hy,w,c);
+  px(sx-w,sy-w,w*2+1,w*2+1,u);px(ex-(w>>1),ey-(w>>1),w+1,w+1,u===c?c:shade(c,.9)); /* shoulder cap and elbow joint */
+  return[ex,ey];
+}
 /* an arm or stick drawn as a short line of squares, from (x0,y0) to (x1,y1) */
 function limb(x0,y0,x1,y1,w,c){const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++)px(Math.round(x0+(x1-x0)*i/n),Math.round(y0+(y1-y0)*i/n),w,w,c)}

@@ -42,9 +42,9 @@ function drawDiner(s){
   px(20,70,18,10,'#e8e0d0');px(22,72,14,1,'#b8b0a0');px(22,75,10,1,'#b8b0a0');
   const wp=gesture('wipe'); /* idle: wipes down the counter */
   if(wp>=0){const x=[66,62,56,50,44,40,46,52,58,64,58,50,44,50,58,66][wp];
-    limb(68,54,x+4,60,4,PC?PC.c1:'#a07a4e');px(x,62,10,3,'#f3efe6');px(x,64,10,1,'#d9d0c0')}
+    arm(70,50,x+4,60,3,PC?PC.c1:'#a07a4e');px(x,62,10,3,'#f3efe6');px(x,64,10,1,'#d9d0c0')}
   if(bl>=0){const hx=[62,58,53,56,60,56,53,56,60,64][bl],hy=[56,57,58,57,56,57,58,57,56,56][bl],by=hy===58?1:0; /* idle: rings the order-up bell */
-    px(47,63,10,2,'#b8962a');px(49,60+by,6,3,'#e8c46a');px(51,58+by,2,2,'#e8c46a');limb(68,54,hx,hy,4,PC?PC.c1:'#a07a4e')}
+    px(47,63,10,2,'#b8962a');px(49,60+by,6,3,'#e8c46a');px(51,58+by,2,2,'#e8c46a');arm(70,50,hx,hy,3,PC?PC.c1:'#a07a4e')}
   if(thinking){for(let i=0;i<=tick%3;i++)px(98+i*5,16,3,3,'#f3e3c8')}
 }
 SCENES.diner={label:"Diner at 3am",icon:"🍳",name:"Nell",win:[8,10,52,30],setting:"in an all-night diner at 3am, you behind the counter pouring coffee and the person sitting on a stool across from you",
