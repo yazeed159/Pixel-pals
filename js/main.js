@@ -9,3 +9,6 @@ let stillAt=0;
 })();
 greet();
 welcome();
+
+/* close the More menu after picking something from it */
+$('#moremenu').addEventListener('click',e=>{if(e.target.closest('button'))$('#more').open=false});

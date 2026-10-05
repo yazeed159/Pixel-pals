@@ -85,7 +85,7 @@ async function startDream(){
 /* ================= letters: write today, a longer reply comes tomorrow morning ================= */
 const mailing=new Set(),fmtD=t=>new Date(t).toLocaleDateString([],{month:'short',day:'numeric'});
 const unread=place=>cfg.letters.filter(L=>L.reply&&!L.read&&(!place||L.place===place));
-const badge=()=>{const n=unread().length;$('#ltb').textContent='✉ Letters'+(n?' ('+n+')':'')};
+const badge=()=>{const n=unread().length;$('#ltb').textContent='✉ Letters'+(n?' ('+n+')':'');$('#more').classList.toggle('dot',n>0)};
 const nextDue=()=>{const d=new Date();d.setHours(8,0,0,0);while(d-Date.now()<6*36e5)d.setDate(d.getDate()+1);return +d+Math.floor(Math.random()*60)*6e4};
 function letterSys(L){
   const c=L.cid&&charById(L.cid),sc=SCENES[L.place]||SCENES.bed,v=VOICES[c?c.species:SCENE_VOICE[L.place]]||VOICES.dog;

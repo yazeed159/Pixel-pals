@@ -2,6 +2,7 @@
    A string with no entry stays English. To add a language: add a block here and a line to LANGS in i18n.js. */
 const TRX={
 "ar": {
+"More": "المزيد",
 "Time": "الوقت",
 "Scene": "المشهد",
 "Colors": "الألوان",
@@ -239,6 +240,7 @@ const TRX={
 "The end": "النهاية"
 },
 "he": {
+"More": "עוד",
 "Time": "שעה",
 "Scene": "סצנה",
 "Colors": "צבעים",
@@ -476,6 +478,13 @@ const TRX={
 "The end": "הסוף"
 },
 "es": {
+"More": "Más",
+"Scene & characters": "Escena y personajes",
+"You & the personality": "Tú y la personalidad",
+"Memory": "Memoria",
+"Look, sound & motion": "Aspecto, sonido y movimiento",
+"Behavior": "Comportamiento",
+"Advanced & data": "Avanzado y datos",
 "Time": "Hora",
 "Scene": "Escena",
 "Colors": "Colores",
@@ -713,6 +722,13 @@ const TRX={
 "The end": "Fin"
 },
 "fr": {
+"More": "Plus",
+"Scene & characters": "Scène et personnages",
+"You & the personality": "Vous et la personnalité",
+"Memory": "Mémoire",
+"Look, sound & motion": "Aspect, son et mouvement",
+"Behavior": "Comportement",
+"Advanced & data": "Avancé et données",
 "Time": "Heure",
 "Scene": "Scène",
 "Colors": "Couleurs",

@@ -30,14 +30,18 @@
     <button id="send">Send</button>
   </div>
   <div id="tools">
-    <button id="redo" aria-label="Redo the last reply">↻ Redo</button>
-    <button id="edit" aria-label="Edit your last message">✎ Edit</button>
     <button id="actb" aria-label="Things to do together">Together</button>
     <button id="sitb" aria-label="Just sit together, no chat" aria-pressed="false">🪑 Sit</button>
-    <button id="logb" aria-label="Chat log">Log</button>
-    <button id="jrb" aria-label="Journal">Journal</button>
-    <button id="ltb" aria-label="Letters">✉ Letters</button>
-    <button id="dbgb" aria-label="Behind the scenes: model, key and request details">🔍 Details</button>
+    <details id="more"><summary>More</summary>
+      <div id="moremenu">
+        <button id="redo" aria-label="Redo the last reply">↻ Redo</button>
+        <button id="edit" aria-label="Edit your last message">✎ Edit</button>
+        <button id="logb" aria-label="Chat log">Log</button>
+        <button id="jrb" aria-label="Journal">Journal</button>
+        <button id="ltb" aria-label="Letters">✉ Letters</button>
+        <button id="dbgb" aria-label="Behind the scenes: model, key and request details">🔍 Details</button>
+      </div>
+    </details>
     <button id="gear" aria-label="Settings">Setup</button>
   </div>
 </div>
@@ -46,107 +50,102 @@
   <h3 style="margin-top:0">Setup</h3>
   <div class="g">
     <div><label for="lang">Language · اللغة · שפה</label><select id="lang"></select></div>
-    <div><label for="rlang">Replies in</label><select id="rlang"><option value="ui">The interface language</option><option value="match">Whatever language I write in</option></select></div>
   </div>
   <label for="prov">AI provider</label>
   <select id="prov"><option value="anthropic">Claude (Anthropic)</option><option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter</option><option value="groq">Groq</option><option value="custom">Custom (OpenAI-compatible)</option></select>
   <label for="key">API keys (stay in this browser). Add several, one per line: when one hits its limit, the next one takes over and the conversation carries on</label>
   <textarea id="key" class="secret" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other" placeholder="key 1&#10;key 2&#10;key 3"></textarea>
-  <div class="foot"><button id="keyshow" class="ghost" type="button">Show keys</button><button id="keyclr" class="ghost" type="button">Try resting keys again</button></div>
+  <div class="foot"><button id="keyshow" class="ghost" type="button">Show keys</button></div>
   <p id="keyst" class="hint" role="status"></p>
   <label for="model">Model name. Add backup models after commas (each model has its own free limit)</label>
   <input id="model" placeholder="gemini-3.5-flash-lite, gemini-2.5-flash-lite, gemini-2.5-flash">
-  <div class="g">
-    <div><label for="fb">If every key is limited</label><select id="fb"><option value="1">Use my other providers that have keys</option><option value="0">Stop and tell me</option></select></div>
-    <div><label for="ctx">Conversation sent each time</label><select id="ctx"><option value="lean">Lean: recent messages, the rest as memory (fewest tokens)</option><option value="normal">Normal: about 40 recent messages</option><option value="full">Everything: up to 60 messages</option></select></div>
-  </div>
   <div id="baseWrap" hidden><label for="base">Base URL (e.g. http://localhost:11434/v1)</label><input id="base"></div>
-  <div class="g">
-    <div><label for="place">Place</label><select id="place"></select></div>
-    <div><label for="cast">Character here</label><select id="cast"></select></div>
-    <div><label for="time">Time of day</label><select id="time"><option value="auto">Follow the clock (gradual)</option><option value="cycle">Time-lapse (a day in 2 min)</option><option value="dawn">Dawn</option><option value="day">Day</option><option value="sunset">Sunset</option><option value="dusk">Dusk</option><option value="night">Night</option></select></div>
-    <div><label for="weather">Weather</label><select id="weather"><option value="none">Clear</option><option value="rain">Rain</option><option value="snow">Snow</option></select></div>
-    <div><label for="pal">Colors in this place</label><select id="pal"><option value="">Natural</option><option value="warm">Warm</option><option value="cold">Cold</option><option value="muted">Muted</option></select></div>
-    <div><label for="style">Chat style</label><select id="style"><option value="box">Dialogue box</option><option value="bubbles">Chat bubbles</option></select></div>
-  </div>
-  <div class="foot"><button id="chman" class="ghost" type="button">Create or edit your own characters…</button></div>
-  <details><summary>Memory &amp; journal</summary>
+  <details><summary>Scene &amp; characters</summary>
     <div class="g">
-      <div><label for="carry">Long-term memory</label><select id="carry"><option value="all">Shared by all scenes</option><option value="scene">Separate per scene</option><option value="off">Off</option></select></div>
-      <div><label for="checkin">Daily check-in</label><select id="checkin"><option value="0">Off</option><option value="1">Ask "how was today?"</option></select></div>
-    </div>
-    <label for="memtxt">What the characters remember (written by the AI after long chats; you can edit it)</label>
-    <textarea id="memtxt" style="min-height:110px" placeholder="Nothing yet. After a longer chat, a short summary shows up here."></textarea>
-    <div class="foot"><button id="memnow" class="ghost" type="button">Summarize now</button><button id="memclr" class="ghost" type="button">Forget memory</button><span id="memst" role="status"></span></div>
-  </details>
-  <details><summary>Closing the loop</summary>
-    <div class="g">
-      <div><label for="lpmile">Quiet milestones</label><select id="lpmile"><option value="1">On</option><option value="0">Off</option></select></div>
-      <div><label for="lpbye">A sign-off when you leave</label><select id="lpbye"><option value="1">On</option><option value="0">Off</option></select></div>
-    </div>
-    <p class="hint">Earlier wrap-ups and look-backs stay on this device and go into backups. No new ones are written, so they use no AI requests. There are no scores or graphs.</p>
-    <div class="foot"><button id="lbopen" class="ghost" type="button">Open Looking back</button></div>
-  </details>
-  <details><summary>Pace &amp; motion</summary>
-    <div class="g">
-      <div><label for="motion">Motion</label><select id="motion"></select></div>
-      <div><label for="spd">Typing speed</label><select id="spd"><option value="90">Very slow</option><option value="50">Slow</option><option value="26">Normal</option><option value="10">Fast</option><option value="0">Instant</option></select></div>
-    </div>
-    <p class="hint">A static scene draws one still picture: no blinking, mouths, idle movement or visitors, and weather is frozen. Typing speed is separate, and Instant shows the whole reply at once.</p>
-  </details>
-  <details><summary>Look &amp; feel</summary>
-    <div class="g">
-      <div><label for="events">Seasonal events</label><select id="events"><option value="auto">On their dates</option><option value="off">Off</option><option value="newyear">Preview: New Year's fireworks</option><option value="halloween">Preview: Halloween</option></select></div>
-    </div>
-    <div class="g">
-      <div><label for="sun">Sky follows</label><select id="sun"><option value="0">Fixed hours</option><option value="1">Sunrise and sunset where I am</option></select></div>
-      <div><label for="sunloc">Where (latitude, longitude)</label><input id="sunloc" placeholder="30.0, 31.2" autocomplete="off" inputmode="text"></div>
-    </div>
-    <div class="foot"><button id="sunuse" class="ghost" type="button">Use my location</button></div>
-    <p class="hint" id="sunmsg" role="status"></p>
-    <p class="hint">Your coordinates are rounded to about 10 km, stay in this browser and are never sent to the AI. Use the clock button on the stage set to “Follow the clock” to see it.</p>
-    <div class="foot"><button id="bgman" class="ghost" type="button">Import your own scenes…</button></div>
-  </details>
-  <details><summary>Presence &amp; honesty</summary>
-    <div class="g">
-      <div><label for="nudge">Speak up after a silence</label><select id="nudge"><option value="0">Never</option><option value="2">After about 2 min</option><option value="5">After about 5 min</option><option value="10">After about 10 min</option></select></div>
-      <div><label for="react">Reactions to you</label><select id="react"><option value="1">On: lean in, laugh, wave, hum, doze</option><option value="0">Off</option></select></div>
-      <div><label for="honest">How they respond</label><select id="honest"><option value="0">Comforting</option><option value="1">Honest: push back when they disagree</option></select></div>
-      <div><label for="gossip">They talk to each other</label><select id="gossip"><option value="1">Yes (never from Therapy)</option><option value="0">No</option></select></div>
-    </div>
-  </details>
-  <details><summary>Visitors, moods &amp; rituals</summary>
-    <div class="g">
-      <div><label for="visitors">Visitors</label><select id="visitors"><option value="3">Often</option><option value="2">Now and then</option><option value="1">Rarely</option><option value="0">Off</option></select></div>
-      <div><label for="inner">Quiet moods (tired, restless)</label><select id="inner"><option value="1">On</option><option value="0">Off</option></select></div>
-      <div><label for="ritual">Ritual</label><select id="ritual"><option value="">None</option><option value="tea">Evening tea</option><option value="coffee">Morning coffee</option><option value="goodnight">Goodnight</option><option value="custom">My own...</option></select></div>
-      <div><label for="ritualT">Ritual time</label><input id="ritualT" type="time"></div>
-    </div>
-    <div id="ritXw" hidden><label for="ritualX">Name your ritual (for example: our crossword)</label><input id="ritualX" maxlength="60"></div>
-    <p id="ritst" class="hint"></p>
-    <div class="foot"><button id="visnow" class="ghost" type="button">Preview a visitor</button></div>
-  </details>
-  <details><summary>More options</summary>
-    <div class="g">
+      <div><label for="place">Place</label><select id="place"></select></div>
+      <div><label for="cast">Character here</label><select id="cast"></select></div>
+      <div><label for="time">Time of day</label><select id="time"><option value="auto">Follow the clock (gradual)</option><option value="cycle">Time-lapse (a day in 2 min)</option><option value="dawn">Dawn</option><option value="day">Day</option><option value="sunset">Sunset</option><option value="dusk">Dusk</option><option value="night">Night</option></select></div>
+      <div><label for="weather">Weather</label><select id="weather"><option value="none">Clear</option><option value="rain">Rain</option><option value="snow">Snow</option></select></div>
+      <div><label for="pal">Colors in this place</label><select id="pal"><option value="">Natural</option><option value="warm">Warm</option><option value="cold">Cold</option><option value="muted">Muted</option></select></div>
+      <div><label for="style">Chat style</label><select id="style"><option value="box">Dialogue box</option><option value="bubbles">Chat bubbles</option></select></div>
       <div><label for="fur">Dog fur</label><select id="fur"><option value="tan">Tan</option><option value="grey">Grey</option><option value="black">Black</option><option value="cream">Cream</option></select></div>
-      <div><label for="len">Reply length</label><select id="len"><option value="short">Brief</option><option value="medium">Natural</option><option value="long">Detailed</option></select></div>
-      <div><label for="pos">Text box</label><select id="pos"><option value="below">Below the scene</option><option value="over">Over the scene</option></select></div>
-      <div><label for="ts">Text size</label><select id="ts"><option value="0.85">Small</option><option value="1">Normal</option><option value="1.25">Large</option></select></div>
-      <div><label for="snd">Typing sound</label><select id="snd"><option value="0">Off</option><option value="1">On</option></select></div>
-      <div><label for="amb">Ambient sound</label><select id="amb"><option value="0">Off</option><option value="1">On</option></select></div>
       <div><label for="season">Seasons</label><select id="season"><option value="n">Snow in winter (north)</option><option value="s">Snow in winter (south)</option><option value="off">Off</option></select></div>
-      <div><label for="qrs">Quick replies</label><select id="qrs"><option value="1">On</option><option value="0">Off</option></select></div>
-      <div><label for="pet">Character name</label><input id="pet" autocomplete="off" data-lpignore="true" data-1p-ignore></div>
-      <div><label for="me">Your name</label><input id="me" autocomplete="off" data-lpignore="true" data-1p-ignore></div>
     </div>
+
+    <div class="foot"><button id="chman" class="ghost" type="button">Create or edit your own characters…</button><button id="bgman" class="ghost" type="button">Import your own scenes…</button></div>
+  </details>
+  <details><summary>You &amp; the personality</summary>
+    <div class="g">
+      <div><label for="me">Your name</label><input id="me" autocomplete="off" data-lpignore="true" data-1p-ignore></div>
+      <div><label for="pet">Character name</label><input id="pet" autocomplete="off" data-lpignore="true" data-1p-ignore></div>
+      <div><label for="len">Reply length</label><select id="len"><option value="short">Brief</option><option value="medium">Natural</option><option value="long">Detailed</option></select></div>
+    </div>
+
     <label for="about">About you (the character remembers this)</label>
     <textarea id="about" style="min-height:70px" placeholder="You can also type /remember ... in the chat"></textarea>
     <label for="prompt">Personality</label>
     <textarea id="prompt" style="min-height:90px" placeholder="Leave empty to use each scene's default personality"></textarea>
   </details>
-  <div id="instrow" hidden><div class="foot"><button id="inst" type="button" hidden>Install app</button></div><p id="insthint" class="hint"></p></div>
-  <div class="foot"><button id="wagain" class="ghost" type="button">Show the welcome screen again</button><button id="bak" class="ghost" type="button">Back up…</button><button id="rst" class="ghost" type="button">Restore…</button><input id="rstf" type="file" accept="application/json,.json" hidden></div>
-  <div class="foot"><button id="ok">Save</button><button id="cancel" class="ghost" type="button">Cancel</button><button id="clear" class="ghost">Clear chat</button><button id="wipe" class="ghost">Erase all</button></div>
+  <details><summary>Memory</summary>
+    <div class="g">
+      <div><label for="carry">Long-term memory</label><select id="carry"><option value="all">Shared by all scenes</option><option value="scene">Separate per scene</option><option value="off">Off</option></select></div>
+      <div><label for="checkin">Daily check-in</label><select id="checkin"><option value="0">Off</option><option value="1">Ask "how was today?"</option></select></div>
+      <div><label for="lpmile">Quiet milestones</label><select id="lpmile"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="lpbye">A sign-off when you leave</label><select id="lpbye"><option value="1">On</option><option value="0">Off</option></select></div>
+    </div>
+
+    <label for="memtxt">What the characters remember (written by the AI after long chats; you can edit it)</label>
+    <textarea id="memtxt" style="min-height:110px" placeholder="Nothing yet. After a longer chat, a short summary shows up here."></textarea>
+    <div class="foot"><button id="memnow" class="ghost" type="button">Summarize now</button><button id="memclr" class="ghost" type="button">Forget memory</button><button id="lbopen" class="ghost" type="button">Open Looking back</button><span id="memst" role="status"></span></div>
+    <p class="hint">Earlier wrap-ups and look-backs stay on this device and go into backups. No new ones are written, so they use no AI requests. There are no scores or graphs.</p>
+  </details>
+  <details><summary>Look, sound &amp; motion</summary>
+    <div class="g">
+      <div><label for="motion">Motion</label><select id="motion"></select></div>
+      <div><label for="spd">Typing speed</label><select id="spd"><option value="90">Very slow</option><option value="50">Slow</option><option value="26">Normal</option><option value="10">Fast</option><option value="0">Instant</option></select></div>
+      <div><label for="ts">Text size</label><select id="ts"><option value="0.85">Small</option><option value="1">Normal</option><option value="1.25">Large</option></select></div>
+      <div><label for="pos">Text box</label><select id="pos"><option value="below">Below the scene</option><option value="over">Over the scene</option></select></div>
+      <div><label for="snd">Typing sound</label><select id="snd"><option value="0">Off</option><option value="1">On</option></select></div>
+      <div><label for="amb">Ambient sound</label><select id="amb"><option value="0">Off</option><option value="1">On</option></select></div>
+      <div><label for="qrs">Quick replies</label><select id="qrs"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="events">Seasonal events</label><select id="events"><option value="auto">On their dates</option><option value="off">Off</option><option value="newyear">Preview: New Year's fireworks</option><option value="halloween">Preview: Halloween</option></select></div>
+      <div><label for="sun">Sky follows</label><select id="sun"><option value="0">Fixed hours</option><option value="1">Sunrise and sunset where I am</option></select></div>
+      <div><label for="sunloc">Where (latitude, longitude)</label><input id="sunloc" placeholder="30.0, 31.2" autocomplete="off" inputmode="text"></div>
+    </div>
+
+    <div class="foot"><button id="sunuse" class="ghost" type="button">Use my location</button></div>
+    <p class="hint" id="sunmsg" role="status"></p>
+    <p class="hint">Your coordinates are rounded to about 10 km, stay in this browser and are never sent to the AI. Use the clock button on the stage set to “Follow the clock” to see it.</p>
+    <p class="hint">A static scene draws one still picture: no blinking, mouths, idle movement or visitors, and weather is frozen. Typing speed is separate, and Instant shows the whole reply at once.</p>
+  </details>
+  <details><summary>Behavior</summary>
+    <div class="g">
+      <div><label for="nudge">Speak up after a silence</label><select id="nudge"><option value="0">Never</option><option value="2">After about 2 min</option><option value="5">After about 5 min</option><option value="10">After about 10 min</option></select></div>
+      <div><label for="react">Reactions to you</label><select id="react"><option value="1">On: lean in, laugh, wave, hum, doze</option><option value="0">Off</option></select></div>
+      <div><label for="honest">How they respond</label><select id="honest"><option value="0">Comforting</option><option value="1">Honest: push back when they disagree</option></select></div>
+      <div><label for="gossip">They talk to each other</label><select id="gossip"><option value="1">Yes (never from Therapy)</option><option value="0">No</option></select></div>
+      <div><label for="visitors">Visitors</label><select id="visitors"><option value="3">Often</option><option value="2">Now and then</option><option value="1">Rarely</option><option value="0">Off</option></select></div>
+      <div><label for="inner">Quiet moods (tired, restless)</label><select id="inner"><option value="1">On</option><option value="0">Off</option></select></div>
+      <div><label for="ritual">Ritual</label><select id="ritual"><option value="">None</option><option value="tea">Evening tea</option><option value="coffee">Morning coffee</option><option value="goodnight">Goodnight</option><option value="custom">My own...</option></select></div>
+      <div><label for="ritualT">Ritual time</label><input id="ritualT" type="time"></div>
+    </div>
+
+    <div id="ritXw" hidden><label for="ritualX">Name your ritual (for example: our crossword)</label><input id="ritualX" maxlength="60"></div>
+    <p id="ritst" class="hint"></p>
+    <div class="foot"><button id="visnow" class="ghost" type="button">Preview a visitor</button></div>
+  </details>
+  <details><summary>Advanced &amp; data</summary>
+    <div class="g">
+      <div><label for="rlang">Replies in</label><select id="rlang"><option value="ui">The interface language</option><option value="match">Whatever language I write in</option></select></div>
+      <div><label for="fb">If every key is limited</label><select id="fb"><option value="1">Use my other providers that have keys</option><option value="0">Stop and tell me</option></select></div>
+      <div><label for="ctx">Conversation sent each time</label><select id="ctx"><option value="lean">Lean: recent messages, the rest as memory (fewest tokens)</option><option value="normal">Normal: about 40 recent messages</option><option value="full">Everything: up to 60 messages</option></select></div>
+    </div>
+
+    <div class="foot"><button id="keyclr" class="ghost" type="button">Try resting keys again</button><button id="wagain" class="ghost" type="button">Show the welcome screen again</button><button id="bak" class="ghost" type="button">Back up…</button><button id="rst" class="ghost" type="button">Restore…</button><input id="rstf" type="file" accept="application/json,.json" hidden></div>
+    <div id="instrow" hidden><div class="foot"><button id="inst" type="button" hidden>Install app</button></div><p id="insthint" class="hint"></p></div>
+    <div class="foot"><button id="clear" class="ghost">Clear chat</button><button id="wipe" class="ghost">Erase all</button></div>
+  </details>
+  <div class="foot"><button id="ok">Save</button><button id="cancel" class="ghost" type="button">Cancel</button></div>
 </dialog>
 
 <dialog id="scenedlg" aria-label="Choose a scene">
@@ -349,6 +348,7 @@
 <script src="js/pace.js"></script>
 <script src="js/gestures.js"></script>
 <script src="js/reactions.js"></script>
+<script src="js/transit.js"></script>
 <script src="js/i18n-data.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/welcome.js"></script>

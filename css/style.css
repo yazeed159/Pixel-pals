@@ -52,6 +52,14 @@ details summary{cursor:pointer;margin:14px 0 2px}
 .chip{white-space:normal;text-align:start;line-height:1.3;max-width:100%;background:var(--plum);color:var(--cream);font-weight:400;font-size:15px;padding:6px 12px;box-shadow:2px 2px 0 var(--ink)}
 #tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 #tools button{padding:6px 12px;font-size:14px}#tools #gear{margin-inline-start:auto}
+#tools{align-items:center}
+#more summary{margin:0;padding:6px 12px;font-size:14px;list-style:none;border:3px solid var(--cream);cursor:pointer;user-select:none}
+#more summary::-webkit-details-marker{display:none}
+#more summary::after{content:' \25BE'}#more[open] summary::after{content:' \25B4'}
+#more.dot summary::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--rose);margin-inline-end:6px}
+#more[open]{flex-basis:100%;order:5}
+#moremenu{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+#dlg details{border-top:2px solid #ffffff22;margin-top:10px}#dlg details summary{margin:10px 0 4px}
 #memst{align-self:center;font-size:14px}
 input[type=color]{height:44px;padding:2px}
 #chv{width:128px;height:128px;image-rendering:pixelated;display:block;margin:8px 0;background:#3b3358;border:3px solid var(--cream)}
@@ -68,6 +76,7 @@ input[type=color]{height:44px;padding:2px}
 #app.sit #dbox,#app.sit #chat,#app.sit #qr,#app.sit #row,#app.sit #you{display:none}
 #app.sit #tools button:not(#sitb){display:none}
 #app.sit #tools #sitb{margin-inline-start:auto}
+#app.sit #more{display:none}
 
 /* together */
 .acts{display:flex;flex-wrap:wrap;gap:8px}

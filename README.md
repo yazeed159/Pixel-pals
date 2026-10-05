@@ -29,6 +29,7 @@ js/together.js      the Together menu: journal question, breathing, grounding, s
 js/behavior.js      initiative, sit mode, voices, characters remembering each other, honest mode
 js/gestures.js      idle gestures per scene and the hello when you switch scenes
 js/reactions.js     body language that follows the chat, and idle behavior (hum, doze, night yawns)
+js/transit.js       walk-out / walk-in when you switch scenes: waves, lamps and lights going off, footsteps (see below)
 js/pace.js          motion setting: normal, calm, static scene (helpers still(), quietMotion(), basePace() are in config.js)
 js/i18n-data.js     interface translations (Arabic, Hebrew, Spanish, French), keyed by the English text
 js/i18n.js          language switching, right-to-left layout, reply language for the AI
@@ -38,6 +39,14 @@ manifest.json, icon-*.png          home-screen icon and name
 wrangler.jsonc, .assetsignore      Cloudflare deploy config
 ```
 Scripts load in the order listed in `index.html`, and they share globals, so it also works when opened straight from disk.
+
+## Walking between scenes (`js/transit.js`)
+Switching scenes plays a short leave and arrive instead of a hard cut. In normal motion it takes about 3.5 s (tap the picture to skip).
+- **Leaving:** the character says a goodbye line and the place closes up. Bed: your hand reaches out and clicks the lamp off. Library and kitchen: a wave, then the lamp goes out. Camp: a wave, then the fire is banked to embers and smoke. Therapy: a wave, then the blinds come down. Train: a wave, then the carriage runs into a tunnel. Diner: a wave with the coffee pot, then the OPEN neon flickers out. Lighthouse: a tug of the cap, then the beam sweeps the night across the picture. Rooftop: a wave, then the string lights go out one after another.
+- **Between:** a short black beat with footsteps.
+- **Arriving:** the reverse. The lamp clicks on and the light spreads, a log goes on and the fire flares, the blinds rise, the train leaves the tunnel, the neon buzzes on after the door bell, the beam sweeps back, the string lights twinkle on in a chain. Then the character waves.
+- **Pace:** *Calm* is only a slow fade out and in (no waving, flicker or footsteps). *Static scene* switches instantly. Sounds (lamp click, footsteps, bell, buzz) play only when ambient sound is on.
+- **How it works:** everything is drawn over the finished scene, so scenes need no changes. The waving arm takes its colors from the pixels of the character, so custom characters and the time-of-day palette just work. `TXS` in `transit.js` has one entry per scene (`out(p)`, `in(p)` for progress 0..1, the pixels to sample, the sounds); a new or custom scene with no entry gets the fade and footsteps. The goodbye lines are in `FAREWELL`.
 
 ## Faces: mouths, blinks, expressions (`js/art/face.js`)
 One shared system moves every character's face, in every scene and species, so a new scene only has to call `Face.mouth(...)` and `Face.blink()`.
