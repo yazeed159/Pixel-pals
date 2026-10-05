@@ -123,3 +123,10 @@ dialog textarea.secret{min-height:70px;-webkit-text-security:disc;text-security:
 .spcard canvas{width:100%;aspect-ratio:16/9;image-rendering:pixelated;border:2px solid var(--ink);background:#201a36}
 .spcard.here{border-color:#ffd27a}
 .spcard:focus-visible{outline:3px solid #ffd27a}
+
+#dbd{width:min(94vw,680px)}
+#dbd .dbrow{font-size:14px;line-height:1.35;padding:6px 8px;margin:4px 0;background:#ffffff0f;border-left:4px solid #8fd0a8;overflow-wrap:anywhere}
+#dbd .dbrow.bad{border-left-color:#d9798f}
+#dbd .dbrow.slot b{display:block}
+#dbd .dberr{font-size:13px;opacity:.85;margin-top:2px}
+#dbd h4{margin:14px 0 4px}

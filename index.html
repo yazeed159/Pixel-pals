@@ -37,6 +37,7 @@
     <button id="logb" aria-label="Chat log">Log</button>
     <button id="jrb" aria-label="Journal">Journal</button>
     <button id="ltb" aria-label="Letters">✉ Letters</button>
+    <button id="dbgb" aria-label="Behind the scenes: model, key and request details">🔍 Details</button>
     <button id="gear" aria-label="Settings">Setup</button>
   </div>
 </div>
@@ -144,13 +145,26 @@
   </details>
   <div id="instrow" hidden><div class="foot"><button id="inst" type="button" hidden>Install app</button></div><p id="insthint" class="hint"></p></div>
   <div class="foot"><button id="wagain" class="ghost" type="button">Show the welcome screen again</button><button id="bak" class="ghost" type="button">Back up…</button><button id="rst" class="ghost" type="button">Restore…</button><input id="rstf" type="file" accept="application/json,.json" hidden></div>
-  <div class="foot"><button id="ok">Save</button><button id="clear" class="ghost">Clear chat</button><button id="wipe" class="ghost">Erase all</button></div>
+  <div class="foot"><button id="ok">Save</button><button id="cancel" class="ghost" type="button">Cancel</button><button id="clear" class="ghost">Clear chat</button><button id="wipe" class="ghost">Erase all</button></div>
 </dialog>
 
 <dialog id="spd" aria-label="Choose a scene">
   <h3 style="margin-top:0">Where to?</h3>
   <div id="spgrid"></div>
   <div style="display:flex;gap:8px;margin-top:14px"><button id="spx" type="button">Close</button></div>
+</dialog>
+
+<dialog id="dbd" aria-label="Behind the scenes">
+  <h3 style="margin-top:0">Behind the scenes</h3>
+  <div id="dbsum"></div>
+  <h4>Keys and models</h4>
+  <div id="dbslots"></div>
+  <label for="dblim">Daily request limit per key and model (optional; used for "left" when the provider does not report it)</label>
+  <input id="dblim" type="number" min="0" inputmode="numeric" placeholder="e.g. 20">
+  <h4>Recent requests</h4>
+  <div id="dblog"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button id="dbcopy" type="button">Copy log</button><button id="dbclr" class="ghost" type="button">Clear log</button><button id="dbx" type="button">Close</button></div>
+  <p id="dbst" class="hint" role="status"></p>
 </dialog>
 
 <dialog id="logd">
@@ -311,9 +325,10 @@
 <script src="js/scenes/library.js"></script>
 <script src="js/scenes/lighthouse.js"></script>
 <script src="js/scenes/kitchen.js"></script>
-<script src="js/scenes/trading.js"></script>
+<script src="js/scenes/rooftop.js"></script>
 <script src="js/dialogue.js"></script>
 <script src="js/chat.js"></script>
+<script src="js/diag.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ambient.js"></script>
 <script src="js/behavior.js"></script>

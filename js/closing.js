@@ -138,7 +138,7 @@ const BYE={
   diner:['*wipes the counter* Get home safe. Coffee is on me next time.','*taps the counter twice* Drive careful. The light stays on.'],
   library:['*closes the book on one finger* Shh... go well. The chair keeps.','*nods softly* Good night. I will leave the lamp on.'],
   lighthouse:['*the lamp turns* Fair winds. I will keep the light.','*tips his cap* Steady on. The light will be here.'],
-  trading:['*sets down the watering can* Rest well. Nothing here is urgent.','*smiles* Good night. The plants and I will be here.'],
+  rooftop:['*stretches and yawns* Sleep well. I will keep watch over the city.','*curls up by the lantern* Good night. The lights will be on when you come back.'],
   kitchen:['*lifts the mug* Sleep well. I will rinse these.','*smiles over the rim* Goodnight. The kettle will be warm.']
 };
 const BYE0=['*smiles* Take care. Until next time.','*a small wave* Be well. See you soon.'];

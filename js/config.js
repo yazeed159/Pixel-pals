@@ -20,6 +20,9 @@ if(/^You are Old Pup/.test(cfg.prompt))cfg.prompt='';if(cfg.pet==='Old Pup')cfg.
 
 /* chats: one list per scene. Each message is {role, content, t (time), m (1 once folded into the memory summary)} */
 let H={}; try{H=JSON.parse(localStorage.pdH||'{}');if(!H.room&&localStorage.pdHist)H.room=JSON.parse(localStorage.pdHist)}catch(e){}
+/* the old Ada greenhouse ('trading') became the rooftop cat: Ada's chat, character and look are left behind */
+if(cfg.place==='trading')cfg.place='rooftop';
+['cast','pals','mem'].forEach(k=>{if(cfg[k])delete cfg[k].trading});delete H.trading;
 const hh=()=>H[cfg.place]||(H[cfg.place]=[]);
 /* journal entries: {d: 'YYYY-MM-DD', t: time, text, who, place} */
 let J=[]; try{J=JSON.parse(localStorage.pdJ||'[]')}catch(e){}

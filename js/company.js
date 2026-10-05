@@ -39,7 +39,7 @@ function startDuo(){
 }
 /* the second character is drawn on top of the scene, so each scene has its own spot: x, y = top-left of the 32x32 sprite
    (feet at y+32), sh = draw a floor shadow, k = 'suit' (helmet and spacesuit) or 'dive' (bubble helmet, floats) */
-const DUO_AT={bed:{x:104,y:46,sh:0},camp:{x:104,y:46},diner:{x:108,y:56},kitchen:{x:110,y:52},library:{x:108,y:52},trading:{x:112,y:42},
+const DUO_AT={bed:{x:104,y:46,sh:0},camp:{x:104,y:46},diner:{x:108,y:56},kitchen:{x:110,y:52},library:{x:108,y:52},rooftop:{x:112,y:42},
   lighthouse:{x:52,y:36},therapy:{x:108,y:48},train:{x:106,y:46,sh:0}};
 function drawDuo(){
   const a=DUO_AT[cfg.place]||{x:104,y:44},{x,y}=a,p=duo.p,w=duo.turn==='b'&&talking;

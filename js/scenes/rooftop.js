@@ -1,35 +1,82 @@
-/* Scene: Rooftop at night with string lights, a drone and a radio. Draws with px(x,y,w,h,color); s = time-of-day palette. */
-function drawRoof(s){
-  const M='#8a9ab8',L='#aab8d0',G='#7affc8';
-  const SKY={day:['#8fd3f4','#a8dcf4','#c4e6f4'],dawn:['#7a6aa0','#e890a0','#ffd0a0'],sunset:['#4a3a7a','#b0587a','#e8825a'],dusk:['#1f1850','#5a3a7a','#c0587a'],night:['#0d1230','#151b3d','#1f2650']},sky=byTime(SKY);
-  sky.forEach((c,i)=>px(0,i*20,160,20,c));
-  if(stars())for(let i=0;i<24;i++)px((i*41+7)%160,(i*19+3)%40,1,1,(i+tick)%6?'#fff':sky[0]);
-  px(132,8,6,6,s.moon);px(133,7,4,8,s.moon);px(131,9,8,4,s.moon);
-  px(((tick*3)%190)-12,16,2,1,'#fff');px(((tick*3)%190)-14,16,1,1,tick%2?'#ff4a4a':sky[0]);
-  [[0,40,22,30,'#1a1630'],[20,34,16,36,'#1a1630'],[60,38,24,32,'#1a1630'],[100,36,18,34,'#1a1630'],[140,40,20,30,'#1a1630']].forEach(([x,y,w,h,c])=>px(x,y,w,h,byDay(c,'#7a96b0')));
-  [[0,48,16,22],[14,40,14,30],[28,52,20,18],[46,44,12,26],[56,54,20,16],[96,46,16,24],[110,36,14,34],[124,50,22,20],[144,42,16,28]].forEach(([x,y,w,h],i)=>{
-    px(x,y,w,h,byDay('#241d3f','#6a86a0'));
-    for(let r=y+3;r<66;r+=5)for(let c=x+2;c<x+w-2;c+=4)if((r*7+c*3+i+(tick>>3))%5<2)px(c,r,2,2,byDay('#ffd27a','#8aa6c0'));
+/* Scene: A city rooftop at night with Biscuit, a friendly orange tabby in a red scarf. String lights, a skyline with lit windows,
+   a crate for a table with a mug and a little fish, a lantern and a blanket. Calm on purpose: twinkling lights and windows, a slow tail,
+   now and then an ear twitch, a glance at the moon or a shooting star. Draws with px(x,y,w,h,color); s = time-of-day palette. */
+const RT_FAR=[[0,14,16],[12,10,24],[22,16,14],[36,9,22],[44,14,12],[56,10,26],[66,18,14],[84,11,24],[95,14,16],[109,10,22],[119,16,13],[135,10,25],[145,15,15]];
+const RT_NEAR=[[0,18,22],[16,22,30],[40,14,18],[54,16,24],[100,18,20],[116,16,28],[130,30,32]];
+function drawRooftop(s){
+  const F='#e0904c',ST='#b5662f',W='#f6ead4',PK='#e89aa0',EYE='#7fd08a',DK='#2b1d2e',SCF='#c9505a',blink=Face.blink();
+  const tw=[0,1,0,-1][Math.floor(tick/5)%4],ear=ev(36,5,11)>=0?1:0,look=ev(48,10,3)>=0?1:0,star=stars()?ev(70,7,5):-1;
+  const dark=DAYF<.55,far=byDay('#1b2050','#8aa6c0'),near=byDay('#120f2a','#5f7a98');
+  /* sky, stars, moon, a shooting star */
+  skyfill(0,0,160,60,s);
+  if(stars())for(let i=0;i<24;i++)px((i*53+7)%160,(i*29+3)%34,1,1,(i+tick)%7?'#fff':s.sky);
+  px(122,10,6,6,s.moon);px(123,9,4,8,s.moon);px(121,11,8,4,s.moon);
+  if(star>=0){px(128-star*7,6+star*3,3,1,'#ffffff');px(131-star*7,5+star*3,3,1,'#ffffff55')}
+  /* the skyline: far and near rows of buildings with a few lit windows, a water tank and an aerial */
+  RT_FAR.forEach(([x,w,h])=>px(x,58-h,w,h,far));
+  RT_NEAR.forEach(([x,w,h],b)=>{
+    px(x,58-h,w,h,near);
+    if(dark)for(let wy=62-h;wy<54;wy+=5)for(let wx=x+2;wx<x+w-2;wx+=4){
+      const k=(wx*7+wy*13+b*5)%11;
+      if(k<4&&((k+(tick>>5))%5)!==0)px(wx,wy,2,2,'#ffd98a');
+    }
   });
-  px(114,26,12,8,'#5a4a3a');px(116,34,2,6,'#5a4a3a');px(122,34,2,6,'#5a4a3a');px(113,25,14,2,'#7a6a5a');
-  px(0,66,160,24,'#3a3050');px(0,66,160,3,'#6a5a80');for(let x=0;x<160;x+=10)px(x,69,1,5,'#2e2640');for(let x=0;x<160;x+=16)px(x,74,1,16,'#2e2640');
-  px(134,52,6,14,'#4a4a60');px(132,50,10,3,'#5a5a70');for(let i=0;i<3;i++)px(136+((tick+i)%3),46-i*4,2,2,'#ffffff55');
-  const cl=['#ff7a8a','#ffd27a','#7affc8','#7ab8ff'];
-  for(let x=0;x<160;x+=4){const y=6+Math.round(5*Math.sin(x/26)+4);px(x,y,4,1,'#00000066');if(x%8===0){px(x,y+1,2,2,cl[(x/8+tick)%4|0]);ctx.fillStyle='rgba(255,220,150,.07)';ctx.fillRect(x-2,y,6,6)}}
-  const dx=118+Math.round(6*Math.sin(tick/3)),dy=22+Math.round(2*Math.sin(tick/2));
-  px(dx,dy,8,4,L);px(dx+2,dy+1,4,2,G);px(dx-3,dy-2,5,1,tick%2?M:L);px(dx+6,dy-2,5,1,tick%2?L:M);
-  px(24,72,22,12,'#7a5a3a');px(24,72,22,2,'#9a7a5a');px(30,60,10,12,'#a85a4a');px(31,54,2,7,'#4aa86a');px(35,52,2,9,'#4aa86a');px(38,56,2,5,'#4aa86a');
-  px(60,70,40,14,'#7a5a3a');px(60,70,40,3,'#9a7a5a');px(76,70,2,14,'#5a3a2a');
+  px(21,17,12,9,byDay('#2a2540','#6f8098'));px(20,15,14,2,byDay('#1a1630','#556478'));px(22,26,1,6,near);px(31,26,1,6,near);
+  px(144,16,1,16,near);px(141,20,7,1,near);px(142,24,5,1,near);if(tick%6<3)px(144,14,1,2,'#ff6a6a');
+  /* the low wall and the roof floor */
+  px(0,58,160,8,s.wall);px(0,57,160,2,mix(s.wall,'#ffffff',.18));
+  for(let x=0;x<160;x+=10){px(x,61,1,5,s.w2);px(x+5,64,1,2,s.w2)}px(0,63,160,1,s.w2);
+  px(0,66,160,24,s.floor);for(let y=70;y<90;y+=5)px(0,y,160,1,s.f2);
+  for(let y=70;y<90;y+=5)for(let x=(y%10?6:26);x<160;x+=40)px(x,y,1,5,s.f2);
+  /* string lights between two poles */
+  const sag=x=>31+Math.round(9*Math.sin(Math.PI*(x-10)/139));
+  px(9,30,3,42,'#2a2236');px(6,70,9,4,'#3a3050');px(148,30,3,42,'#2a2236');px(145,70,9,4,'#3a3050');
+  for(let x=10;x<150;x++)px(x,sag(x),1,1,'#2a2236');
+  const BC=['#ffd98a','#ff9ab0','#9ad8ff','#b8f0a0'];
+  for(let i=0;i<14;i++){const x=14+i*10,y=sag(x),on=((i*3+(tick>>1))%9)!==0;
+    px(x,y+1,2,3,on?BC[i%4]:'#6a5a50');if(on)px(x-1,y+1,4,5,'rgba(255,217,138,.12)')}
+  /* soft glow from the lights and the lantern */
+  [[20,28,120,40],[50,36,60,40]].forEach(g=>{ctx.fillStyle='rgba('+s.glow+',.04)';ctx.fillRect(...g)});
+  /* a cushion for the cat to sit on */
+  px(58,66,44,6,'#4f7f8f');px(58,66,44,1,'#6fa0b0');px(56,68,2,4,'#e8c46a');px(102,68,2,4,'#e8c46a');
+  /* Biscuit */
   CH.b();
-  drawChar(PC||charById('p:dog'),64,38,2); /* the scene's own resident is the ready-made dog; cast anyone else in Setup */
+  if(PC)drawChar(PC,64,34,2);
+  else{
+    px(94,62,8,4,F);px(100,52+tw,4,12,F);px(100,50+tw,4,3,ST);                                                  /* tail with a dark tip */
+    px(64,50,6,16,F);px(90,50,6,16,F);px(67,43,26,24,F);px(75,46,10,18,W);                                      /* haunches, body, white chest */
+    px(67,50,3,1,ST);px(67,54,3,1,ST);px(90,50,3,1,ST);px(90,54,3,1,ST);
+    px(71,62,7,6,W);px(82,62,7,6,W);px(74,65,1,3,'#d8c8a8');px(85,65,1,3,'#d8c8a8');                              /* front paws */
+    px(68,42,24,4,SCF);px(68,44,24,1,'#a8404a');px(86,46,4,9,SCF);px(86,53,4,2,'#f3e3c8');                       /* red scarf */
+    px(67,19+ear,3,2,F);px(66,21+ear,5,3,F);px(66,24,6,3,F);px(68,22+ear,2,3,PK);                               /* ears */
+    px(90,19,3,2,F);px(89,21,5,3,F);px(88,24,6,3,F);px(90,22,2,3,PK);
+    px(66,26,28,16,F);px(68,24,24,2,F);                                                                         /* head */
+    px(76,24,2,4,ST);px(80,24,2,5,ST);px(83,24,2,4,ST);px(66,32,4,1,ST);px(66,35,4,1,ST);px(90,32,4,1,ST);px(90,35,4,1,ST);
+    px(74,35,12,7,W);px(76,33,8,2,W);                                                                           /* muzzle */
+    if(!blink){px(71,29,6,6,EYE);px(73+look,29,2,6,DK);px(72,30,1,2,'#fff');px(83,29,6,6,EYE);px(85+look,29,2,6,DK);px(84,30,1,2,'#fff')}
+    else{px(71,32,6,1,DK);px(83,32,6,1,DK)}
+    px(78,34,4,1,PK);px(79,35,2,1,PK);Face.mouth(px,77,37,{w:6,lip:DK,maxH:3});
+    px(70,36,3,2,'#f0a0a0');px(87,36,3,2,'#f0a0a0');                                                            /* blush */
+    px(60,34,6,1,'#efe4cc');px(61,37,5,1,'#efe4cc');px(94,34,6,1,'#efe4cc');px(94,37,5,1,'#efe4cc');          /* whiskers */
+  }
   CH.e();
-  px(120,72,16,10,'#8a4a4a');px(122,74,6,6,'#5a2a2a');px(130,74,4,1,'#ffd27a');px(130,77,4,1,'#ffd27a');px(133,66,1,6,'#ccc');
-  if(tick%2)px(124+(tick%3)*3,66-(tick%4)*3,2,2,'#ffd27a');
-  if(thinking){for(let i=0;i<=tick%3;i++)px(98+i*5,16,3,3,'#f3e3c8')}
+  if(thinking){for(let i=0;i<=tick%3;i++)px(100+i*5,16,3,3,'#f3e3c8')}
+  /* the crate that serves as a table */
+  px(36,72,88,16,'#7a5a38');px(36,72,88,2,'#a88a5e');px(36,78,88,1,'#5a4026');px(36,84,88,1,'#5a4026');
+  px(36,72,3,16,'#5a4026');px(121,72,3,16,'#5a4026');px(78,72,2,16,'#5a4026');
+  px(46,66,7,6,'#f3e3c8');px(53,67,2,3,'#f3e3c8');px(47,66,5,1,'#8a5a32');                                       /* mug */
+  if(tick%6<3){px(48,63,1,2,'#ffffff66');px(50,62,1,2,'#ffffff44')}
+  px(96,70,16,2,'#e8e0d0');px(99,67,7,3,'#7a9ad8');px(106,66,2,5,'#7a9ad8');px(100,68,1,1,DK);px(99,69,5,1,'#a8c0f0');   /* a little fish on a plate */
+  px(114,68,6,4,'#b5654a');px(115,64,4,4,'#6fbf6f');px(116,62,2,2,'#8acb7a');                                    /* a seedling pot */
+  /* a lantern and a folded blanket */
+  const fl=tick%4<2;
+  px(136,66,4,1,'#2a2a3a');px(134,67,8,13,'#2a2a3a');px(135,69,6,9,fl?'#ffd27a':'#ffbe6e');px(133,80,10,2,'#3a3a4a');
+  ctx.fillStyle='rgba(255,200,110,.035)';ctx.fillRect(122,64,36,24);
+  px(6,76,28,12,'#9a4a5a');px(6,80,28,2,'#e8c46a');px(6,84,28,2,'#e8c46a');px(6,76,28,1,'#b8606e');
 }
-SCENES.rooftop={label:"Rooftop at night",icon:"🌃",name:"Biscuit",outdoor:true,setting:"on a city rooftop, string lights overhead and a radio playing low",
-  prompt:"You are {pet}, a warm, loyal old dog lying beside the person on a city rooftop at night, string lights overhead and a radio playing low. You listen more than you talk, with a dry, gentle humor. Speak plainly. Don't lecture. Use an action in asterisks only occasionally.",
-  greet:"*thumps tail* Hi. The city looks good from up here. What's been on your mind?",
-  back:"*lifts head* You're back.",
-  hot:[{r:[56,12,50,74],say:["*thumps tail*","*a soft huff* Yes?"]},{r:[110,16,24,12],say:["*watches the drone circle once and settle*"]},{r:[118,70,22,12],say:["*an ear twitches as the radio shifts to a slower song*"]}],
-  draw:drawRoof};
+SCENES.rooftop={label:"Rooftop at night",icon:"🌃",name:"Biscuit",outdoor:true,win:[0,0,160,58],setting:"on a city rooftop at night, string lights overhead, a crate for a table between you with a mug and a little fish on it, a lantern glowing and the skyline all around",
+  prompt:"You are {pet}, a friendly orange tabby cat in a red scarf who lives on a city rooftop and loves company. You are warm, curious and playful, quick to purr and quick to laugh, and you make people feel welcome right away. You notice small things: the lit windows across the street, the moon, the wind, a plane going over. You are a good listener who asks about the person's day and remembers what they say, and you are happy to talk about anything: big things, small things, silly things or nothing in particular. You tease gently and never meanly, you do not lecture, and you do not pretend to be a person. If they seem to be having a hard time, slow down and keep them company first. A cat's habits show up now and then (a slow blink, a stretch, a tail curling around your paws), lightly and never forced."+STYLE,
+  greet:"*tail curls up* There you are! I saved you the good spot. The city is lovely tonight. How was your day?",
+  back:"*looks up and purrs* Back already? Good. The lights are still on.",
+  hot:[{r:[62,18,38,50],say:["*slow blink* Hello, you.","*purrs* I'm listening. Take your time.","*tilts head* Mm? Go on."]},{r:[44,60,14,12],say:["*sniffs the mug* Still warm. Don't tell anyone I checked.","*pats the mug* Good for cold paws."]},{r:[94,64,20,8],say:["*eyes the fish* That's for later. Probably.","*whiskers twitch* Do not look at the fish. It is a trap."]},{r:[8,28,142,18],say:["*looks up at the lights* I hung every one of those myself. Well, I supervised.","*watches the bulbs twinkle* Pretty, aren't they?"]},{r:[0,18,160,38],say:["*nods at the skyline* Every window is somebody's evening.","*watches the city* I like it up here. It's quiet and loud at once."]},{r:[132,64,14,20],say:["*warms paws by the lantern* Cozy.","*the lantern flickers, then steadies*"]}],
+  draw:drawRooftop};

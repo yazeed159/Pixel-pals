@@ -16,7 +16,7 @@ js/art/core.js      canvas helper, time-of-day palettes, idle timing, seasons, c
 js/art/face.js      mouths, blinks, expressions and small body motions for every character
 js/art/chars.js     the six character species, drawChar(), ready-made characters
 js/art/dog.js       the dog sprite
-js/scenes/          one file per scene (bed, therapy, camp, train, diner, library, lighthouse, kitchen, trading)
+js/scenes/          one file per scene (bed, therapy, camp, train, diner, library, lighthouse, kitchen, rooftop)
 js/dialogue.js      typewriter text, tap to advance, typing sound
 js/chat.js          AI providers, sending/redo/edit, quick replies, memory summaries, check-in, greetings
 js/ui.js            settings, character creator, journal, backup/restore, stage buttons
@@ -184,8 +184,8 @@ The character you left remembers too: when you come back (within 3 days) they ma
 
 It is controlled by Setup > Presence & honesty > **They talk to each other** and needs Long-term memory not set to Off. Therapy stays private in both directions. The transcript goes to the same AI provider as your messages, nowhere else. The older "I heard what you told my friends" line is skipped while a hand-off is active so it does not repeat the transcript.
 
-## Ada, the greenhouse (`js/scenes/trading.js`)
-A greenhouse at dusk with Ada, an older woman in round glasses and a sage cardigan who spent a lifetime around money and now tends plants. A potting bench holds a notebook, a cup of tea and a brass balance scale (a coin on one pan, a leaf on the other: risk and reward), with shelves of pots and hanging plants around. It is deliberately calm: the hanging plants sway very slowly and the scale tilts gently, nothing else moves. She is warm, patient and never competitive: she takes the long view and asks what the money is for before any talk of a trade. She explains markets in plain words (how stocks, funds, crypto and options work, orders and fees, charts, position sizing, risk and reward, the habits that cost people money) and thinks in odds, not certainties. She never promises returns or gives a confident buy or sell call, says briefly that she is not a licensed advisor when real money is on the line, has no live prices and says so instead of guessing, and slows people down around leverage, money they cannot afford to lose, and trading to escape stress or win back a loss. If you are having a hard time she sets the markets aside and sits with you first. The scene id is still `trading`, so earlier chats and any character you cast there carry over. The scene label is English only until it is added to `js/i18n-data.js`.
+## Biscuit, the rooftop (`js/scenes/rooftop.js`)
+A city rooftop at night with Biscuit, a friendly orange tabby in a red scarf. String lights, a skyline with lit windows, a crate for a table with a mug and a little fish, a lantern and a blanket. Biscuit is warm, playful and curious, and happy to talk about anything. The scene is calm on purpose: twinkling lights and windows, a slow tail, now and then an ear twitch, a glance at the moon or a shooting star. On New Year's the fireworks show here. This replaced the old Ada greenhouse; a saved game that was in the greenhouse moves to the rooftop, and Ada's chat is not carried over.
 
 ## Removed and simplified
 The Rooftop (Biscuit) and the Sea (Luma, the jellyfish) are gone too. If either was your selected scene the app opens on the bed; chats you had there stay in your saved data but are no longer reachable. The four stage buttons now carry a word under the icon (Time, Scene, Colors, Photo) and a colored top edge. The bed is a more realistic first-person view: you lie on your back looking past your knees to the footboard, window and lamp, with the dog between your legs.

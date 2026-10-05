@@ -43,6 +43,7 @@ $('#ok').onclick=()=>{
   if(cfg.place!==pp)leaveScene(pp);
   if(cfg.place!==pp||cfg.style!==ps||(cfg.cast[cfg.place]||'')!==prevCast)greet();
   ambient()};
+$('#cancel').onclick=()=>dlg.close(); /* closes without saving; the fields are refilled from the saved settings next time Setup opens */
 $('#clear').onclick=()=>{hh().length=0;store();you.style.display='none';dlg.close();greet()};
 $('#wipe').onclick=()=>{if(confirm(T('Delete your API keys, settings, journal and all chats from this browser?'))){localStorage.clear();location.reload()}};
 

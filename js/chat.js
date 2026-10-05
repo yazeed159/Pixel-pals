@@ -55,12 +55,14 @@ async function callOnce(p,k,m,system,h,onDelta,maxTok){
   }
   if(onDelta){if(p==='gemini')url=url.replace(':generateContent',':streamGenerateContent')+'?alt=sse';else body.stream=true}
   const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
+  lastMeta={hdr:dbgHdr(r)};
   if(onDelta&&r.ok&&r.body){streamed=true;return (await readStream(r,PICK[p]||PICK.oa,onDelta))||'...'}
   const d=await r.json().catch(()=>({}));
   if(!r.ok){
     const msg=d.error?.message||(typeof d.error==='string'?d.error:'')||('HTTP '+r.status);
-    const e=new Error(msg);Object.assign(e,limitInfo(r,d,r.status,msg));throw e;
+    const e=new Error(msg);Object.assign(e,limitInfo(r,d,r.status,msg));e.status=r.status;e.quotaLimit=dbgQuota(msg+' '+JSON.stringify(d||{}));throw e;
   }
+  lastMeta.usage=dbgUsage(p,d);
   if(p==='anthropic')return d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
   if(p==='gemini')return (d.candidates?.[0]?.content?.parts||[]).map(x=>x.text||'').join('')||'...';
   return d.choices?.[0]?.message?.content||'...';
@@ -80,12 +82,15 @@ async function complete(system,h,onDelta,maxTok=4096){
         const i=(start+n)%slots.length,[k,m]=slots[i],w=rest(p,k,m);
         if(w>0){soonest=Math.min(soonest,w);continue}
         tried++;
+        const t0=Date.now(),what=dbgWhat(system,onDelta);lastMeta={};
         try{
           const out=await callOnce(p,k,m,system,h,onDelta,maxTok);
+          dbgRecord({p,k,m,what,t0,meta:lastMeta});
           (cfg.ki=cfg.ki||{})[p]=i;
           if(n||p!==cfg.provider)keyNote='Switched to '+(p!==cfg.provider?p+' ':'')+'key '+(keyList(p).indexOf(k)+1)+(modelList(p).length>1?' with '+m:'')+' because the first one was limited.';
           return out;
         }catch(e){
+          dbgRecord({p,k,m,what,t0,e,meta:lastMeta});
           if(e.limit||e.bad){rested(p,k,m,e.ms);firstErr=firstErr||e;if(e.limit)soonest=Math.min(soonest,e.ms);continue}
           throw e; /* a real problem (no network, a bad request): do not burn through the other keys */
         }
@@ -94,13 +99,13 @@ async function complete(system,h,onDelta,maxTok=4096){
     if(pass===0&&soonest<=15e3&&Number.isFinite(soonest)){await nap(soonest+300);firstErr=null;continue} /* a short rest: just wait it out */
     if(!tried&&!firstErr){ /* everything is already resting from earlier */
       const e=new Error('All your keys are resting after hitting their limits. Try again in about '+Math.max(1,Math.ceil(soonest/1000))+' seconds'+(soonest>120e3?' (about '+Math.ceil(soonest/60e3)+' minutes)':'')+'. Adding more keys or backup models in Setup helps.');
-      throw e;
+      dbgNote('No request sent',e.message);throw e;
     }
     break;
   }
   const n=order.reduce((a,p)=>a+slotsOf(p).length,0);
   const e=new Error((firstErr&&firstErr.bad&&!firstErr.limit?'The key was refused: ':'Every key hit its limit ('+n+' tried). ')+(firstErr?firstErr.message.slice(0,160):'')+' Add more keys or backup models in Setup, or wait a bit.');
-  throw e;
+  dbgNote('Every key failed',e.message);throw e;
 }
 /* ---- how much of the chat is sent with each reply ----
    Sending the whole chat every time costs a lot of tokens, and free plans count tokens as well as requests. Only the recent part is sent

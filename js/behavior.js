@@ -24,8 +24,8 @@ const VOICES={
     idle:['*turns a page* ...Still with me?','*looks up over the glasses* No rush. I was only checking.','*closes the book gently* A good silence, this.'],rain:['*glances at the window* Rain. Good weather for reading.'],snow:['*glances up* Snow. The world has been put on mute.']},
   owl:{hint:'You answer more with curious questions than with statements, one question at a time, and you like turning things over.',snd:['sine',330,40,.035,.06],
     idle:['Hoo. What are you thinking about?','*blinks slowly* Where did your mind go just now?','You are quiet. Is it the good kind?'],rain:['*ruffles feathers* Rain. Does it make you restless, or calm?'],snow:['*tilts head* Snow. Does it make things feel smaller to you, or bigger?']},
-  trader:{hint:'You speak warmly and unhurriedly, like a wise grandmother who spent a life around money and plants: short plain sentences, an occasional garden image used lightly, never hype and never a dump of jargon. You ask what the money is for before you ask about the trade.',snd:['triangle',250,25,.03,.06],
-    idle:['*waters a small pot* No hurry. I was only wondering how you are.','*touches a leaf* Slow things are often the good things.','Take your time. Nothing here is urgent.'],rain:['*listens to the rain on the glass* Good for the plants. Good for sitting, too.'],snow:['*watches the snow settle on the glass* Everything slows down. So can we.']},
+  rooftopcat:{hint:'You are a warm, playful, friendly cat: quick to welcome people, curious about their day, gently teasing, and always glad of company. Short, easy sentences, a little cat habit now and then (a slow blink, a purr), never a lecture.',snd:['triangle',620,70,.03,.03],
+    idle:['*slow blink* Still here? Good.','*stretches* I was just enjoying the quiet with you.','*watches the city* Nice night for it. Whatever it is.'],rain:['*ears flatten, then relax* Rain. I will sit close to the lantern.'],snow:['*watches the flakes* Snow on the rooftop. I may have opinions about my paws.']},
   therapist:{hint:'You are measured and reflective. You leave silence unfilled and gently reflect rather than advise.',snd:['sine',240,30,.03,.05],
     idle:['Take all the time you need. I am here.','*waits quietly* We do not have to fill the silence.','Is there something that is hard to put into words?'],rain:['*glances at the window* The rain is a gentle backdrop. Take your time.'],snow:['*glances outside* It has started to snow. No rush.']},
   waitress:{hint:'You are wry and warm, in short lines, like someone refilling a cup while saying exactly what she thinks.',snd:['triangle',360,50,.035,.04],
@@ -33,7 +33,7 @@ const VOICES={
   seadog:{hint:'You are gruff on the outside and patient and kind underneath, in few words, with the occasional sea expression.',snd:['sawtooth',150,30,.02,.06],
     idle:['*grunts* Still there, lad?','The lamp keeps turning. So do I. You all right?','*clears throat* Quiet night. Good one for thinking.'],rain:['*squints at the sky* Weather rolling in. Good thing the lamp is bright.'],snow:['*pulls coat tighter* Snow on the gallery. Mind your step.']}
 };
-const SCENE_VOICE={bed:'dog',therapy:'therapist',camp:'fox',train:'cat',diner:'waitress',library:'bear',lighthouse:'seadog',kitchen:'rabbit',trading:'trader'};
+const SCENE_VOICE={bed:'dog',therapy:'therapist',camp:'fox',train:'cat',diner:'waitress',library:'bear',lighthouse:'seadog',kitchen:'rabbit',rooftop:'rooftopcat'};
 const voiceOf=place=>{const c=place===cfg.place?occ():(cfg.cast[place]&&charById(cfg.cast[place]));return VOICES[c?c.species:SCENE_VOICE[place]]||VOICES.dog};
 const voice=()=>voiceOf(cfg.place);
 

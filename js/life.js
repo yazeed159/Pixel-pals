@@ -160,7 +160,7 @@ const PLACEV={
   camp:[{k:'hog',y:86,d:1,when:'dark'}],
   train:[{k:'pass',d:.3,when:'dark',behind:true}],
   diner:[{k:'walker',d:.2,when:'dark'}],
-  trading:[{k:'moth',x:98,y:8,d:.5,when:'dark'}],
+  rooftop:[{k:'moth',x:96,y:34,d:.5,when:'dark'}],
   library:[{k:'moth',x:105,y:38,d:.5,when:'dark'},{k:'mouse',y:87,d:1}],
   lighthouse:[{k:'moth',x:30,y:33,d:.5,when:'dark'}],
   kitchen:[{k:'sillcat',x:114,y:30,d:.3},{k:'mouse',y:86,d:1},{k:'moth',x:80,y:15,d:.5,when:'dark'}]
