@@ -2,6 +2,10 @@
    A string with no entry stays English. To add a language: add a block here and a line to LANGS in i18n.js. */
 const TRX={
 "ar": {
+"Time": "الوقت",
+"Scene": "المشهد",
+"Colors": "الألوان",
+"Photo": "صورة",
 "Closing the loop": "إغلاق الدائرة",
 "Wrap-up after a conversation": "خلاصة بعد كل محادثة",
 "Weekly look-back": "نظرة على الأسبوع",
@@ -235,6 +239,10 @@ const TRX={
 "The end": "النهاية"
 },
 "he": {
+"Time": "שעה",
+"Scene": "סצנה",
+"Colors": "צבעים",
+"Photo": "תמונה",
 "Closing the loop": "סגירת המעגל",
 "Wrap-up after a conversation": "סיכום קצר אחרי שיחה",
 "Weekly look-back": "מבט אחורה על השבוע",
@@ -468,6 +476,10 @@ const TRX={
 "The end": "הסוף"
 },
 "es": {
+"Time": "Hora",
+"Scene": "Escena",
+"Colors": "Colores",
+"Photo": "Foto",
 "Closing the loop": "Cerrar el círculo",
 "Wrap-up after a conversation": "Resumen tras cada conversación",
 "Weekly look-back": "Mirada a la semana",
@@ -701,6 +713,10 @@ const TRX={
 "The end": "Fin"
 },
 "fr": {
+"Time": "Heure",
+"Scene": "Scène",
+"Colors": "Couleurs",
+"Photo": "Photo",
 "Closing the loop": "Boucler la boucle",
 "Wrap-up after a conversation": "Résumé après une conversation",
 "Weekly look-back": "Regard sur la semaine",

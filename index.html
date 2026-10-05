@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="Pixel Pals">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&text=0123456789%3A%2F%25&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -25,7 +26,7 @@
   <div id="chat"></div>
   <div id="qr" aria-label="Suggested replies"></div>
   <div id="row">
-    <input id="msg" placeholder="Say something..." autocomplete="off">
+    <textarea id="msg" rows="1" name="chat-message" placeholder="Say something..." autocomplete="off" autocapitalize="sentences" autocorrect="on" spellcheck="true" enterkeyhint="send" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other"></textarea>
     <button id="send">Send</button>
   </div>
   <div id="tools">
@@ -49,7 +50,7 @@
   <label for="prov">AI provider</label>
   <select id="prov"><option value="anthropic">Claude (Anthropic)</option><option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter</option><option value="groq">Groq</option><option value="custom">Custom (OpenAI-compatible)</option></select>
   <label for="key">API key (stays in this browser)</label>
-  <input id="key" type="password" autocomplete="off">
+  <input id="key" type="password" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other">
   <label for="model">Model name</label>
   <input id="model">
   <div id="baseWrap" hidden><label for="base">Base URL (e.g. http://localhost:11434/v1)</label><input id="base"></div>
@@ -129,8 +130,8 @@
       <div><label for="amb">Ambient sound</label><select id="amb"><option value="0">Off</option><option value="1">On</option></select></div>
       <div><label for="season">Seasons</label><select id="season"><option value="n">Snow in winter (north)</option><option value="s">Snow in winter (south)</option><option value="off">Off</option></select></div>
       <div><label for="qrs">Quick replies</label><select id="qrs"><option value="1">On</option><option value="0">Off</option></select></div>
-      <div><label for="pet">Character name</label><input id="pet"></div>
-      <div><label for="me">Your name</label><input id="me"></div>
+      <div><label for="pet">Character name</label><input id="pet" autocomplete="off" data-lpignore="true" data-1p-ignore></div>
+      <div><label for="me">Your name</label><input id="me" autocomplete="off" data-lpignore="true" data-1p-ignore></div>
     </div>
     <label for="about">About you (the character remembers this)</label>
     <textarea id="about" style="min-height:70px" placeholder="You can also type /remember ... in the chat"></textarea>
@@ -295,8 +296,6 @@
 <script src="js/scenes/bed.js"></script>
 <script src="js/scenes/therapy.js"></script>
 <script src="js/scenes/camp.js"></script>
-<script src="js/scenes/rooftop.js"></script>
-<script src="js/scenes/sea.js"></script>
 <script src="js/scenes/train.js"></script>
 <script src="js/scenes/diner.js"></script>
 <script src="js/scenes/library.js"></script>

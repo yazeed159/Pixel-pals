@@ -16,7 +16,7 @@ js/art/core.js      canvas helper, time-of-day palettes, idle timing, seasons, c
 js/art/face.js      mouths, blinks, expressions and small body motions for every character
 js/art/chars.js     the six character species, drawChar(), ready-made characters
 js/art/dog.js       the dog sprite
-js/scenes/          one file per scene (bed, therapy, camp, rooftop, sea, train, diner, library, lighthouse, kitchen, trading)
+js/scenes/          one file per scene (bed, therapy, camp, train, diner, library, lighthouse, kitchen, trading)
 js/dialogue.js      typewriter text, tap to advance, typing sound
 js/chat.js          AI providers, sending/redo/edit, quick replies, memory summaries, check-in, greetings
 js/ui.js            settings, character creator, journal, backup/restore, stage buttons
@@ -180,4 +180,12 @@ It is controlled by Setup > Presence & honesty > **They talk to each other** and
 A greenhouse at dusk with Ada, an older woman in round glasses and a sage cardigan who spent a lifetime around money and now tends plants. A potting bench holds a notebook, a cup of tea and a brass balance scale (a coin on one pan, a leaf on the other: risk and reward), with shelves of pots and hanging plants around. It is deliberately calm: the hanging plants sway very slowly and the scale tilts gently, nothing else moves. She is warm, patient and never competitive: she takes the long view and asks what the money is for before any talk of a trade. She explains markets in plain words (how stocks, funds, crypto and options work, orders and fees, charts, position sizing, risk and reward, the habits that cost people money) and thinks in odds, not certainties. She never promises returns or gives a confident buy or sell call, says briefly that she is not a licensed advisor when real money is on the line, has no live prices and says so instead of guessing, and slows people down around leverage, money they cannot afford to lose, and trading to escape stress or win back a loss. If you are having a hard time she sets the markets aside and sits with you first. The scene id is still `trading`, so earlier chats and any character you cast there carry over. The scene label is English only until it is added to `js/i18n-data.js`.
 
 ## Removed and simplified
+The Rooftop (Biscuit) and the Sea (Luma, the jellyfish) are gone too. If either was your selected scene the app opens on the bed; chats you had there stay in your saved data but are no longer reachable. The four stage buttons now carry a word under the icon (Time, Scene, Colors, Photo) and a colored top edge. The bed is a more realistic first-person view: you lie on your back looking past your knees to the footboard, window and lamp, with the dog between your legs.
+
 The Moon base (Comet) is gone, including its astronaut voice and the passing rover. The Sea (Luma) is now deliberately calm: one jellyfish drifting slowly, a few bubbles and a still sea floor, with no fish, background jellyfish, whale shadow or passing turtle and ship. Chats you already had on the Moon base stay in your saved data but are no longer reachable; if the Moon base was your selected scene the app opens on the bed instead.
+
+## Readable numbers
+The pixel font (Pixelify Sans) makes digits hard to tell apart, so digits, colon, slash and percent are shown in Atkinson Hyperlegible, a font designed for legibility (it is loaded for just those 13 characters from Google Fonts, see `index.html`). If it cannot load, for example offline, a clear system font is used for them instead (`PPDigits` in `css/style.css`). Letters stay in the pixel font. Numbers drawn inside the scene pictures (like the 3 on the diner menu) are part of the artwork and unchanged.
+
+## The message box
+It is a one-line-looking textarea instead of a text input, so browsers and password managers stop treating it as an email or username field and asking to save it after every message. **Enter** sends, **Shift+Enter** adds a new line, and the box grows up to about five lines then scrolls. The name fields and the API key field also tell password managers to leave them alone. If your browser still offers to save the API key (it is a password-type field on purpose, so it is masked), choose "Never" once.

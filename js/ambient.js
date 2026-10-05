@@ -1,7 +1,7 @@
 /* Ambient sound, built with Web Audio (no audio files). Off by default; starts after your first tap. */
 let AC2,NB,nodes=[],cr,gest=false;
 const white=c=>{const b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b};
-const LAY={trading:[[160,'lowpass',.03]],bed:[[250,'lowpass',.05]],therapy:[[180,'lowpass',.035]],camp:[[500,'lowpass',.035]],rooftop:[[450,'lowpass',.05,.1]],sea:[[300,'lowpass',.08,.15]],train:[[220,'lowpass',.09,3]],diner:[[200,'lowpass',.04],[3000,'bandpass',.004]],library:[[120,'lowpass',.025]],lighthouse:[[300,'lowpass',.08,.12],[900,'bandpass',.015,.3]],kitchen:[[160,'lowpass',.03]]};
+const LAY={trading:[[160,'lowpass',.03]],bed:[[250,'lowpass',.05]],therapy:[[180,'lowpass',.035]],camp:[[500,'lowpass',.035]],train:[[220,'lowpass',.09,3]],diner:[[200,'lowpass',.04],[3000,'bandpass',.004]],library:[[120,'lowpass',.025]],lighthouse:[[300,'lowpass',.08,.12],[900,'bandpass',.015,.3]],kitchen:[[160,'lowpass',.03]]};
 function layer(f,type,g,lfo){
   const s=AC2.createBufferSource(),fl=AC2.createBiquadFilter(),gn=AC2.createGain();
   s.buffer=NB;s.loop=true;fl.type=type;fl.frequency.value=f;gn.gain.value=g;

@@ -135,8 +135,6 @@ const BYE={
   bed:['*a sleepy tail thump* Goodnight. I will keep the warm spot.','*yawns and curls up* Sleep well. I am right here.'],
   therapy:['Take care of yourself until next time. We can pick this up whenever you like.','Be gentle with yourself today. The door is open when you want it.'],
   camp:['*pokes the embers* Go easy. The fire will keep.','*nods at the fire* Safe travels. We will sit again.'],
-  rooftop:['*thumps tail* See you up here. Mind the stairs.','*lifts head* Later. The city is not going anywhere.'],
-  sea:['*a slow drift of bubbles* Swim easy.','*waves a fin* Until the next tide.'],
   train:['*pours the last of the tea* Safe travels. The night train runs again tomorrow.','*a small bow* Until the next station.'],
   diner:['*wipes the counter* Get home safe. Coffee is on me next time.','*taps the counter twice* Drive careful. The light stays on.'],
   library:['*closes the book on one finger* Shh... go well. The chair keeps.','*nods softly* Good night. I will leave the lamp on.'],

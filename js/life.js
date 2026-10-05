@@ -158,7 +158,6 @@ const PLACEV={
   bed:[{k:'moth',x:21,y:22,d:.5,when:'dark'}],
   therapy:[{k:'bird',x:136,y:39,d:.2,when:'light'},{k:'moth',x:131,y:26,d:.2,when:'dark'}],
   camp:[{k:'hog',y:86,d:1,when:'dark'}],
-  rooftop:[{k:'ledgecat',y:67,stop:6,d:.5}],
   train:[{k:'pass',d:.3,when:'dark',behind:true}],
   diner:[{k:'walker',d:.2,when:'dark'}],
   trading:[{k:'moth',x:98,y:8,d:.5,when:'dark'}],

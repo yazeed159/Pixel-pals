@@ -26,8 +26,6 @@ const VOICES={
     idle:['Hoo. What are you thinking about?','*blinks slowly* Where did your mind go just now?','You are quiet. Is it the good kind?'],rain:['*ruffles feathers* Rain. Does it make you restless, or calm?'],snow:['*tilts head* Snow. Does it make things feel smaller to you, or bigger?']},
   trader:{hint:'You speak warmly and unhurriedly, like a wise grandmother who spent a life around money and plants: short plain sentences, an occasional garden image used lightly, never hype and never a dump of jargon. You ask what the money is for before you ask about the trade.',snd:['triangle',250,25,.03,.06],
     idle:['*waters a small pot* No hurry. I was only wondering how you are.','*touches a leaf* Slow things are often the good things.','Take your time. Nothing here is urgent.'],rain:['*listens to the rain on the glass* Good for the plants. Good for sitting, too.'],snow:['*watches the snow settle on the glass* Everything slows down. So can we.']},
-  jelly:{hint:'You drift and speak simply and sensorially, in slow, short lines about light, water and calm.',snd:['sine',380,200,.03,.09],
-    idle:['*glows a little brighter* ...Are you still floating with me?','*drifts closer* The water is calm. Are you?','Everything is slow here. You can be slow too.'],rain:['Above us, the surface is full of rain. I can feel it as soft taps.'],snow:['Cold, bright and quiet above us. I think it is snowing.']},
   therapist:{hint:'You are measured and reflective. You leave silence unfilled and gently reflect rather than advise.',snd:['sine',240,30,.03,.05],
     idle:['Take all the time you need. I am here.','*waits quietly* We do not have to fill the silence.','Is there something that is hard to put into words?'],rain:['*glances at the window* The rain is a gentle backdrop. Take your time.'],snow:['*glances outside* It has started to snow. No rush.']},
   waitress:{hint:'You are wry and warm, in short lines, like someone refilling a cup while saying exactly what she thinks.',snd:['triangle',360,50,.035,.04],
@@ -35,7 +33,7 @@ const VOICES={
   seadog:{hint:'You are gruff on the outside and patient and kind underneath, in few words, with the occasional sea expression.',snd:['sawtooth',150,30,.02,.06],
     idle:['*grunts* Still there, lad?','The lamp keeps turning. So do I. You all right?','*clears throat* Quiet night. Good one for thinking.'],rain:['*squints at the sky* Weather rolling in. Good thing the lamp is bright.'],snow:['*pulls coat tighter* Snow on the gallery. Mind your step.']}
 };
-const SCENE_VOICE={bed:'dog',therapy:'therapist',camp:'fox',rooftop:'dog',sea:'jelly',train:'cat',diner:'waitress',library:'bear',lighthouse:'seadog',kitchen:'rabbit',trading:'trader'};
+const SCENE_VOICE={bed:'dog',therapy:'therapist',camp:'fox',train:'cat',diner:'waitress',library:'bear',lighthouse:'seadog',kitchen:'rabbit',trading:'trader'};
 const voiceOf=place=>{const c=place===cfg.place?occ():(cfg.cast[place]&&charById(cfg.cast[place]));return VOICES[c?c.species:SCENE_VOICE[place]]||VOICES.dog};
 const voice=()=>voiceOf(cfg.place);
 

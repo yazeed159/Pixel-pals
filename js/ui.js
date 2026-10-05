@@ -2,7 +2,7 @@
 const dlg=$('#dlg');
 const FIELDS=['place','time','weather','style','fur','pos','ts','spd','snd','amb','len','pet','me','season','carry','checkin','motion','lang','rlang','sun'];
 let dr={cast:{},pals:{}},dp=cfg.place,memShown='*';
-function applyUI(){$('#dbox').className=cfg.pos==='over'?'over':'';document.documentElement.style.setProperty('--ts',cfg.ts);$('#name').textContent=nm();$('#tb').textContent=TI[cfg.time]||'🕒';$('#pb').textContent=SCENES[cfg.place].icon;$('#kb').textContent=PI[cfg.pals[cfg.place]||''];$('#app').classList.toggle('bub',cfg.style==='bubbles')}
+function applyUI(){$('#dbox').className=cfg.pos==='over'?'over':'';document.documentElement.style.setProperty('--ts',cfg.ts);$('#name').textContent=nm();$('#tb').textContent=TI[cfg.time]||'🕒';$('#pb').textContent=SCENES[cfg.place].icon;$('#kb').textContent=PI[cfg.pals[cfg.place]||''];$('#phb').textContent='📷';[['tb','Time'],['pb','Scene'],['kb','Colors'],['phb','Photo']].forEach(([i,l])=>$('#'+i).dataset.l=T(l));$('#app').classList.toggle('bub',cfg.style==='bubbles')}
 let shown=cfg.provider;
 function loadFields(){const p=$('#prov').value;$('#key').value=cfg.keys[p]||'';$('#model').value=cfg.models[p]||MODELS[p];$('#base').value=cfg.base;$('#baseWrap').hidden=p!=='custom'}
 function stash(){const p=shown;cfg.keys[p]=$('#key').value.trim();cfg.models[p]=$('#model').value.trim()||MODELS[p];cfg.base=$('#base').value.trim()}

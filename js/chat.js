@@ -117,7 +117,13 @@ async function respond(onFail){
   if(!typing&&ci>=chunks.length-1)showQR();
   if(unmemorized(cfg.place)>=30)summarize(cfg.place,10).then(ok=>ok&&refreshMemBox&&refreshMemBox());
 }
-$('#send').onclick=()=>send(); msg.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)send()});
+$('#send').onclick=()=>send(); /* The message box is a textarea, not an input: browsers and password managers treat a lone text input as an email/username field and ask to save it after every
+   send. Enter sends, Shift+Enter adds a line, and the box grows up to about five lines. */
+msg.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+const growMsg=()=>{msg.style.height='auto';const h=Math.min(msg.scrollHeight+(msg.offsetHeight-msg.clientHeight),160);msg.style.height=h+'px';msg.style.overflowY=msg.scrollHeight>msg.clientHeight+1?'auto':'hidden'};
+{const d=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value');
+ Object.defineProperty(msg,'value',{get(){return d.get.call(msg)},set(v){d.set.call(msg,v);growMsg()},configurable:true})} /* code that sets msg.value (after sending, restoring an edit) resizes it too */
+msg.addEventListener('input',growMsg);
 msg.addEventListener('input',()=>{if(msg.value)$('#qr').textContent=''});
 
 /* ---- redo the last reply / edit your last message ---- */
