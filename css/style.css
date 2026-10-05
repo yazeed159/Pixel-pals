@@ -4,10 +4,18 @@
 /* Numbers: Pixelify Sans digits are hard to tell apart (3/8, 5/6, 0/8), so digits, colon, slash and percent use a clear font. Atkinson Hyperlegible
    is loaded for just those characters (index.html); if it cannot load (offline), PPDigits falls back to a clear system font. Letters stay pixel. */
 @font-face{font-family:'PPDigits';src:local('Consolas'),local('Menlo'),local('DejaVu Sans Mono'),local('Roboto Mono'),local('Roboto'),local('Noto Sans'),local('Droid Sans'),local('Helvetica Neue'),local('Arial');unicode-range:U+0030-003A,U+002F,U+0025}
+html,body,#app{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+/* nothing on the page should turn blue when tapped or double-tapped; text you type, read in the log or copy stays selectable */
+body{-webkit-user-select:none;user-select:none}
+input,textarea,#log,#jrl,#ltl,#lbl,#chat,.b,.je,pre,.dbpre{-webkit-user-select:text;user-select:text}
+#play,#stage{-webkit-user-select:none;user-select:none}
+#play ::selection,#stage ::selection,canvas::selection{background:transparent}
+canvas{-webkit-user-drag:none;-webkit-tap-highlight-color:transparent}
+button,summary,select,.chip{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:#0f0b1a;color:var(--cream);font-family:'Atkinson Hyperlegible','PPDigits','Pixelify Sans',ui-monospace,monospace;font-variant-numeric:tabular-nums lining-nums}
 #app{max-width:min(960px,max(320px,calc((100vh - 250px)*1.7777)));margin:0 auto;padding:12px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom));padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
 .hint{font-size:.85em;opacity:.75;margin:6px 0 0}
-#play{position:relative;cursor:pointer;user-select:none;-webkit-user-select:none}
+#play{position:relative;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 #stage{position:relative;border:4px solid var(--cream);outline:4px solid var(--ink);user-select:none;-webkit-user-select:none}
 canvas{display:block;width:100%;image-rendering:pixelated;aspect-ratio:16/9}
 #you{position:absolute;top:3%;inset-inline-end:3%;max-width:42%;background:var(--cream);color:var(--ink);padding:8px 12px;font-size:clamp(12px,2vw,18px);display:none;box-shadow:4px 4px 0 var(--ink)}
@@ -118,10 +126,10 @@ dialog select{text-overflow:ellipsis}
 #edc{touch-action:none;cursor:crosshair;aspect-ratio:16/9}
 #edo{position:absolute;inset:0;height:100%;pointer-events:none}
 @media (max-width:560px){
-  #tb,#pb,#kb,#phb{top:5px;width:42px;height:40px;font-size:15px;border-width:2px;border-top-width:5px}
+  #tb,#pb,#kb,#phb{top:5px;width:44px;height:44px;font-size:15px;border-width:2px;border-top-width:5px}
   #tb::after,#pb::after,#kb::after,#phb::after{font-size:9px}
-  #tb{left:5px}#pb{left:51px}#kb{left:97px}#phb{left:143px}#ftime{top:50px;left:5px}
-  html[dir=rtl] #tb{right:5px}html[dir=rtl] #pb{right:51px}html[dir=rtl] #kb{right:97px}html[dir=rtl] #phb{right:143px}html[dir=rtl] #ftime{right:5px}
+  #tb{left:5px}#pb{left:55px}#kb{left:105px}#phb{left:155px}#ftime{top:54px;left:5px}
+  html[dir=rtl] #tb{right:5px}html[dir=rtl] #pb{right:55px}html[dir=rtl] #kb{right:105px}html[dir=rtl] #phb{right:155px}html[dir=rtl] #ftime{right:5px}
 }
 
 dialog textarea.secret{min-height:70px;-webkit-text-security:disc;text-security:disc;font-family:ui-monospace,monospace}

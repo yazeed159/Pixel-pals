@@ -29,15 +29,20 @@ function say(t){you.style.display='none';
 function bub(r,t){const d=document.createElement('div');d.className='b '+r;d.dir='auto';d.textContent=t;chat.append(d);return d}
 function renderChat(){chat.textContent='';pend=null;if(cfg.style==='bubbles')hh().forEach(m=>bub(m.role==='user'?'user':'ai',m.content))}
 new MutationObserver(()=>{chat.scrollTop=chat.scrollHeight}).observe(chat,{childList:true,subtree:true,characterData:true});
+const COARSE=matchMedia('(pointer:coarse)');
 $('#play').addEventListener('click',()=>{
   if(typing) return finish();
-  if(ci<chunks.length-1){ci++;show()} else msg.focus();
+  if(ci<chunks.length-1){ci++;show()} else if(!COARSE.matches)msg.focus(); /* on a phone, tapping the picture must not pop the keyboard open */
 });
 document.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();$('#play').click()}});
 $('#stage').addEventListener('click',e=>{
   if(typing||busy||e.target.tagName==='BUTTON')return;
   const r=$('#cv').getBoundingClientRect(),x=(e.clientX-r.left)/r.width*160,y=(e.clientY-r.top)/r.height*90;
-  const h=(SCENES[cfg.place].hot||[]).find(h=>x>=h.r[0]&&x<=h.r[0]+h.r[2]&&y>=h.r[1]&&y<=h.r[1]+h.r[3]);
+  /* fingers are fat and the picture is only 160 px wide: on touch screens each prop gets about 14 screen px of slack, and the nearest one wins */
+  const pad=COARSE.matches?14*160/r.width:0;
+  let h=null,hd=1e9;
+  (SCENES[cfg.place].hot||[]).forEach(t=>{const dx=Math.max(t.r[0]-x,0,x-(t.r[0]+t.r[2])),dy=Math.max(t.r[1]-y,0,y-(t.r[1]+t.r[3])),d=Math.hypot(dx,dy);
+    if(d<=pad&&d<hd){h=t;hd=d}});
   if(!h)return; e.stopPropagation(); jolt=still()?0:6; jx=h.r[0]+(h.r[2]>>1)-2; jy=h.r[1];
   say(h.say[Math.floor(Math.random()*h.say.length)]);
 });
