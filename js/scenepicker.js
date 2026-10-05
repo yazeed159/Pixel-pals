@@ -24,11 +24,11 @@ function openScenePicker(){
     const l=document.createElement('span');l.textContent=(v.icon||'')+' '+(typeof T==='function'?T(v.label):v.label).replace(/^🖼\s*/,'');
     b.append(c,l);
     b.setAttribute('aria-label',v.label+(k===cfg.place?' (you are here)':''));
-    b.onclick=()=>{$('#spd').close();goScene(k)};
+    b.onclick=()=>{$('#scenedlg').close();goScene(k)};
     grid.append(b);
     sceneThumb(k,c);
   });
-  $('#spd').showModal();
+  $('#scenedlg').showModal();
 }
 $('#pb').onclick=e=>{e.stopPropagation();openScenePicker()};
-$('#spx').onclick=()=>$('#spd').close();
+$('#spx').onclick=()=>$('#scenedlg').close();

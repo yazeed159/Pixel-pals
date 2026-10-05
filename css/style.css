@@ -117,7 +117,7 @@ dialog select{text-overflow:ellipsis}
 
 dialog textarea.secret{min-height:70px;-webkit-text-security:disc;text-security:disc;font-family:ui-monospace,monospace}
 
-#spd{width:min(94vw,640px)}
+#scenedlg{width:min(94vw,640px)}
 #spgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .spcard{display:flex;flex-direction:column;gap:6px;padding:6px;background:var(--plum);color:var(--cream);border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);text-align:center;font-size:14px;line-height:1.2}
 .spcard canvas{width:100%;aspect-ratio:16/9;image-rendering:pixelated;border:2px solid var(--ink);background:#201a36}

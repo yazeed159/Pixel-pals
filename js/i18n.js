@@ -82,5 +82,3 @@ function langDirective(){
 }
 const _sysI=sys;
 sys=function(){const l=langDirective();return _sysI()+(l?l+(cfg.qr==='1'?' Keep the [[quick: a | b | c]] line exactly in that form, with the three options in the same language as your reply.':''):'')};
-const _completeI=complete;
-complete=function(system,h,onDelta,maxTok){if(system===QRSYS){const l=langDirective();if(l)system+=l}return _completeI(system,h,onDelta,maxTok)};

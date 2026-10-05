@@ -1,7 +1,7 @@
 /* Offline cache. Core files are saved on install so the app opens with no network; after that it is
    network first (always the newest copy when online) and falls back to the saved one. Never touches API calls
    (they are cross-origin) or non-GET requests. Bump C whenever you add or rename a file in SHELL. */
-const C='pp-v31';
+const C='pp-v33';
 const SHELL=['./','index.html','manifest.json','css/style.css','icon-192.png','icon-512.png','icon-maskable-192.png','icon-maskable-512.png','apple-touch-icon.png',
 'js/config.js','js/art/core.js','js/art/face.js','js/art/dog.js','js/art/chars.js',
 'js/scenes/bed.js','js/scenes/therapy.js','js/scenes/camp.js','js/scenes/train.js','js/scenes/diner.js','js/scenes/library.js','js/scenes/lighthouse.js','js/scenes/kitchen.js','js/scenes/rooftop.js',
