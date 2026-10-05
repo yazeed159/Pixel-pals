@@ -130,3 +130,10 @@ dialog textarea.secret{min-height:70px;-webkit-text-security:disc;text-security:
 #dbd .dbrow.slot b{display:block}
 #dbd .dberr{font-size:13px;opacity:.85;margin-top:2px}
 #dbd h4{margin:14px 0 4px}
+
+#dbd details.dbfull{background:#ffffff0f;border-left:4px solid #8fd0a8;margin:4px 0;padding:6px 8px}
+#dbd details.dbfull.bad{border-left-color:#d9798f}
+#dbd details summary{cursor:pointer;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+#dbd .dbfh{font-size:13px;font-weight:bold;margin:10px 0 2px;opacity:.9}
+#dbd pre.dbpre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.4 ui-monospace,Consolas,monospace;background:#0000003a;padding:8px;margin:0;max-height:320px;overflow:auto;user-select:text}
+#dbd details.dbraw{margin-top:10px}

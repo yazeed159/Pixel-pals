@@ -1,6 +1,6 @@
 /* Scene: A diner at 3am. Night-shift owl behind the counter. Draws with px(x,y,w,h,color); s = time-of-day palette. */
 function drawDiner(s){
-  const flick=tick%9===0,pour=ev(38,6,8)>=0; /* idle: the owl tops up your coffee */
+  const nn=gesture('neon'),bl=gesture('bell'),flick=tick%9===0||(nn>=0&&[1,0,1,1,0,0,1,0,1,0,1,1][nn]===1),pour=ev(38,6,8)>=0; /* idle: the owl tops up your coffee */
   /* tiled back wall */
   px(0,0,160,56,'#2c6a72');for(let y=0;y<56;y+=6)px(0,y,160,1,'#265b62');for(let x=0;x<160;x+=8)px(x,0,1,56,'#265b62');
   px(0,40,160,16,'#8a2f3a');px(0,40,160,1,'#c9c0b0');
@@ -40,6 +40,11 @@ function drawDiner(s){
   px(79,65-(tick%3),1,3,'#ffffff88');px(82,66-((tick+1)%3),1,3,'#ffffff66');
   px(112,68,10,9,'#aab0c0');px(113,69,8,2,'#d9dce6');px(130,66,4,10,'#d94a4a');px(130,64,4,2,'#f3e3c8');px(138,68,5,8,'#e8e8f0');px(139,66,3,2,'#9aa0b0');
   px(20,70,18,10,'#e8e0d0');px(22,72,14,1,'#b8b0a0');px(22,75,10,1,'#b8b0a0');
+  const wp=gesture('wipe'); /* idle: wipes down the counter */
+  if(wp>=0){const x=[66,62,56,50,44,40,46,52,58,64,58,50,44,50,58,66][wp];
+    limb(68,54,x+4,60,4,PC?PC.c1:'#a07a4e');px(x,62,10,3,'#f3efe6');px(x,64,10,1,'#d9d0c0')}
+  if(bl>=0){const hx=[62,58,53,56,60,56,53,56,60,64][bl],hy=[56,57,58,57,56,57,58,57,56,56][bl],by=hy===58?1:0; /* idle: rings the order-up bell */
+    px(47,63,10,2,'#b8962a');px(49,60+by,6,3,'#e8c46a');px(51,58+by,2,2,'#e8c46a');limb(68,54,hx,hy,4,PC?PC.c1:'#a07a4e')}
   if(thinking){for(let i=0;i<=tick%3;i++)px(98+i*5,16,3,3,'#f3e3c8')}
 }
 SCENES.diner={label:"Diner at 3am",icon:"🍳",name:"Nell",win:[8,10,52,30],setting:"in an all-night diner at 3am, you behind the counter pouring coffee and the person sitting on a stool across from you",
@@ -47,4 +52,4 @@ SCENES.diner={label:"Diner at 3am",icon:"🍳",name:"Nell",win:[8,10,52,30],sett
   greet:"*slides a mug across the counter* Coffee's fresh. Can't sleep either, huh?",
   back:"*glances up from the pot* Same stool. Coffee's on its way.",
   hot:[{r:[62,22,38,34],say:["*tops up your coffee* Mm.","*wipes the counter* Go on, hon.","*yawns* Sorry. Long shift. I'm listening."]},{r:[72,6,18,18],say:["*glances at the clock* Still three. It's always three."]},{r:[108,36,42,22],say:["*taps the glass* Last slice of the night. It's yours."]},{r:[6,8,56,34],say:["*the neon buzzes and the rain streaks past the window*"]}],
-  noLate:true,draw:drawDiner};
+  noLate:true,gest:{wipe:16,neon:12,bell:10},draw:drawDiner};

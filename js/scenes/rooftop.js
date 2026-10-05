@@ -5,13 +5,15 @@ const RT_FAR=[[0,14,16],[12,10,24],[22,16,14],[36,9,22],[44,14,12],[56,10,26],[6
 const RT_NEAR=[[0,18,22],[16,22,30],[40,14,18],[54,16,24],[100,18,20],[116,16,28],[130,30,32]];
 function drawRooftop(s){
   const F='#e0904c',ST='#b5662f',W='#f6ead4',PK='#e89aa0',EYE='#7fd08a',DK='#2b1d2e',SCF='#c9505a',blink=Face.blink();
-  const tw=[0,1,0,-1][Math.floor(tick/5)%4],ear=ev(36,5,11)>=0?1:0,look=ev(48,10,3)>=0?1:0,star=stars()?ev(70,7,5):-1;
-  const dark=DAYF<.55,far=byDay('#1b2050','#8aa6c0'),near=byDay('#120f2a','#5f7a98');
+  const tw=[0,1,0,-1][Math.floor(tick/5)%4],ear=ev(36,5,11)>=0?1:0,look=ev(48,10,3)>=0?1:0,star=gesture('star'),pl=gesture('plane'),pu=gesture('purr'),rg=gesture('tap'),fj=rg>=4&&rg<=7&&rg%2===0?-1:0; /* idle: a paw taps the fish */
+  const near0=()=>byDay('#120f2a','#2a3a50'),dark=DAYF<.55,far=byDay('#1b2050','#8aa6c0'),near=byDay('#120f2a','#5f7a98');
   /* sky, stars, moon, a shooting star */
   skyfill(0,0,160,60,s);
   if(stars())for(let i=0;i<24;i++)px((i*53+7)%160,(i*29+3)%34,1,1,(i+tick)%7?'#fff':s.sky);
   px(122,10,6,6,s.moon);px(123,9,4,8,s.moon);px(121,11,8,4,s.moon);
-  if(star>=0){px(128-star*7,6+star*3,3,1,'#ffffff');px(131-star*7,5+star*3,3,1,'#ffffff55')}
+  if(star>=0){if(stars()){px(128-star*7,6+star*3,3,1,'#ffffff');px(131-star*7,5+star*3,3,1,'#ffffff55')} /* a shooting star by night, a bird by day */
+    else{const bx=140-star*20,by=12+(star%2);px(bx,by,3,1,near0());px(bx-2,by-1+(star%2),2,1,near0());px(bx+3,by-1+(star%2),2,1,near0())}}
+  if(pl>=0){const x=-6+pl*11,y=16-(pl>>2);px(x,y,5,1,'#cfd2e0');px(x,y-1,1,1,'#cfd2e0');px(x+1,y+1,2,1,'#aab0c0');px(x+5,y,1,1,pl%2?'#ff6a6a':'#6aff9a')} /* a plane passes over */
   /* the skyline: far and near rows of buildings with a few lit windows, a water tank and an aerial */
   RT_FAR.forEach(([x,w,h])=>px(x,58-h,w,h,far));
   RT_NEAR.forEach(([x,w,h],b)=>{
@@ -60,14 +62,17 @@ function drawRooftop(s){
     px(60,34,6,1,'#efe4cc');px(61,37,5,1,'#efe4cc');px(94,34,6,1,'#efe4cc');px(94,37,5,1,'#efe4cc');          /* whiskers */
   }
   CH.e();
+  if(pu>=2){const hh=(x,y)=>{px(x,y,2,1,'#ff7a9a');px(x+3,y,2,1,'#ff7a9a');px(x,y+1,5,1,'#ff7a9a');px(x+1,y+2,3,1,'#ff7a9a');px(x+2,y+3,1,1,'#ff7a9a')}; /* purring: little hearts */
+    hh(98,32-(pu-2)*2);if(pu>=6)hh(58,34-(pu-6)*2)}
   if(thinking){for(let i=0;i<=tick%3;i++)px(100+i*5,16,3,3,'#f3e3c8')}
   /* the crate that serves as a table */
   px(36,72,88,16,'#7a5a38');px(36,72,88,2,'#a88a5e');px(36,78,88,1,'#5a4026');px(36,84,88,1,'#5a4026');
   px(36,72,3,16,'#5a4026');px(121,72,3,16,'#5a4026');px(78,72,2,16,'#5a4026');
   px(46,66,7,6,'#f3e3c8');px(53,67,2,3,'#f3e3c8');px(47,66,5,1,'#8a5a32');                                       /* mug */
   if(tick%6<3){px(48,63,1,2,'#ffffff66');px(50,62,1,2,'#ffffff44')}
-  px(96,70,16,2,'#e8e0d0');px(99,67,7,3,'#7a9ad8');px(106,66,2,5,'#7a9ad8');px(100,68,1,1,DK);px(99,69,5,1,'#a8c0f0');   /* a little fish on a plate */
+  px(96,70,16,2,'#e8e0d0');px(99,67+fj,7,3,'#7a9ad8');px(106,66+fj,2,5,'#7a9ad8');px(100,68+fj,1,1,DK);px(99,69+fj,5,1,'#a8c0f0');   /* a little fish on a plate */
   px(114,68,6,4,'#b5654a');px(115,64,4,4,'#6fbf6f');px(116,62,2,2,'#8acb7a');                                    /* a seedling pot */
+  if(rg>=0){const d=[0,2,4,6,7,7,7,7,5,3,1,0][rg];px(91,64,3+d,3,PC?PC.c1:F);px(92+d,64,3,3,PC?PC.c2:W)}
   /* a lantern and a folded blanket */
   const fl=tick%4<2;
   px(136,66,4,1,'#2a2a3a');px(134,67,8,13,'#2a2a3a');px(135,69,6,9,fl?'#ffd27a':'#ffbe6e');px(133,80,10,2,'#3a3a4a');
@@ -79,4 +84,4 @@ SCENES.rooftop={label:"Rooftop at night",icon:"🌃",name:"Biscuit",outdoor:true
   greet:"*tail curls up* There you are! I saved you the good spot. The city is lovely tonight. How was your day?",
   back:"*looks up and purrs* Back already? Good. The lights are still on.",
   hot:[{r:[62,18,38,50],say:["*slow blink* Hello, you.","*purrs* I'm listening. Take your time.","*tilts head* Mm? Go on."]},{r:[44,60,14,12],say:["*sniffs the mug* Still warm. Don't tell anyone I checked.","*pats the mug* Good for cold paws."]},{r:[94,64,20,8],say:["*eyes the fish* That's for later. Probably.","*whiskers twitch* Do not look at the fish. It is a trap."]},{r:[8,28,142,18],say:["*looks up at the lights* I hung every one of those myself. Well, I supervised.","*watches the bulbs twinkle* Pretty, aren't they?"]},{r:[0,18,160,38],say:["*nods at the skyline* Every window is somebody's evening.","*watches the city* I like it up here. It's quiet and loud at once."]},{r:[132,64,14,20],say:["*warms paws by the lantern* Cozy.","*the lantern flickers, then steadies*"]}],
-  draw:drawRooftop};
+  gest:{tap:12,star:7,plane:16,purr:14},gp:(n,f)=>n==='purr'?(f%2):0,draw:drawRooftop};

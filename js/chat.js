@@ -54,8 +54,9 @@ async function callOnce(p,k,m,system,h,onDelta,maxTok){
     body={model:m,messages:[{role:'system',content:system},...h]};
   }
   if(onDelta){if(p==='gemini')url=url.replace(':generateContent',':streamGenerateContent')+'?alt=sse';else body.stream=true}
-  const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
-  lastMeta={hdr:dbgHdr(r)};
+  lastMeta={sent:JSON.stringify(body),url}; /* the exact body, for the Details panel; keys are in headers and are never recorded */
+  const r=await fetch(url,{method:'POST',headers,body:lastMeta.sent});
+  lastMeta.hdr=dbgHdr(r);
   if(onDelta&&r.ok&&r.body){streamed=true;return (await readStream(r,PICK[p]||PICK.oa,onDelta))||'...'}
   const d=await r.json().catch(()=>({}));
   if(!r.ok){
@@ -85,7 +86,7 @@ async function complete(system,h,onDelta,maxTok=4096){
         const t0=Date.now(),what=dbgWhat(system,onDelta);lastMeta={};
         try{
           const out=await callOnce(p,k,m,system,h,onDelta,maxTok);
-          dbgRecord({p,k,m,what,t0,meta:lastMeta});
+          dbgRecord({p,k,m,what,t0,meta:lastMeta,reply:out});
           (cfg.ki=cfg.ki||{})[p]=i;
           if(n||p!==cfg.provider)keyNote='Switched to '+(p!==cfg.provider?p+' ':'')+'key '+(keyList(p).indexOf(k)+1)+(modelList(p).length>1?' with '+m:'')+' because the first one was limited.';
           return out;

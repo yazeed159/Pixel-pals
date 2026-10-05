@@ -1,10 +1,18 @@
 /* Behind the scenes (the "Details" button): which model answered, which key, what failed, and how many requests are left.
    Every AI request is logged here (time, what it was for, provider, model, key number and its last 4 characters, result, time taken,
-   tokens when the provider reports them). No message text and no full keys are stored. Counts are for this browser only.
+   tokens when the provider reports them). Keys are never stored. The exact text of each request and reply is kept too (newest ones, up to about 1.5 MB, only in this browser; switch it off in the panel). Counts are for this browser only.
    "Left" comes from the provider's own rate-limit headers when the browser is allowed to read them, otherwise from a daily limit
    learned from a quota error (or typed in the panel) minus what this browser has sent today. */
 let lastMeta={};
-let DBGLOG=[],USE={},HDR={};
+let DBGLOG=[],USE={},HDR={},DBGFULL=[]; /* DBGFULL: the exact request body and reply of every call, oldest first */
+try{DBGFULL=JSON.parse(localStorage.getItem('pdFull')||'[]')}catch(e){}
+let FULLSEQ=DBGFULL.reduce((a,e)=>Math.max(a,e.n||0),0);
+const fullOn=()=>localStorage.getItem('pdFullOff')!=='1';
+function fullSave(){
+  let s=JSON.stringify(DBGFULL);
+  while(s.length>1.5e6&&DBGFULL.length>1){DBGFULL.shift();s=JSON.stringify(DBGFULL)}
+  for(;;){try{localStorage.setItem('pdFull',s);break}catch(e){if(DBGFULL.length<=1)break;DBGFULL.shift();s=JSON.stringify(DBGFULL)}}
+}
 try{DBGLOG=JSON.parse(localStorage.getItem('pdLog')||'[]')}catch(e){}
 try{USE=JSON.parse(localStorage.getItem('pdUse')||'{}')}catch(e){}
 try{HDR=JSON.parse(localStorage.getItem('pdHdr')||'{}')}catch(e){}
@@ -50,6 +58,7 @@ function dbgRecord(o){
   if(e&&e.quotaLimit)c.lim=e.quotaLimit;
   if(meta.hdr){meta.hdr.t=Date.now();HDR[id]=meta.hdr}
   dbgSave();
+  if(fullOn()&&meta.sent){DBGFULL.push({n:++FULLSEQ,t:o.t0,what:o.what,p,m,url:meta.url||'',ok:!e,ms:Date.now()-o.t0,sent:dbgScrub(meta.sent),reply:o.reply!=null?dbgScrub(o.reply):'',err:e?dbgScrub(e.message).slice(0,500):''});fullSave()}
 }
 function dbgNote(what,msg){ /* a request that never left: every key was resting */
   DBGLOG.unshift({t:Date.now(),p:'',m:'',kn:0,k4:'',what,ok:false,kind:'error',ms:0,err:dbgScrub(msg).slice(0,300)});
@@ -65,6 +74,34 @@ const dbgAgo=t=>{const s=Math.round((Date.now()-t)/1000);return s<90?s+' s ago':
 const dbgSlot=e=>pname(e.p)+' · '+(e.kn?'key '+e.kn+' (…'+e.k4+')':'no key')+' · '+e.m;
 function el(tag,cls,text){const x=document.createElement(tag);if(cls)x.className=cls;if(text!=null)x.textContent=text;return x}
 
+/* ---- the exact messages, first to last ---- */
+function fullParts(e){ /* what was sent, in plain labelled pieces, whichever provider it went to */
+  let b={};try{b=JSON.parse(e.sent)}catch(x){}
+  const S=v=>typeof v==='string'?v:JSON.stringify(v,null,1);
+  let sys='',msgs=[];
+  if(b.system!=null){sys=S(b.system);msgs=b.messages||[]}
+  else if(b.systemInstruction){sys=(b.systemInstruction.parts||[]).map(x=>x.text).join('');msgs=(b.contents||[]).map(x=>({role:x.role,content:(x.parts||[]).map(y=>y.text).join('')}))}
+  else{const a=b.messages||[];if(a[0]&&a[0].role==='system'){sys=S(a[0].content);msgs=a.slice(1)}else msgs=a}
+  const parts=[['Sent to',e.url+(b.model?'  (model '+b.model+')':'  (model '+e.m+')')+(b.max_tokens?'  max_tokens '+b.max_tokens:'')],['System prompt (hidden instructions the character is given)',sys]];
+  msgs.forEach((x,i)=>parts.push(['Message '+(i+1)+' of '+msgs.length+': '+(x.role==='user'?'you':'the character'),S(x.content)]));
+  parts.push([e.ok?'Reply that came back':'What went wrong',e.ok?e.reply:e.err]);
+  return parts;
+}
+const fullHead=e=>'#'+e.n+' · '+new Date(e.t).toLocaleString()+' · '+e.what+' · '+pname(e.p)+' · '+e.m+' · '+(e.ok?'OK':'FAILED')+(e.ms?' · '+(e.ms/1000).toFixed(1)+' s':'');
+function fullText(){
+  return DBGFULL.map(e=>'==== '+fullHead(e)+' ====\n'+fullParts(e).map(([h,t])=>'--- '+h+' ---\n'+t).join('\n\n')+'\n--- Raw JSON body as sent ---\n'+e.sent).join('\n\n\n');
+}
+function renderFull(){
+  const box=$('#dbfulllist');box.textContent='';$('#dbfull').checked=fullOn();
+  if(!DBGFULL.length){box.append(el('div','dbrow',fullOn()?'Nothing recorded yet. Send a message and it will appear here.':'Recording is off.'));return}
+  box.append(el('div','hint',DBGFULL.length+' request'+(DBGFULL.length>1?'s':'')+' kept, oldest first (newest at the bottom). Tap one to open it.'));
+  DBGFULL.forEach(e=>{
+    const d=el('details','dbfull'+(e.ok?'':' bad'));d.append(el('summary',null,fullHead(e)));
+    fullParts(e).forEach(([h,t])=>{d.append(el('div','dbfh',h));d.append(el('pre','dbpre',t||'(empty)'))});
+    const raw=el('details','dbraw');raw.append(el('summary',null,'Raw JSON body, exactly as sent'));raw.append(el('pre','dbpre',e.sent));d.append(raw);
+    box.append(d);
+  });
+}
 function renderDiag(){
   /* summary */
   const sum=$('#dbsum');sum.textContent='';
@@ -119,6 +156,7 @@ function renderDiag(){
     if(e.err)r.append(el('div','dberr',e.err));
     lg.append(r);
   });
+  renderFull();
 }
 function dbgText(){
   return DBGLOG.map(e=>new Date(e.t).toISOString()+' '+(e.ok?'OK':e.kind.toUpperCase())+' '+(e.p?dbgSlot(e)+' ':'')+'['+e.what+'] '+(e.ms/1000).toFixed(1)+'s'
@@ -127,8 +165,16 @@ function dbgText(){
 $('#dbgb').onclick=()=>{renderDiag();$('#dbst').textContent='';$('#dbd').showModal()};
 $('#dbx').onclick=()=>$('#dbd').close();
 $('#dblim').onchange=()=>{const v=Math.max(0,Math.floor(+$('#dblim').value||0));try{v?localStorage.setItem('pdLim',v):localStorage.removeItem('pdLim')}catch(e){}renderDiag()};
-$('#dbclr').onclick=()=>{DBGLOG=[];USE={};HDR={};dbgSave();renderDiag();$('#dbst').textContent='Cleared.'};
+$('#dbclr').onclick=()=>{DBGLOG=[];USE={};HDR={};DBGFULL=[];try{localStorage.removeItem('pdFull')}catch(e){}dbgSave();renderDiag();$('#dbst').textContent='Cleared.'};
 $('#dbcopy').onclick=async()=>{
   try{await navigator.clipboard.writeText(dbgText());$('#dbst').textContent='Copied the log (no keys, no messages).'}
   catch(e){$('#dbst').textContent='Could not copy. Select the text below instead.'}
+};
+$('#dbfull').onchange=()=>{try{$('#dbfull').checked?localStorage.removeItem('pdFullOff'):localStorage.setItem('pdFullOff','1')}catch(e){}renderFull()};
+$('#dbfcopy').onclick=async()=>{
+  try{await navigator.clipboard.writeText(fullText());$('#dbst').textContent='Copied every request and reply, first to last.'}
+  catch(e){$('#dbst').textContent='Could not copy. Use Download instead.'}
+};
+$('#dbfdl').onclick=()=>{
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([fullText()],{type:'text/plain'}));a.download='pixel-pals-exact-messages.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 };

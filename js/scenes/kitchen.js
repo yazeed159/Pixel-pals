@@ -1,6 +1,7 @@
 /* Scene: A quiet kitchen late at night with a rabbit. Draws with px(x,y,w,h,color); s = time-of-day palette. */
+const KY=[0,0,1,1,2,2,2,2,1,1,0,0]; /* how far the rabbit dips during a yawn */
 function drawKitchen(s){
-  const stir=ev(30,8,2)>=0; /* idle: stirs the mug, ears twitch */
+  const stir=ev(30,8,2)>=0,sp=gesture('sip'),ck=gesture('cookie'),ke=gesture('kettle'),yw=gesture('yawn'); /* idle: stirs the mug, and now and then picks it up for a sip */ /* idle: stirs the mug, ears twitch */
   px(0,0,160,64,'#6a7e8e');for(let y=0;y<64;y+=8)px(0,y,160,1,'#5c707f');for(let x=0;x<160;x+=8)px(x,0,1,64,'#5c707f');
   px(0,40,160,24,'#7f9aa6');for(let y=40;y<64;y+=6)px(0,y,160,1,'#6d8894');for(let x=0;x<160;x+=6)px(x,40,1,24,'#6d8894');
   /* window with a herb on the sill */
@@ -17,6 +18,7 @@ function drawKitchen(s){
   px(6,46,40,22,'#3a3f4a');px(6,46,40,2,'#6a707e');px(10,50,12,8,'#2a2f3a');px(26,50,12,8,'#2a2f3a');px(12,52,8,4,'#ff8a3a');
   px(10,36,18,10,'#9aa4aa');px(12,34,14,3,'#9aa4aa');px(8,38,3,4,'#9aa4aa');px(28,38,3,2,'#6a707e');px(16,31,6,3,'#2b1d2e');
   for(let i=0;i<3;i++)px(16+((tick+i)%3),28-i*4-(tick%2),2,2,'#ffffff77');
+  if(ke>=0){px(16,29+(ke%2),6,2,'#2b1d2e');for(let i=0;i<8;i++)px(13+((i*5+tick)%6),26-i*3-(ke%2),2+(i>4?1:0),2,'#ffffffcc')} /* idle: the kettle whistles */
   /* warm pendant light */
   px(80,0,1,10,'#2b1d2e');px(74,10,13,5,'#e8c46a');px(72,14,17,2,'#ffe9a0');
   [[56,16,52,50],[62,24,40,40]].forEach(g=>{ctx.fillStyle=`rgba(${s.glow},.06)`;ctx.fillRect(...g)});
@@ -29,11 +31,20 @@ function drawKitchen(s){
   CH.e();
   /* table with two mugs and cookies */
   px(30,64,100,5,'#9a6a3a');px(30,64,100,1,'#b88a52');px(34,69,92,3,'#7a5028');px(36,72,5,18,'#7a5028');px(119,72,5,18,'#7a5028');
-  px(94,58,10,7,'#e8c46a');px(104,60,3,4,'#e8c46a');px(95,58,8,2,'#4a2a1a');
+  if(sp<0){px(94,58,10,7,'#e8c46a');px(104,60,3,4,'#e8c46a');px(95,58,8,2,'#4a2a1a')}
+  else{const mx=[94,94,92,88,82,77,76,76,76,78,84,90,94],my=[58,58,56,53,50,47,46,46,46,48,53,57,58],x=mx[sp],y=my[sp],fur=PC||rb;
+    for(let i=0;i<=5;i++)px(Math.round(89+(x+11-89)*i/5),Math.round(55+(y+3-55)*i/5),3,3,fur.c1); /* arm */
+    px(x,y,10,7,'#e8c46a');px(x+10,y+2,3,4,'#e8c46a');px(x+1,y,8,2,'#4a2a1a');px(x+9,y+1,4,5,fur.c2); /* mug and paw on the handle */
+    if(sp>3)px(x+3+(tick%2),y-3,1,2,'#ffffff77')}
   px(58,59,10,6,'#f3e3c8');px(68,61,3,3,'#f3e3c8');px(59,59,8,2,'#4a2a1a');
-  if(stir){px(98,50+(tick%2),1,8,'#c9c0b0')}
-  px(97,52-(tick%3),1,3,'#ffffff77');px(101,53-((tick+1)%3),1,3,'#ffffff55');
-  px(110,62,16,3,'#f3e3c8');px(112,60,4,3,'#c8803a');px(118,60,4,3,'#d9983a');
+  if(stir&&sp<0){px(98,50+(tick%2),1,8,'#c9c0b0')}
+  if(sp<0){px(97,52-(tick%3),1,3,'#ffffff77');px(101,53-((tick+1)%3),1,3,'#ffffff55')}
+  px(110,62,16,3,'#f3e3c8');if(ck<0)px(112,60,4,3,'#c8803a');px(118,60,4,3,'#d9983a');
+  if(ck>=0){const P=[[112,60],[108,56],[102,52],[95,50],[88,48],[82,47],[81,47],[81,47],[81,47],[81,47],[88,49],[98,53],[108,58],[112,60]][ck],w=ck===8||ck===9?3:4,fur=PC||rb; /* idle: nibbles a cookie */
+    limb(89,56,P[0]+4,P[1]+2,3,fur.c1);px(P[0],P[1],w,3,'#c8803a');px(P[0]+3,P[1]+1,3,3,fur.c1);
+    if(ck>=7&&ck<=11)px(81+(ck%3),50+(ck-6)*2,1,1,'#c8803a')}
+  if(yw>=0){const P=[[88,54],[84,50],[80,47],[78,46],[78,46],[78,46],[78,46],[78,46],[79,47],[82,50],[86,54],[89,56]][yw],fur=PC||rb,dy=KY[yw]; /* idle: a sleepy yawn behind a paw */
+    limb(89,56,P[0]+1,P[1]+1+dy,3,fur.c1);px(P[0]-1,P[1]-1+dy,7,6,shade(fur.c1,.7));px(P[0],P[1]+dy,5,4,fur.c1)}
   px(0,72,160,18,'#5a4a3a');px(0,72,160,1,'#4a3a2a');for(let x=0;x<160;x+=16)px(x,73,1,17,'#4a3a2a');
   px(30,72,100,2,'#00000030');
   if(thinking){for(let i=0;i<=tick%3;i++)px(98+i*5,20,3,3,'#f3e3c8')}
@@ -43,4 +54,4 @@ SCENES.kitchen={label:"Quiet kitchen",icon:"🍵",name:"Clover",win:[96,12,32,26
   greet:"*sets down two mugs* Kettle just boiled. Couldn't sleep either? Sit, sit.",
   back:"*nudges a mug toward your chair* It's still warm.",
   hot:[{r:[60,26,40,40],say:["*ears twitch* Mm?","*stirs her tea* Take your time.","*smiles* There's no rush."]},{r:[8,30,40,38],say:["*the kettle ticks as it cools*"]},{r:[130,6,28,60],say:["*the fridge hums, then goes quiet*"]},{r:[56,56,76,12],say:["*pushes the cookie plate toward you*"]}],
-  draw:drawKitchen};
+  gest:{sip:13,cookie:14,kettle:14,yawn:12},gp:(n,f)=>n==='yawn'?KY[f]:0,draw:drawKitchen};

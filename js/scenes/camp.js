@@ -31,8 +31,18 @@ function drawCamp(s){
   px(70,70,20,8,'#e8602a');px(73,64-a,6,14+a,'#e8602a');px(81,66-b,6,12+b,'#e8602a');
   px(73,70,14,6,'#f5a03a');px(75,67-c,5,9+c,'#f5a03a');px(82,69-a,4,7+a,'#f5a03a');
   px(76,72,8,4,'#ffe08a');px(78,70-b,3,6+b,'#ffe08a');
-  const pk=ev(34,6,5); /* idle: the fox pokes the fire with a stick */
-  if(pk>=0){const tx=79+(pk%2)*2,ty=70-(pk%3);for(let i=0;i<=12;i++)px(Math.round(88-(88-tx)*i/12),Math.round(54+(ty-54)*i/12),2,2,'#6d4a36');px(86,52,5,4,CR);for(let i=0;i<5;i++)px(tx-6+((pk*7+i*5)%14),62-pk*3-i*2,1,1,'#ffd27a')}
+  const rs=gesture('roast'),lg=gesture('log'),sk=gesture('sky'),pk=ev(34,6,5); /* idle: the fox pokes the fire with a stick */
+  if(rs>=0){const T=[[86,56],[84,60],[82,64],[80,67],[80,67],[80,67],[80,67],[80,67],[81,62],[82,56],[83,50],[83,46],[83,46],[83,46],[85,52]][rs],mc=rs<5?'#f3efe6':rs<7?'#e8d9a8':rs<8?'#c9984a':'#8a5a2a';
+    limb(88,54,T[0],T[1],2,'#6d4a36');px(86,52,5,4,PC?PC.c2:CR);if(rs<12)px(T[0]-2,T[1]-1,4,3,mc);
+    if(rs>=3&&rs<=8)for(let i=0;i<4;i++)px(76+((rs*5+i*7)%10),63-((rs*3+i*4)%8),1,1,'#ffd27a')}
+  else if(pk>=0&&lg<0){const tx=79+(pk%2)*2,ty=70-(pk%3);for(let i=0;i<=12;i++)px(Math.round(88-(88-tx)*i/12),Math.round(54+(ty-54)*i/12),2,2,'#6d4a36');px(86,52,5,4,CR);for(let i=0;i<5;i++)px(tx-6+((pk*7+i*5)%14),62-pk*3-i*2,1,1,'#ffd27a')}
+  if(lg>=0){const LX=[90,92,92,90,88,86,84,82,80,79,78,78],LY=[54,50,48,48,50,54,58,62,66,68,68,68]; /* idle: tosses a log on the fire */
+    if(lg<=5)limb(88,55,LX[lg]+2,LY[lg]+1,2,PC?PC.c1:'#e8803a');
+    if(lg<=11){px(LX[lg],LY[lg],9,3,'#6d4a36');px(LX[lg],LY[lg],2,3,'#a88a5e')}
+    if(lg>=8){px(72,56,6,10,'#e8602a');px(80,52,6,14,'#f5a03a');px(76,50,5,8,'#ffe08a');
+      for(let i=0;i<8;i++)px(70+((lg*7+i*9)%24),60-(((lg-7)*4+i*3)%24),1,1,'#ffd27a')}}
+  if(sk>=0){if(stars()){px(140-sk*14,6+sk*4,3,1,'#ffffff');px(143-sk*14,5+sk*4,3,1,'#ffffff55')} /* idle: a shooting star by night, a bird by day */
+    else{const bx=150-sk*15,by=14+(sk%2);px(bx,by,3,1,'#2b1d2e');px(bx-2,by-1+(sk%2),2,1,'#2b1d2e');px(bx+3,by-1+(sk%2),2,1,'#2b1d2e')}}
   px(66+(tick*5)%14,62-(tick*3)%18,1,1,'#ffd27a');px(90-(tick*7)%12,58-(tick*4)%16,1,1,'#ffd27a');
   [[20,50],[100,44],[150,56]].forEach(([x,y],i)=>{if((tick+i)%3)px(x+(tick%4),y,1,1,'#d8ff7a')});
   px(0,82,160,8,'#5a3a2a');px(0,82,160,1,'#6d4a36');
@@ -42,5 +52,5 @@ SCENES.camp={label:"Campfire with a fox",icon:"🔥",name:"Rusty",outdoor:true,s
   prompt:"You are {pet}, a weathered, even-tempered fox sitting across a campfire from the person, under an open sky. Speak simply and honestly, like someone who has traveled a lot and has nothing to prove. Don't lecture. Use an action in asterisks only occasionally.",
   greet:"*adds a log to the fire* Evening. Sit, get warm. What's on your mind?",
   back:"*glances up from the flames* Back by the fire. Good.",
-  hot:[{r:[66,18,28,46],say:["*looks up* Hm?","*a nod* Go on."]},{r:[66,60,28,20],say:["*the fire pops and sparks rise*","*he adds another log*"]}],
+  gest:{roast:15,log:12,sky:10},hot:[{r:[66,18,28,46],say:["*looks up* Hm?","*a nod* Go on."]},{r:[66,60,28,20],say:["*the fire pops and sparks rise*","*he adds another log*"]}],
   draw:drawCamp};

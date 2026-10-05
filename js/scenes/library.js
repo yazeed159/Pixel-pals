@@ -1,7 +1,7 @@
 /* Scene: A quiet library with a bear librarian. Draws with px(x,y,w,h,color); s = time-of-day palette. */
 const BOOKC=['#a83a4a','#3a6aa8','#4a8a5a','#d9a45a','#7a4aa8','#c8c0a0','#3a8a8a','#b8603a'];
 function drawLibrary(s){
-  const pg=ev(34,5,4),adj=ev(46,6,17)>=0; /* idle: turns a page, pushes up his glasses */
+  const pg=gesture('page'),adj=gesture('glasses')>=0,sh=gesture('shush'); /* idle: turns a page, pushes up his glasses, shushes */
   px(0,0,160,62,'#3a2619');for(let x=0;x<160;x+=10)px(x,0,1,62,'#321f14');
   /* bookcases */
   const case_=(x0,w)=>{px(x0,4,w,60,'#4a3020');for(let r=0;r<4;r++){const y=6+r*14;px(x0+1,y,w-2,13,'#2a1810');let x=x0+2;for(let i=0;x<x0+w-4;i++){const bw=2+((i*5+r*3)%3),bh=7+((i*7+r)%5);px(x,y+13-bh,bw,bh,BOOKC[(i*3+r*2)%8]);x+=bw+(i%6===0?2:0)}px(x0,y+13,w,2,'#5a3a28')}};
@@ -12,7 +12,10 @@ function drawLibrary(s){
   /* warm glow */
   [[40,20,80,50],[48,28,64,38]].forEach(g=>{ctx.fillStyle=`rgba(${s.glow},.05)`;ctx.fillRect(...g)});
   /* globe and ladder */
-  px(48,52,10,3,'#5a3a2a');px(52,46,2,6,'#5a3a2a');for(let dy=-4;dy<=4;dy++){const w=Math.round(Math.sqrt(16-dy*dy));px(53-w,42+dy+2,2*w,1,'#3a6aa8')}px(50,44,3,2,'#4a8a5a');px(55,46,2,2,'#4a8a5a');
+  px(48,52,10,3,'#5a3a2a');px(52,46,2,6,'#5a3a2a');for(let dy=-4;dy<=4;dy++){const w=Math.round(Math.sqrt(16-dy*dy));px(53-w,42+dy+2,2*w,1,'#3a6aa8')}const sw=gesture('spin'),o=sw>=0?(sw*2)%8:0; /* idle: gives the globe a spin */
+  [[50,44,3,2],[55,46,2,2]].forEach(([x,y,w,h])=>{const nx=49+((x-49+o)%8);px(nx,y,Math.min(w,57-nx),h,'#4a8a5a')});
+  if(sw>=0&&sw<5){px(58-(sw%2),47,4,4,PC?PC.c1:'#7a4e34');px(58-(sw%2),47,2,4,PC?PC.c2:'#d8b890')}
+  if(sw>=2&&sw<10)px(46+sw%3,44+(sw%2)*5,1,1,'#ffffff99');
   px(160-18,6,2,62,'#8a6a42');px(160-10,6,2,62,'#8a6a42');for(let y=12;y<64;y+=9)px(142,y,10,2,'#8a6a42');
   /* the bear librarian */
   const bear={species:'bear',c1:'#7a4e34',c2:'#d8b890'};
@@ -24,6 +27,8 @@ function drawLibrary(s){
     px(83,40+yy,7,1,g);px(83,46+yy,7,1,g);px(83,40+yy,1,7,g);px(89,40+yy,1,7,g);px(77,43+yy,6,1,g);
     px(70,54,20,6,'#4a6a4a');px(76,54,8,6,'#f3e3c8')}                /* cardigan + shirt */
   if(adj)px(90,38,5,6,PC?'#d8b890':'#d8b890'); /* paw up to the glasses */
+  if(sh>=0){const H=[[80,60],[80,56],[79,52],[78,50],[78,49],[78,49],[78,49],[78,49],[78,49],[79,52],[80,56],[80,60]][sh],f1=PC?PC.c1:'#7a4e34'; /* a paw to the lips: shh */
+    limb(88,62,H[0]+2,H[1]+2,3,f1);px(H[0]-1,H[1]-1,7,7,shade(f1,.7));px(H[0],H[1],5,5,f1);px(H[0]+1,H[1]+1,3,3,PC?PC.c2:'#d8b890')}
   CH.e();
   /* the desk, a lamp, an open book */
   px(36,60,92,5,'#6a4a2a');px(36,60,92,1,'#8a6a42');px(40,65,84,14,'#5a3a22');px(44,68,32,8,'#4a2e1a');px(84,68,32,8,'#4a2e1a');px(60,71,4,2,'#c8a050');px(100,71,4,2,'#c8a050');
@@ -43,4 +48,4 @@ SCENES.library={label:"Library at night",icon:"📚",name:"Barnaby",setting:"in 
   greet:"*closes the book on one finger* Shh... well, you may speak. We're alone. What brings you in?",
   back:"*looks up over his glasses* Ah. Your usual chair is free.",
   hot:[{r:[62,28,40,34],say:["*pushes up his glasses* Mm?","*turns a page without looking down*","*a soft, rumbling hum*"]},{r:[92,34,32,30],say:["*the lamp hums warmly*"]},{r:[44,40,16,16],say:["*gives the globe a slow spin*"]},{r:[2,4,44,60],say:["*a book somewhere settles with a quiet thud*"]}],
-  win:[66,12,28,28],draw:drawLibrary};
+  gest:{spin:12,page:5,glasses:6,shush:12},win:[66,12,28,28],draw:drawLibrary};

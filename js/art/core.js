@@ -66,7 +66,7 @@ function tint(){
   ctx.restore();
 }
 
-function draw(){TM=resolveTime();PC=occ();CH.on=0;if(typeof lifePose==='function')lifePose();if(typeof facePose==='function')facePose();const s=CURPAL;(SCENES[cfg.place]||SCENES.bed).draw(s);CH.on=0;if(typeof lifeOver==='function')lifeOver(s);tint();fx()}
+function draw(){TM=resolveTime();PC=occ();CH.on=0;if(typeof lifePose==='function')lifePose();if(typeof gestPose==='function')gestPose();if(typeof rxPose==='function')rxPose();if(typeof facePose==='function')facePose();const s=CURPAL;(SCENES[cfg.place]||SCENES.bed).draw(s);CH.on=0;if(typeof lifeOver==='function')lifeOver(s);if(typeof rxOver==='function')rxOver();tint();fx();if(typeof gestOver==='function')gestOver()}
 function fx(){if(jolt>0){const y=jy-(6-jolt)*2,c='#f3e3c8aa';px(jx,y,1,1,c);px(jx+3,y+2,1,1,c);px(jx-2,y+3,1,1,c)}if(moodT>0&&mood){const h=(SCENES[cfg.place].hot||[])[0];if(h){const x=h.r[0]+h.r[2]-2,y=h.r[1]+2,t=tick%4;
     if(mood==='happy'){px(x,y,1,1,t<2?'#f3e3c8':'#f3e3c855')}
     else if(mood==='sad'){px(x-12,y+8+t*3,1,2,'#7ab8ff');px(x-11,y+9+t*3,1,1,'#7ab8ff')}

@@ -8,7 +8,7 @@ function drawBed(s){
   const SK=dk('#e8b894',.12),SK2=dk('#c99572',.12),SKH=dk('#f4cdb0',.12);
   const QL=mix(QB,QH,.35),QM=mix(QB,QS,.5),QF=mix(QB,QH,.5); /* leg cloth, soft seam, soft highlight */   /* skin */
   const WD=dk('#6d4a36'),WD2=dk('#563725'),WDH=dk('#8a6048');             /* wood */
-  const breath=(tick%8<4)?0:1;
+  const breath=(tick%8<4)?0:1,pa=gesture('pat'),pt=pa<0?0:[0,-2,-4,-2,-4,-2,0,0][pa],zz=gesture('snore'),mo=gesture('moth'),dd=(pa===2||pa===4||(zz>=0&&zz%4<2))?1:0; /* idle: a pat on the dog */
   const row=(y,x0,x1,c)=>{if(x1>x0)px(x0,y,x1-x0,1,c)};
   const L=y=>Math.round(34*(1-(y-41)/48)); /* left edge of the bed at row y; the right edge is 160-L */
 
@@ -72,7 +72,7 @@ function drawBed(s){
   /* ---- the dog: a dent in the quilt, the dog, then a ridge of quilt over its paws ---- */
   const dp=[[0,0],[-2,0],[2,0],[0,2],[-2,2]][held(40,0,5)]; /* idle: every so often the dog shifts to a new spot */
   for(let k=0;k<5;k++){const hw=22-k*3;px(80+dp[0]-hw,60+dp[1]+k,hw*2,1,`rgba(25,12,50,${(.10+.05*k).toFixed(2)})`)}
-  CH.b();if(PC)drawChar(PC,64+dp[0],34+dp[1],2,{dots:true});else dog(64+dp[0],34+dp[1]);CH.e();
+  CH.b();if(PC)drawChar(PC,64+dp[0],34+dp[1]+dd,2,{dots:true});else dog(64+dp[0],34+dp[1]+dd);CH.e();
   for(let x=50;x<=110;x++){const top=75-Math.round(7*Math.sin(Math.PI*(x-50)/60));px(x,top,1,76-top,QB);px(x,top,1,1,QH);if(top<73)px(x,top+1,1,1,QF)}
 
   /* soft light from the lamp and the moon (or day) on the quilt */
@@ -93,12 +93,16 @@ function drawBed(s){
     for(const fx of [2,4,6])px(x+fx,y-3,1,3,SK2);px(x+7,y-4,1,4,SK2)};
   blob([[6,92,9],[26,83,8],[44,76,6.5],[54,72,5.5]],PJ,PJH,PJ2);
   px(48,70,12,2,SH);px(48,70,12,1,SH3);
-  hand(53,62,0);
+  hand(53,62+pt,0);
   const wig=[0,1,2,1][tick%4];
   blob([[154,92,9],[134,83,8],[116,74,6.5],[104,68,5.5]],PJ,PJH,PJ2);
   px(98+wig,66,12,2,SH);px(98+wig,66,12,1,SH3);
   hand(95+wig,57,1);
 
+  /* ---- idle: the dog snores (Zzz), a moth circles the lamp ---- */
+  if(zz>=0){const z=(a,y,w)=>{px(a,y,w,1,'#f3e3c8');px(a+w-1,y+1,1,1,'#f3e3c8');px(a+w-2,y+2,1,1,'#f3e3c8');px(a,y+3,w,1,'#f3e3c8')};
+    z(88,32-(zz>>1),4);if(zz>=5)z(94,26-((zz-3)>>1),3)}
+  if(mo>=0){const a=mo*.8,mx=Math.round(21+9*Math.cos(a)),my=Math.round(21+6*Math.sin(a));px(mx,my,2,1,'#f3efe6');px(mx-1+(mo%2),my-1,1,1,'#f3efe6aa');px(mx+2-(mo%2),my-1,1,1,'#f3efe6aa')}
   /* ---- soft dark edges, like looking from a pillow ---- */
   for(let i=0;i<6;i++){ctx.fillStyle=`rgba(8,5,20,${((6-i)*.045*(.5+N*.5)).toFixed(3)})`;
     ctx.fillRect(0,i,160,1);ctx.fillRect(0,89-i,160,1);ctx.fillRect(i,0,1,90);ctx.fillRect(159-i,0,1,90)}
@@ -107,5 +111,5 @@ SCENES.bed={label:"In bed, first-person view",icon:"🛏️",name:"Old Pup",win:
   prompt:"You are {pet}, an old, calm dog lying next to the person in bed late at night, being petted. Quiet, steady and warm, like a late-night talk with someone who has known you a long time. Listen first, but also share your own thoughts. Don't lecture. Use an action in asterisks only occasionally.",
   greet:"*settles in beside you* It's late. How was your day, really?",
   back:"*lifts his head* There you are.",
-  hot:[{r:[64,34,32,32],say:["*leans into your hand*","*a long, slow breath*","*thumps his tail once*"]},{r:[12,16,18,22],say:["*the lamp hums softly*"]}],
+  gest:{pat:8,snore:14,moth:18},hot:[{r:[64,34,32,32],say:["*leans into your hand*","*a long, slow breath*","*thumps his tail once*"]},{r:[12,16,18,22],say:["*the lamp hums softly*"]}],
   draw:drawBed};

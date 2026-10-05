@@ -1,6 +1,6 @@
 /* Scene: A lighthouse gallery with a grey sea-dog keeper. Draws with px(x,y,w,h,color); s = time-of-day palette. */
 function drawLighthouse(s){
-  const gl=ev(52,12,9); /* idle: a gull flies past */
+  const gl=gesture('gull'),sc2=gesture('scope'),bn=gesture('bell'); /* idle: a gull flies past, a look through binoculars, the fog bell */
   skyfill(0,0,160,56,s);
   if(stars())for(let i=0;i<22;i++)px((i*43+9)%160,(i*17+4)%44,1,1,(i+tick)%6?'#fff':s.sky);
   px(122,10,6,6,s.moon);px(123,9,4,8,s.moon);px(121,11,8,4,s.moon);
@@ -23,6 +23,8 @@ function drawLighthouse(s){
   /* railing and the deck */
   px(0,64,160,26,'#5a4030');for(let y=68;y<90;y+=5)px(0,y,160,1,'#4a3224');for(let x=0;x<160;x+=24)px(x,64,1,26,'#4a3224');
   px(0,62,160,3,'#8a8a9a');for(let x=2;x<160;x+=14)px(x,52,2,12,'#7a7a8a');px(0,52,160,2,'#9a9aaa');
+  const bs=bn>=0?[0,-2,2,-2,2,-1,1,-1,0,0,0,0][bn]:0; /* the fog bell on its bracket */
+  px(146,32,2,20,'#7a7a8a');px(136,32,12,2,'#7a7a8a');px(137+bs,34,1,2,'#5a5a6a');px(135+bs,36,5,5,'#e8c46a');px(134+bs,40,7,1,'#c89830');px(137+bs,41,1,1,'#2a2a3a');
   /* the keeper on a crate */
   const dg={species:'dog',c1:'#8a8a98',c2:'#eae4d4'};
   px(78,66,50,8,'#6a4a30');px(78,66,50,2,'#8a6a42');
@@ -32,7 +34,15 @@ function drawLighthouse(s){
     px(91,34,26,4,'#f3e3c8');px(91,37,26,2,'#2a3a7a');px(98,31,12,3,'#f3e3c8');    /* sailor cap */
     px(90,56,28,10,'#e8b840');px(90,56,3,10,'#c89830');px(115,56,3,10,'#c89830')}  /* yellow raincoat */
   CH.e();
-  px(132,56,6,10,'#9aa0b0');px(133,54,4,2,'#2b1d2e');px(130,70,10,6,'#f3e3c8');px(131,70,8,2,'#4a2a1a');px(134,64-(tick%3),1,3,'#ffffff77');
+  const po=gesture('pour'); /* idle: pours a cup from the thermos */
+  if(po<0){px(132,56,6,10,'#9aa0b0');px(133,54,4,2,'#2b1d2e')}
+  else{limb(117,58,138,po>=2&&po<=9?52:55,3,PC?PC.c1:'#8a8a98');
+    if(po>=2&&po<=9){for(let i=0;i<10;i++)px(136-Math.round(i*.55),52+i,5,1,'#9aa0b0');px(136,50,5,2,'#2b1d2e');px(131,62,1,8,tick%2?'#6a3a22':'#8a5a3a')}
+    else{px(132,52,6,10,'#9aa0b0');px(133,50,4,2,'#2b1d2e')}
+    px(138,50,4,5,PC?PC.c1:'#8a8a98')}
+  if(bn>=0&&bn<10){limb(118,53,138+bs,47,3,PC?PC.c1:'#8a8a98');px(139+bs,41,1,7,'#c8b890')}
+  if(sc2>=0){const up=sc2<3?sc2:sc2>8?11-sc2:3,by=[56,50,45,43][up],bx=99+(sc2>3&&sc2<9?[0,1,2,2,1][sc2-4]:0); /* looks out to sea through binoculars */
+    limb(102,60,bx+5,by+4,3,PC?PC.c1:'#8a8a98');px(bx,by,5,5,'#2a2a3a');px(bx+6,by,5,5,'#2a2a3a');px(bx+5,by+1,1,3,'#2a2a3a');px(bx+1,by+1,3,1,'#6a6a8a');px(bx+7,by+1,3,1,'#6a6a8a')}px(130,70,10,6,'#f3e3c8');px(131,70,8,2,'#4a2a1a');px(134,64-(tick%3),1,3,'#ffffff77');
   if(thinking){for(let i=0;i<=tick%3;i++)px(122+i*5,28,3,3,'#f3e3c8')}
 }
 SCENES.lighthouse={label:"Lighthouse at night",icon:"🗼",name:"Skipper",outdoor:true,setting:"on the gallery of a lighthouse at night, the lamp turning behind you and the sea below",
@@ -40,4 +50,4 @@ SCENES.lighthouse={label:"Lighthouse at night",icon:"🗼",name:"Skipper",outdoo
   greet:"*pours something hot from a thermos* The light's turning. Sit a while. What's out there tonight?",
   back:"*nods toward the crate* Saved your spot.",
   hot:[{r:[86,30,36,38],say:["*tugs his cap* Mm.","*pours you a cup* Warm that up.","*watches the sea* Steady, now."]},{r:[8,6,44,56],say:["*the beam sweeps slowly out over the water*"]},{r:[0,56,160,10],say:["*far below, the waves keep time*"]}],
-  draw:drawLighthouse};
+  gest:{pour:12,gull:12,scope:12,bell:12},draw:drawLighthouse};

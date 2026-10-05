@@ -110,6 +110,7 @@
   <details><summary>Presence &amp; honesty</summary>
     <div class="g">
       <div><label for="nudge">Speak up after a silence</label><select id="nudge"><option value="0">Never</option><option value="2">After about 2 min</option><option value="5">After about 5 min</option><option value="10">After about 10 min</option></select></div>
+      <div><label for="react">Reactions to you</label><select id="react"><option value="1">On: lean in, laugh, wave, hum, doze</option><option value="0">Off</option></select></div>
       <div><label for="honest">How they respond</label><select id="honest"><option value="0">Comforting</option><option value="1">Honest: push back when they disagree</option></select></div>
       <div><label for="gossip">They talk to each other</label><select id="gossip"><option value="1">Yes (never from Therapy)</option><option value="0">No</option></select></div>
     </div>
@@ -163,7 +164,10 @@
   <input id="dblim" type="number" min="0" inputmode="numeric" placeholder="e.g. 20">
   <h4>Recent requests</h4>
   <div id="dblog"></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button id="dbcopy" type="button">Copy log</button><button id="dbclr" class="ghost" type="button">Clear log</button><button id="dbx" type="button">Close</button></div>
+  <h4>Exact messages, first to last</h4>
+  <label class="hint" style="display:block;margin:2px 0 6px"><input type="checkbox" id="dbfull"> Keep the exact text of every request and reply (only in this browser; keys are never kept)</label>
+  <div id="dbfulllist"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button id="dbfcopy" type="button">Copy exact messages</button><button id="dbfdl" type="button">Download .txt</button><button id="dbcopy" type="button">Copy log</button><button id="dbclr" class="ghost" type="button">Clear log</button><button id="dbx" type="button">Close</button></div>
   <p id="dbst" class="hint" role="status"></p>
 </dialog>
 
@@ -343,6 +347,8 @@
 <script src="js/life.js"></script>
 <script src="js/scenepicker.js"></script>
 <script src="js/pace.js"></script>
+<script src="js/gestures.js"></script>
+<script src="js/reactions.js"></script>
 <script src="js/i18n-data.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/welcome.js"></script>

@@ -1,6 +1,6 @@
 /* Scene: Therapy session. Draws on the 160x90 canvas with px(x,y,w,h,color); s = time-of-day palette. */
 function drawTherapy(s){
-  const SK='#e8b894',DK='#2b1d2e',blink=Face.blink(),wr=ev(32,8,6)>=0; /* idle: the therapist jots a note */
+  const SK='#e8b894',DK='#2b1d2e',blink=Face.blink(),sp=gesture('tea'),ts=gesture('tissue'),se=gesture('settle'),wr=ev(32,8,6)>=0&&sp<0; /* idle: the therapist jots a note */
   px(0,0,160,58,s.wall);for(let x=0;x<160;x+=8)px(x,0,1,58,s.w2);
   px(0,58,160,32,s.floor);for(let y=62;y<90;y+=6)px(0,y,160,1,s.f2);px(0,56,160,3,'#2a2140');
   px(8,8,38,50,'#5a3a2a');px(10,10,34,46,'#3a2619');
@@ -24,12 +24,17 @@ function drawTherapy(s){
   }
   if(thinking){for(let i=0;i<=tick%3;i++)px(92+i*5,18,3,3,'#f3e3c8')}
   px(52,76,56,4,'#5a3a2a');px(56,80,4,6,'#5a3a2a');px(100,80,4,6,'#5a3a2a');
-  px(60,71,10,5,'#7a9ad8');px(63,69,4,2,'#fff');px(90,71,6,5,'#f3e3c8');px(96,72,2,3,'#f3e3c8');
+  px(60,71,10,5,'#7a9ad8');px(63,69,4,2,'#fff');if(sp<0){px(90,71,6,5,'#f3e3c8');px(96,72,2,3,'#f3e3c8')}
+  else{const mx=[90,90,89,87,84,82,80,80,80,84,88,90,90][sp],my=[71,66,58,50,42,36,35,35,35,42,52,64,71][sp];
+    limb(93,56,mx+5,my+3,3,PC?PC.c1:SK);px(mx,my,6,5,'#f3e3c8');px(mx+6,my+1,2,3,'#f3e3c8');px(mx,my,6,1,'#b8a888');
+    if(sp>3&&sp<9)px(mx+2+(tick%2),my-3,1,2,'#ffffff77')}
+  if(ts>=0){const up=[0,1,3,5,6,6,6,5,3,1,0,0][ts]; /* idle: offers a tissue */
+    limb(66,57,64,Math.max(62,67-(up>>1)),3,PC?PC.c1:SK);px(63,69-up,4,2+up,'#fff');px(63,69-up,4,1,'#dfe6f4');px(62,66-up,6,4,PC?PC.c1:SK)}
   px(0,64,16,26,'#6a5aa0');px(144,64,16,26,'#6a5aa0');px(16,80,128,10,'#5a4a90');px(16,80,128,1,'#7a6ab8');
 }
 SCENES.therapy={label:"Therapy session",icon:"🛋️",name:"Dr. Sage",win:[115,13,32,26],setting:"in a quiet therapy office, with the person on the couch and you in the armchair across from them",
   prompt:"You are {pet}, a calm, attentive therapist in a quiet office, in a session with the person on the couch. Listen closely, reflect back what you hear, and ask a question when it helps. Never lecture or diagnose. You are an AI character for reflection and conversation, not a licensed clinician; if the person seems to be in crisis or mentions hurting themselves, respond with care and encourage them to reach out to a local crisis line or someone they trust.",
   greet:"Come in, sit wherever is comfortable. We can start anywhere. How are you doing today?",
   back:"Welcome back. Where would you like to pick up?",
-  hot:[{r:[60,22,40,50],say:["Yes? I'm listening.","*nods* Take your time.","We can slow down if you like."]}],
+  gest:{tea:13,tissue:12,settle:8},gp:(n,f)=>n==='settle'?[0,-1,-1,0,1,1,0,0][f]||0:0,hot:[{r:[60,22,40,50],say:["Yes? I'm listening.","*nods* Take your time.","We can slow down if you like."]}],
   draw:drawTherapy};
