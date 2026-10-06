@@ -88,9 +88,7 @@ function drawBed(s){
   for(let x=0;x<160;x+=1){const y=83-breath+Math.round(3*Math.sin(x/9));px(x,y,1,1,PJH)}
 
   /* ---- arms: sleeves from the bottom corners, left hand resting by the dog, right hand stroking its side ---- */
-  const hand=(x,y,rt)=>{px(x+1,y+6,7,4,SK);px(x,y,9,7,SK);px(x,y,9,1,SKH);px(x,y+6,9,1,SK2);const tx=rt?x-3:x+8;px(tx,y+2,4,4,SK);px(tx,y+5,4,1,SK2);
-    px(x,y-4,2,4,SK);px(x+2,y-5,2,5,SK);px(x+4,y-5,2,5,SK);px(x+6,y-4,2,4,SK);px(x+2,y-5,1,5,SKH);px(x+4,y-5,1,5,SKH);
-    for(const fx of [2,4,6])px(x+fx,y-3,1,3,SK2);px(x+7,y-4,1,4,SK2)};
+  const hand=(x,y,rt)=>handH(rt?x-2:x,y-7,rt,SK,SKH,SK2); /* a real hand: four fingers, knuckles, thumb, wrist */
   const armAway=typeof TX!=='undefined'&&TX.on&&TX.hl; /* switching the lamp: this same left arm is the one reaching, so it is not also resting by the dog */
   if(!armAway){blob([[6,92,9],[26,83,8],[44,76,6.5],[54,72,5.5]],PJ,PJH,PJ2);
   px(48,70,12,2,SH);px(48,70,12,1,SH3);

@@ -69,14 +69,14 @@ function rxOver(){
   if(rxAlive()&&RX.name==='wave'&&!A.nowave){
     const t=n-RX.t0,L=RX.len,up=Math.max(0,Math.min(1,t/350,(L-t)/350)),sw=Math.round(Math.sin(t/110)*3*up);
     const sx=ox+23+dx,sy=oy+24+dy,hx=ox+32+sw+dx,hy=Math.round(oy+22-14*up)+dy;
-    arm(sx,sy,hx,hy,2,fur,A.sl,ol); /* the character's own arm, from the shoulder, with an elbow */
-    px(hx-3,hy-4,8,8,ol);px(hx-2,hy-3,6,6,fur);px(hx-1,hy-2,4,4,lt);
+    arm(sx,sy,hx,hy+1,2,fur,A.sl,ol); /* the character's own arm, from the shoulder, with an elbow */
+    paw(hx-3,hy-5,fur,lt,ol);
   }
   if(rxAlive()&&RX.name==='yawn'&&!A.nowave){
     const t=n-RX.t0,L=RX.len,pr=Math.max(0,Math.min(1,t/(L*.25),(L-t)/(L*.25)));
     const x=Math.round(rxLerp(ox+25,mx+3,pr))+dx,y=Math.round(rxLerp(oy+30,my,pr))+dy;
-    arm(ox+23+dx,oy+24+dy,x,y,2,fur,A.sl,ol); /* the same arm, paw up to the mouth */
-    px(x-1,y-1,8,6,ol);px(x,y,6,4,fur);
+    arm(ox+23+dx,oy+24+dy,x+2,y+4,2,fur,A.sl,ol); /* the same arm, paw up to the mouth */
+    paw(x-1,y-3,fur,lt,ol);
   }
   if(RX.idle==='hum'){
     for(let k=0;k<3;k++){

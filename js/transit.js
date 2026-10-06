@@ -55,16 +55,16 @@ function cover(c){if(c<=0)return;if(c>=1){rpx(0,0,160,90,'#07050f');return}dithe
 function samp(p){const d=ctx.getImageData(p[0],p[1],1,1).data;return '#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('')}
 function limbR(x0,y0,x1,y1,w,c,w1=w){const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++){const q=Math.round(w+(w1-w)*i/n);rpx(Math.round(x0+(x1-x0)*i/n)-(q>>1),Math.round(y0+(y1-y0)*i/n)-(q>>1),q,q,c)}}
 /* an arm with a shoulder cap and an elbow (see arm() in gestures.js), drawn in the transition layer */
-function armR(sx,sy,hx,hy,w,c,sl,o){const[ex,ey]=armElbow(sx,sy,hx,hy),u=sl||c;
-  limbR(sx,sy,ex,ey,w+3,o);limbR(ex,ey,hx,hy,w+2,o);limbR(sx,sy,ex,ey,w+1,u);limbR(ex,ey,hx,hy,w,c);rpx(sx-w,sy-w,w*2+1,w*2+1,u)}
+function armR(sx,sy,hx,hy,w,c,sl,o){const[ex,ey]=armElbow(sx,sy,hx,hy),u=sl||c,wu=w+2,wf=w+1;
+  limbR(sx,sy,ex,ey,wu+2,o);limbR(ex,ey,hx,hy,wf+2,o);rpx(sx-(wu>>1)-1,sy-(wu>>1)-1,wu+3,wu+3,o);limbR(sx,sy,ex,ey,wu,u);limbR(ex,ey,hx,hy,wf,c);rpx(sx-(wu>>1),sy-(wu>>1),wu+1,wu+1,u)}
 /* the character waves: a raised arm swinging side to side. a = {s:[shoulder x,y], up:[how far the paw rises: dx,dy]}; t = 0..1 */
 function wave(a,t){
   if(t<=0||t>=1||!TX.col)return;
   const k=ease(cl(Math.min(t*5,(1-t)*5))),sw=Math.round(Math.sin(t*Math.PI*7)*3*k);
   const pc=TX.col.pw||TX.col.sl; /* the arm is the character's own fur, not their clothes */
   const sx=a.s[0],sy=a.s[1],hx=Math.round(sx+a.up[0]*k)+sw,hy=Math.round(sy+a.up[1]*k),o=shade(pc,.5);
-  armR(sx,sy,hx,hy,2,pc,pc,o); /* the character's own arm: shoulder, elbow, forearm */
-  rpx(hx-2,hy-3,5,5,o);rpx(hx-1,hy-2,3,3,mix(pc,'#ffffff',.3));
+  armR(sx,sy,hx,hy+1,2,pc,pc,o); /* the character's own arm: shoulder, elbow, forearm */
+  paw(hx-3,hy-5,pc,mix(pc,'#ffffff',.3),o,rpx);
 }
 /* your own arm reaching in from the bottom corner to the lamp (first-person bed scene): e = how far it has reached, 0..1 */
 function reach(from,to,e){
@@ -72,9 +72,8 @@ function reach(from,to,e){
   if(e<=0||!TX.col)return;
   const hx=Math.round(from[0]+(to[0]-from[0])*e),hy=Math.round(from[1]+(to[1]-from[1])*e),o=shade(TX.col.sl,.5),sk=TX.col.pw;
   limbR(from[0],from[1],hx,hy,15,o,10);limbR(from[0],from[1],hx,hy,13,TX.col.sl,8);
-  /* the hand: palm, curled fingers, thumb */
-  rpx(hx-5,hy-4,10,8,shade(sk,.7));rpx(hx-4,hy-4,8,7,sk);rpx(hx-4,hy-5,8,2,mix(sk,'#ffffff',.25));
-  rpx(hx-4,hy-8,2,4,sk);rpx(hx-1,hy-9,2,5,sk);rpx(hx+2,hy-8,2,4,sk);rpx(hx-6,hy-1,3,3,sk);
+  /* the hand: a real one, fingers up toward the switch */
+  handH(hx-6,hy-14,0,sk,mix(sk,'#ffffff',.25),shade(sk,.8),rpx);
 }
 /* paint a lamp's bulb dark (the scene still draws it lit) */
 function bulbOff(r){const c=mix(samp([r[0]+(r[2]>>1),r[1]+(r[3]>>1)]),'#1a1428',.72);rpx(r[0],r[1],r[2],r[3],c)}
