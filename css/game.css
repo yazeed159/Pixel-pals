@@ -11,9 +11,9 @@ html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;overscro
 #cv{position:absolute;top:0;left:0;height:100%;width:auto;aspect-ratio:16/9}
 
 /* the four stage buttons: a tidy column of icons down the right edge */
-#tb,#pb,#kb,#phb{left:auto;right:10px;width:48px;height:48px;font-size:22px;padding:0;border-width:3px;border-top-width:3px;border-top-color:var(--bc,var(--cream));box-shadow:0 0 0 3px #0f0b1a99,3px 3px 0 var(--ink)}
-#tb::after,#pb::after,#kb::after,#phb::after{display:none}
-#tb{top:10px}#pb{top:66px}#kb{top:122px}#phb{top:178px}
+#tb,#pb,#kb,#phb{left:auto;right:10px;width:60px;height:60px;font-size:22px;padding:2px 0 0;border-width:3px;border-top-width:3px;border-top-color:var(--bc,var(--cream));box-shadow:0 0 0 3px #0f0b1a99,3px 3px 0 var(--ink)}
+#tb::after,#pb::after,#kb::after,#phb::after{font-size:11px;margin-top:2px} /* the little names stay under the icons */
+#tb{top:10px}#pb{top:78px}#kb{top:146px}#phb{top:214px}
 html[dir=rtl] #tb,html[dir=rtl] #pb,html[dir=rtl] #kb,html[dir=rtl] #phb{right:auto;left:10px}
 #ftime{top:10px;left:10px;right:auto;font-size:15px}
 html[dir=rtl] #ftime{left:auto;right:10px}
@@ -57,12 +57,11 @@ html[dir=rtl] #ftime{left:auto;right:10px}
   #row{grid-column:2;grid-row:3;border-left:3px solid #ffffff1f}
   #tools{grid-column:2;grid-row:4;border-left:3px solid #ffffff1f}
   #box,#dbox.over #box{font-size:calc(clamp(15px,1.5vw,20px)*var(--ts,1));flex:0 1 auto;max-height:100%}
-  #tb,#pb,#kb,#phb{width:44px;height:44px;font-size:20px}
-  #pb{top:60px}#kb{top:110px}#phb{top:160px}
 }
 @media (orientation:landscape) and (max-height:520px){
-  #tb,#pb,#kb,#phb{width:40px;height:40px;font-size:18px}
-  #pb{top:54px}#kb{top:98px}#phb{top:142px}
+  #tb,#pb,#kb,#phb{width:54px;height:54px;font-size:18px}
+  #tb::after,#pb::after,#kb::after,#phb::after{font-size:10px}
+  #tb{top:8px}#pb{top:68px}#kb{top:128px}#phb{top:188px}
   #tools button,#more summary{height:44px;font-size:14px}
   #msg{font-size:15px;padding:8px}#send{padding:8px 12px;font-size:15px}
 }
