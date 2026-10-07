@@ -32,19 +32,19 @@ function drawKitchen(s){
   /* table with two mugs and cookies */
   px(30,64,100,5,'#9a6a3a');px(30,64,100,1,'#b88a52');px(34,69,92,3,'#7a5028');px(36,72,5,18,'#7a5028');px(119,72,5,18,'#7a5028');
   if(sp<0){px(94,58,10,7,'#e8c46a');px(104,60,3,4,'#e8c46a');px(95,58,8,2,'#4a2a1a')}
-  else{const mx=[94,94,92,88,82,77,76,76,76,78,84,90,94],my=[58,58,56,53,50,47,46,46,46,48,53,57,58],x=mx[sp],y=my[sp],fur=PC||rb;
-    arm(88,55,x+11,y+3,2,fur.c1); /* arm */
-    px(x,y,10,7,'#e8c46a');px(x+10,y+2,3,4,'#e8c46a');px(x+1,y,8,2,'#4a2a1a');px(x+9,y+1,4,5,fur.c2); /* mug and paw on the handle */
+  else{const mx=[94,94,92,88,82,77,76,76,76,78,84,90,94],my=[58,58,56,53,50,47,46,46,46,48,53,57,58],x=mx[sp],y=my[sp],hd=placeHand();
+    armHand(88,55,x+12,y+4,hd); /* the arm, then the mug, then the paw wrapped around its handle */
+    px(x,y,10,7,'#e8c46a');px(x+10,y+2,3,4,'#e8c46a');px(x+1,y,8,2,'#4a2a1a');handAt(x+12,y+4,hd,'fist');
     if(sp>3)px(x+3+(tick%2),y-3,1,2,'#ffffff77')}
   px(58,59,10,6,'#f3e3c8');px(68,61,3,3,'#f3e3c8');px(59,59,8,2,'#4a2a1a');
   if(stir&&sp<0){px(98,50+(tick%2),1,8,'#c9c0b0')}
   if(sp<0){px(97,52-(tick%3),1,3,'#ffffff77');px(101,53-((tick+1)%3),1,3,'#ffffff55')}
   px(110,62,16,3,'#f3e3c8');if(ck<0)px(112,60,4,3,'#c8803a');px(118,60,4,3,'#d9983a');
-  if(ck>=0){const P=[[112,60],[108,56],[102,52],[95,50],[88,48],[82,47],[81,47],[81,47],[81,47],[81,47],[88,49],[98,53],[108,58],[112,60]][ck],w=ck===8||ck===9?3:4,fur=PC||rb; /* idle: nibbles a cookie */
-    arm(88,55,P[0]+4,P[1]+2,2,fur.c1);px(P[0],P[1],w,3,'#c8803a');px(P[0]+3,P[1]+1,3,3,fur.c1);
+  if(ck>=0){const P=[[112,60],[108,56],[102,52],[95,50],[88,48],[82,47],[81,47],[81,47],[81,47],[81,47],[88,49],[98,53],[108,58],[112,60]][ck],w=ck===8||ck===9?3:4,hd=placeHand(); /* idle: nibbles a cookie */
+    armHand(88,55,P[0]+5,P[1]+2,hd);px(P[0],P[1],w,3,'#c8803a');handAt(P[0]+5,P[1]+2,hd,'grip');
     if(ck>=7&&ck<=11)px(81+(ck%3),50+(ck-6)*2,1,1,'#c8803a')}
-  if(yw>=0){const P=[[88,54],[84,50],[80,47],[78,46],[78,46],[78,46],[78,46],[78,46],[79,47],[82,50],[86,54],[89,56]][yw],fur=PC||rb,dy=KY[yw]; /* idle: a sleepy yawn behind a paw */
-    arm(88,55,P[0]+1,P[1]+1+dy,2,fur.c1);px(P[0]-1,P[1]-1+dy,7,6,shade(fur.c1,.7));px(P[0],P[1]+dy,5,4,fur.c1)}
+  if(yw>=0){const P=[[88,54],[84,50],[80,47],[78,46],[78,46],[78,46],[78,46],[78,46],[79,47],[82,50],[86,54],[89,56]][yw],dy=KY[yw]; /* idle: a sleepy yawn behind a paw */
+    armHand(88,55,P[0]+2,P[1]+2+dy,placeHand(),'fist')}
   px(0,72,160,18,'#5a4a3a');px(0,72,160,1,'#4a3a2a');for(let x=0;x<160;x+=16)px(x,73,1,17,'#4a3a2a');
   px(30,72,100,2,'#00000030');
   if(thinking){for(let i=0;i<=tick%3;i++)px(98+i*5,20,3,3,'#f3e3c8')}

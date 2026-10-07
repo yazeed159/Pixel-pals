@@ -33,12 +33,13 @@ function drawCamp(s){
   px(76,72,8,4,'#ffe08a');px(78,70-b,3,6+b,'#ffe08a');
   const rs=gesture('roast'),lg=gesture('log'),sk=gesture('sky'),pk=ev(34,6,5); /* idle: the fox pokes the fire with a stick */
   if(rs>=0){const T=[[86,56],[84,60],[82,64],[80,67],[80,67],[80,67],[80,67],[80,67],[81,62],[82,56],[83,50],[83,46],[83,46],[83,46],[85,52]][rs],mc=rs<5?'#f3efe6':rs<7?'#e8d9a8':rs<8?'#c9984a':'#8a5a2a';
-    limb(88,54,T[0],T[1],2,'#6d4a36');px(86,52,5,4,PC?PC.c2:CR);if(rs<12)px(T[0]-2,T[1]-1,4,3,mc);
+    limb(92,57,T[0],T[1],2,'#6d4a36');if(rs<12)px(T[0]-2,T[1]-1,4,3,mc);const hd=placeHand();armHand(88,54,92,57,hd,'grip');
     if(rs>=3&&rs<=8)for(let i=0;i<4;i++)px(76+((rs*5+i*7)%10),63-((rs*3+i*4)%8),1,1,'#ffd27a')}
-  else if(pk>=0&&lg<0){const tx=79+(pk%2)*2,ty=70-(pk%3);for(let i=0;i<=12;i++)px(Math.round(88-(88-tx)*i/12),Math.round(54+(ty-54)*i/12),2,2,'#6d4a36');px(86,52,5,4,CR);for(let i=0;i<5;i++)px(tx-6+((pk*7+i*5)%14),62-pk*3-i*2,1,1,'#ffd27a')}
+  else if(pk>=0&&lg<0){const tx=79+(pk%2)*2,ty=70-(pk%3);for(let i=0;i<=12;i++)px(Math.round(92-(92-tx)*i/12),Math.round(57+(ty-57)*i/12),2,2,'#6d4a36');{const hd=placeHand();armHand(88,54,92,57,hd,'grip')}for(let i=0;i<5;i++)px(tx-6+((pk*7+i*5)%14),62-pk*3-i*2,1,1,'#ffd27a')}
   if(lg>=0){const LX=[90,92,92,90,88,86,84,82,80,79,78,78],LY=[54,50,48,48,50,54,58,62,66,68,68,68]; /* idle: tosses a log on the fire */
-    if(lg<=5)arm(88,54,LX[lg]+2,LY[lg]+1,2,PC?PC.c1:'#e8803a');
+    const hd=placeHand();if(lg<=5)armHand(88,54,LX[lg]+7,LY[lg]+1,hd);
     if(lg<=11){px(LX[lg],LY[lg],9,3,'#6d4a36');px(LX[lg],LY[lg],2,3,'#a88a5e')}
+    if(lg<=5)handAt(LX[lg]+6,LY[lg]+1,hd,'grip');
     if(lg>=8){px(72,56,6,10,'#e8602a');px(80,52,6,14,'#f5a03a');px(76,50,5,8,'#ffe08a');
       for(let i=0;i<8;i++)px(70+((lg*7+i*9)%24),60-(((lg-7)*4+i*3)%24),1,1,'#ffd27a')}}
   if(sk>=0){if(stars()){px(140-sk*14,6+sk*4,3,1,'#ffffff');px(143-sk*14,5+sk*4,3,1,'#ffffff55')} /* idle: a shooting star by night, a bird by day */

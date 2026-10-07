@@ -36,13 +36,15 @@ function drawLighthouse(s){
   CH.e();
   const po=gesture('pour'); /* idle: pours a cup from the thermos */
   if(po<0){px(132,56,6,10,'#9aa0b0');px(133,54,4,2,'#2b1d2e')}
-  else{arm(117,58,138,po>=2&&po<=9?52:55,2,PC?PC.c1:'#8a8a98',PC?PC.c1:'#e8b840');
+  else{const hd=placeHand(),hy=po>=2&&po<=9?52:55;armHand(117,58,139,hy,hd);
     if(po>=2&&po<=9){for(let i=0;i<10;i++)px(136-Math.round(i*.55),52+i,5,1,'#9aa0b0');px(136,50,5,2,'#2b1d2e');px(131,62,1,8,tick%2?'#6a3a22':'#8a5a3a')}
     else{px(132,52,6,10,'#9aa0b0');px(133,50,4,2,'#2b1d2e')}
-    px(138,50,4,5,PC?PC.c1:'#8a8a98')}
-  if(bn>=0&&bn<10){arm(117,58,138+bs,47,2,PC?PC.c1:'#8a8a98',PC?PC.c1:'#e8b840');px(139+bs,41,1,7,'#c8b890')}
+    handAt(139,hy+1,hd,'fist')}
+  if(bn>=0&&bn<10){px(139+bs,41,1,7,'#c8b890');armHand(117,58,139+bs,47,placeHand(),'grip')}
   if(sc2>=0){const up=sc2<3?sc2:sc2>8?11-sc2:3,by=[56,50,45,43][up],bx=99+(sc2>3&&sc2<9?[0,1,2,2,1][sc2-4]:0); /* looks out to sea through binoculars */
-    arm(105,58,bx+5,by+4,2,PC?PC.c1:'#8a8a98',PC?PC.c1:'#e8b840');px(bx,by,5,5,'#2a2a3a');px(bx+6,by,5,5,'#2a2a3a');px(bx+5,by+1,1,3,'#2a2a3a');px(bx+1,by+1,3,1,'#6a6a8a');px(bx+7,by+1,3,1,'#6a6a8a')}px(130,70,10,6,'#f3e3c8');px(131,70,8,2,'#4a2a1a');px(134,64-(tick%3),1,3,'#ffffff77');
+    const hd=placeHand();armHand(92,58,bx-1,by+5,hd);armHand(116,58,bx+12,by+5,hd,null,{flip:1}); /* both paws hold the binoculars */
+    px(bx,by,5,5,'#2a2a3a');px(bx+6,by,5,5,'#2a2a3a');px(bx+5,by+1,1,3,'#2a2a3a');px(bx+1,by+1,3,1,'#6a6a8a');px(bx+7,by+1,3,1,'#6a6a8a');
+    handAt(bx-1,by+4,hd,'grip');handAt(bx+12,by+4,hd,'grip',{flip:1})}px(130,70,10,6,'#f3e3c8');px(131,70,8,2,'#4a2a1a');px(134,64-(tick%3),1,3,'#ffffff77');
   if(thinking){for(let i=0;i<=tick%3;i++)px(122+i*5,28,3,3,'#f3e3c8')}
 }
 SCENES.lighthouse={label:"Lighthouse at night",icon:"🗼",name:"Skipper",outdoor:true,setting:"on the gallery of a lighthouse at night, the lamp turning behind you and the sea below",

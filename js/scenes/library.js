@@ -26,14 +26,14 @@ function drawLibrary(s){
     px(70,40+yy,7,1,g);px(70,46+yy,7,1,g);px(70,40+yy,1,7,g);px(76,40+yy,1,7,g);
     px(83,40+yy,7,1,g);px(83,46+yy,7,1,g);px(83,40+yy,1,7,g);px(89,40+yy,1,7,g);px(77,43+yy,6,1,g);
     px(70,54,20,6,'#4a6a4a');px(76,54,8,6,'#f3e3c8')}                /* cardigan + shirt */
-  if(adj)px(90,38,5,6,PC?'#d8b890':'#d8b890'); /* paw up to the glasses */
-  if(sh>=0){const H=[[80,60],[80,56],[79,52],[78,50],[78,49],[78,49],[78,49],[78,49],[78,49],[79,52],[80,56],[80,60]][sh],f1=PC?PC.c1:'#7a4e34'; /* a paw to the lips: shh */
-    arm(88,54,H[0]+2,H[1]+2,2,f1);px(H[0]-1,H[1]-1,7,7,shade(f1,.7));px(H[0],H[1],5,5,f1);px(H[0]+1,H[1]+1,3,3,PC?PC.c2:'#d8b890')}
+  if(adj)armHand(88,55,89,49,placeHand(),'point'); /* a paw up to the glasses */
   CH.e();
   /* the desk, a lamp, an open book */
   px(36,60,92,5,'#6a4a2a');px(36,60,92,1,'#8a6a42');px(40,65,84,14,'#5a3a22');px(44,68,32,8,'#4a2e1a');px(84,68,32,8,'#4a2e1a');px(60,71,4,2,'#c8a050');px(100,71,4,2,'#c8a050');
   px(54,54,26,6,'#f3e3c8');px(80,54,26,6,'#ece0c0');px(79,53,2,8,'#a83a4a');px(56,56,20,1,'#b8a888');px(56,58,18,1,'#b8a888');px(84,56,18,1,'#b8a888');px(84,58,14,1,'#b8a888');
   if(pg>=0){const fx=80+(pg<3?pg*8:(5-pg)*8);px(fx-(pg<3?0:0),52+(pg%2),Math.max(2,26-fx+80),5,'#fff')}
+  if(sh>=0){const H=[[80,60],[80,56],[79,52],[78,50],[78,49],[78,49],[78,49],[78,49],[78,49],[79,52],[80,56],[80,60]][sh]; /* one finger to the lips: shh. Drawn in front of the desk and book so the whole paw shows. */
+    armHand(88,55,H[0]+6,H[1]+5,placeHand(),'point')}
   px(104,40,2,20,'#2a4a3a');px(98,36,14,6,'#2f7a4f');px(100,34,10,3,'#2f7a4f');px(99,42,12,2,'#ffe9a0');
   ctx.fillStyle='rgba(255,230,150,.10)';ctx.fillRect(92,44,30,28);
   for(let i=0;i<7;i++)px(94+(i*9+tick*(1+i%2))%28,46+(i*13+tick)%24,1,1,'#ffe9a099');  /* dust in the lamplight */

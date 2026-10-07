@@ -10,17 +10,17 @@
 if(cfg.react===undefined)cfg.react='1';
 FIELDS.push('react');
 
-/* where each default character is: at = top-left of its 32x32 sprite, mo = its mouth, fur = arm color, c2 = lighter paw, idle = what it may do alone */
+/* where each default character is: at = top-left of its 32x32 sprite, mo = its mouth, idle = what it may do alone. Arms and hands come from art/hands.js (placeHand). */
 const RXA={
-  kitchen:{at:[64,30],mo:[77,47],fur:'#e8dcd0',c2:'#fff4ec',idle:['doze','hum']},
-  therapy:{at:[64,34],mo:[77,35],fur:'#e8b894',c2:'#f4cdb0',idle:[],nowave:1},
-  camp:{at:[64,30],mo:[77,43],fur:'#e8803a',c2:'#f3e3c8',idle:['doze','hum']},
-  train:{at:[64,36],mo:[77,41],fur:'#e8d3a8',c2:'#f6e8c8',sl:'#2b3a7a',idle:['doze','hum']},
-  diner:{at:[64,24],mo:[77,40],fur:'#a07a4e',c2:'#f0dcb4',idle:['doze','hum']},
-  library:{at:[64,30],mo:[77,49],fur:'#7a4e34',c2:'#d8b890',idle:['doze','hum']},
-  lighthouse:{at:[88,34],mo:[101,53],fur:'#8a8a98',c2:'#eae4d4',sl:'#e8b840',idle:['doze','hum']},
-  rooftop:{at:[64,34],mo:[77,37],fur:'#e0904c',c2:'#f6ead4',idle:['doze','hum']},
-  bed:{at:[64,34],mo:[80,50],fur:'#c98f56',c2:'#f3e3c8',idle:['doze'],nowave:1}
+  kitchen:{at:[64,30],mo:[77,47],idle:['doze','hum']},
+  therapy:{at:[64,34],mo:[77,35],idle:[],nowave:1},
+  camp:{at:[64,30],mo:[77,43],idle:['doze','hum']},
+  train:{at:[64,36],mo:[77,41],idle:['doze','hum']},
+  diner:{at:[64,24],mo:[77,40],idle:['doze','hum']},
+  library:{at:[64,30],mo:[77,49],idle:['doze','hum']},
+  lighthouse:{at:[88,34],mo:[101,53],idle:['doze','hum']},
+  rooftop:{at:[64,34],mo:[77,37],idle:['doze','hum']},
+  bed:{at:[64,34],mo:[80,50],idle:['doze'],nowave:1}
 };
 const RX={name:'',t0:0,len:0,act:Date.now(),idle:'',idleT0:0,nextIdle:0,snoreAt:0,humAt:0,yawnAt:0,bye:0,pl:''};
 const RXP={perk:1,yawn:1,lean:2,laugh:3,wave:3}; /* a weaker reaction never cuts a stronger one short */
@@ -64,19 +64,17 @@ function rxPose(){
 function rxOver(){
   if(!rxOn()||quietMotion())return;
   const A=RXA[cfg.place];if(!A)return;
-  const n=Date.now(),dx=CH.dx,dy=CH.dy,fur=PC?PC.c1:A.fur,lt=PC?PC.c2:A.c2,ol=shade(fur,.62),[ox,oy]=A.at,[mx,my]=A.mo;
+  const n=Date.now(),dx=CH.dx,dy=CH.dy,hs_=placeHand(),[ox,oy]=A.at,[mx,my]=A.mo;
   CH.on=0;
   if(rxAlive()&&RX.name==='wave'&&!A.nowave){
     const t=n-RX.t0,L=RX.len,up=Math.max(0,Math.min(1,t/350,(L-t)/350)),sw=Math.round(Math.sin(t/110)*3*up);
-    const sx=ox+23+dx,sy=oy+24+dy,hx=ox+32+sw+dx,hy=Math.round(oy+22-14*up)+dy;
-    arm(sx,sy,hx,hy+1,2,fur,A.sl,ol); /* the character's own arm, from the shoulder, with an elbow */
-    paw(hx-3,hy-5,fur,lt,ol);
+    const sx=ox+23+dx,sy=oy+24+dy,hx=ox+32+sw+dx,hy=Math.round(oy+20-14*up)+dy;
+    armHand(sx,sy,hx,hy,hs_,'open'); /* the character's own arm and hand, from the shoulder, with an elbow */
   }
   if(rxAlive()&&RX.name==='yawn'&&!A.nowave){
     const t=n-RX.t0,L=RX.len,pr=Math.max(0,Math.min(1,t/(L*.25),(L-t)/(L*.25)));
-    const x=Math.round(rxLerp(ox+25,mx+3,pr))+dx,y=Math.round(rxLerp(oy+30,my,pr))+dy;
-    arm(ox+23+dx,oy+24+dy,x+2,y+4,2,fur,A.sl,ol); /* the same arm, paw up to the mouth */
-    paw(x-1,y-3,fur,lt,ol);
+    const x=Math.round(rxLerp(ox+27,mx+3,pr))+dx,y=Math.round(rxLerp(oy+31,my+1,pr))+dy;
+    armHand(ox+23+dx,oy+24+dy,x,y,hs_,'fist'); /* the same arm, paw up to the mouth */
   }
   if(RX.idle==='hum'){
     for(let k=0;k<3;k++){

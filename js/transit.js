@@ -12,8 +12,8 @@
    paw colors of the waving arm (so custom characters and night palettes just work); t0 = when the arm is first needed;
    snd = [progress, sound] pairs (only audible when ambient sound is on); self = the effect covers the whole picture itself.
    Loads after gestures.js and ambient.js. It wraps goScene(), draw() and gestStep(). */
-const TX={on:0,ph:'',t0:0,from:'',to:'',d:null,iv:0,tm:[],calm:0,colK:'',col:null,spO:null,spI:null,went:0};
-const TXD={normal:{out:1700,gap:650,inn:1400},calm:{out:800,gap:250,inn:800}};
+const TX={on:0,ph:'',t0:0,from:'',to:'',d:null,iv:0,tm:[],calm:0,colK:'',col:null,hs:null,spO:null,spI:null,went:0};
+const TXD={normal:{out:2300,gap:650,inn:1400},calm:{out:800,gap:250,inn:800}};
 const FAREWELL={
   bed:'*a sleepy thump of the tail* Night, friend.',
   therapy:'We can pick this up next time. Take care of yourself.',
@@ -54,17 +54,13 @@ function dim(D,keep,pool){
 function cover(c){if(c<=0)return;if(c>=1){rpx(0,0,160,90,'#07050f');return}dither(()=>c);if(c>.8){ctx.fillStyle='rgba(7,5,15,'+((c-.8)/.2).toFixed(2)+')';ctx.fillRect(0,0,160,90)}}
 function samp(p){const d=ctx.getImageData(p[0],p[1],1,1).data;return '#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('')}
 function limbR(x0,y0,x1,y1,w,c,w1=w){const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++){const q=Math.round(w+(w1-w)*i/n);rpx(Math.round(x0+(x1-x0)*i/n)-(q>>1),Math.round(y0+(y1-y0)*i/n)-(q>>1),q,q,c)}}
-/* an arm with a shoulder cap and an elbow (see arm() in gestures.js), drawn in the transition layer */
-function armR(sx,sy,hx,hy,w,c,sl,o){const[ex,ey]=armElbow(sx,sy,hx,hy),u=sl||c,wu=w+2,wf=w+1;
-  limbR(sx,sy,ex,ey,wu+2,o);limbR(ex,ey,hx,hy,wf+2,o);rpx(sx-(wu>>1)-1,sy-(wu>>1)-1,wu+3,wu+3,o);limbR(sx,sy,ex,ey,wu,u);limbR(ex,ey,hx,hy,wf,c);rpx(sx-(wu>>1),sy-(wu>>1),wu+1,wu+1,u)}
-/* the character waves: a raised arm swinging side to side. a = {s:[shoulder x,y], up:[how far the paw rises: dx,dy]}; t = 0..1 */
+/* the character waves: a raised arm swinging side to side, drawn with the shared hands (art/hands.js) in the character's own
+   fur, skin or feathers. a = {s:[shoulder x,y], up:[how far the paw rises: dx,dy]}; t = 0..1 */
 function wave(a,t){
-  if(t<=0||t>=1||!TX.col)return;
+  if(t<=0||t>=1||!TX.hs)return;
   const k=ease(cl(Math.min(t*5,(1-t)*5))),sw=Math.round(Math.sin(t*Math.PI*7)*3*k);
-  const pc=TX.col.pw||TX.col.sl; /* the arm is the character's own fur, not their clothes */
-  const sx=a.s[0],sy=a.s[1],hx=Math.round(sx+a.up[0]*k)+sw,hy=Math.round(sy+a.up[1]*k),o=shade(pc,.5);
-  armR(sx,sy,hx,hy+1,2,pc,pc,o); /* the character's own arm: shoulder, elbow, forearm */
-  paw(hx-3,hy-5,pc,mix(pc,'#ffffff',.3),o,rpx);
+  const sx=a.s[0],sy=a.s[1],hx=Math.round(sx+a.up[0]*k)+sw,hy=Math.round(sy+a.up[1]*k);
+  armHand(sx,sy,hx,hy,TX.hs,'open',{P:rpx});
 }
 /* your own arm reaching in from the bottom corner to the lamp (first-person bed scene): e = how far it has reached, 0..1 */
 function reach(from,to,e){
@@ -72,8 +68,8 @@ function reach(from,to,e){
   if(e<=0||!TX.col)return;
   const hx=Math.round(from[0]+(to[0]-from[0])*e),hy=Math.round(from[1]+(to[1]-from[1])*e),o=shade(TX.col.sl,.5),sk=TX.col.pw;
   limbR(from[0],from[1],hx,hy,15,o,10);limbR(from[0],from[1],hx,hy,13,TX.col.sl,8);
-  /* the hand: a real one, fingers up toward the switch */
-  handH(hx-6,hy-14,0,sk,mix(sk,'#ffffff',.25),shade(sk,.8),rpx);
+  /* the hand: the same first-person hand as in the bed scene (art/hands.js) */
+  povHand(rpx,hx-5,hy-9,0,{s:sk,h:mix(sk,'#ffffff',.2),d:shade(sk,.84),n:mix(sk,'#e08a8a',.4)});
 }
 /* paint a lamp's bulb dark (the scene still draws it lit) */
 function bulbOff(r){const c=mix(samp([r[0]+(r[2]>>1),r[1]+(r[3]>>1)]),'#1a1428',.72);rpx(r[0],r[1],r[2],r[3],c)}
@@ -89,7 +85,7 @@ function lampSpec(o){
     out(p){
       if(p>=pc)bulbOff(o.bulb);
       dim(.92*ease(cl((p-pc)/.2)),o.keep);
-      if(o.reach)reach(o.from,o.lamp,ext(p));else wave(o.arm,(p-.04)/.4);
+      if(o.reach)reach(o.from,o.lamp,ext(p));else wave(o.arm,(TX.rp-.03)/.3);
     },
     in(p){
       if(p<pi)bulbOff(o.bulb);
@@ -101,13 +97,13 @@ function lampSpec(o){
 const fire=[78,72];
 const TXS={
   bed:lampSpec({reach:1,from:[-4,94],lamp:[21,31],bulb:[14,17,14,9],keep:[[110,9,36,22,.55]],col:{sl:[80,88],pw:[57,66]}}),
-  library:lampSpec({arm:{s:[88,54],up:[10,-16]},lamp:[105,39],bulb:[98,34,15,9],keep:[[66,12,28,28,.5]],col:{sl:[88,38],pw:null}}),
+  library:lampSpec({arm:{s:[88,54],up:[10,-16]},lamp:[105,39],bulb:[98,34,15,9],keep:[[66,12,28,28,.5]],col:{sl:[106,41],pw:[86,36]}}),
   kitchen:lampSpec({arm:{s:[88,55],up:[8,-14]},lamp:[80,14],bulb:[74,10,14,5],keep:[[94,10,36,30,.55]],col:{sl:[84,60],pw:[76,44]}}),
 
   /* camp: the fox waves, banks the fire to embers and smoke; on arrival a log goes on and the fire flares */
-  camp:{col:{sl:[73,52],pw:[80,56]},t0:{out:.03,in:.58},snd:{out:[[.4,'sizzle']],in:[[.3,'thud'],[.33,'pop'],[.37,'pop'],[.42,'pop']]},
+  camp:{col:{sl:[73,52],pw:[71,60]},t0:{out:.03,in:.58},snd:{out:[[.4,'sizzle']],in:[[.3,'thud'],[.33,'pop'],[.37,'pop'],[.42,'pop']]},
     out(p){
-      wave({s:[71,52],up:[-7,-17]},(p-.04)/.4);
+      wave({s:[71,52],up:[-7,-17]},(TX.rp-.03)/.3);
       const f=ease(cl((p-.4)/.3));
       dim(.9*ease(cl((p-.45)/.3)),0,{x:fire[0],y:fire[1],R:70-45*ease(cl((p-.4)/.4)),soft:30});
       if(f>0){rpx(72,64,14,Math.round(f*12),'#3a2218');
@@ -128,7 +124,7 @@ const TXS={
   /* therapy: a wave, then the blinds come down and the room goes quiet; on arrival they are raised */
   therapy:{col:{sl:[72,50],pw:[80,37]},t0:{out:.03,in:.52},snd:{out:[[.4,'creak']],in:[[.3,'creak']]},
     out(p){
-      wave({s:[96,46],up:[8,-18]},(p-.04)/.4);
+      wave({s:[96,46],up:[8,-18]},(TX.rp-.03)/.3);
       blinds(Math.round(26*ease(cl((p-.36)/.34))));
       dim(.55*ease(cl((p-.5)/.3)));
     },
@@ -141,7 +137,7 @@ const TXS={
   /* train: the carriage runs into a tunnel (lamps streak past the window); on arrival it comes out the other side */
   train:{col:{sl:[84,52],pw:[74,36]},t0:{out:.03,in:.52},snd:{out:[[.28,'toot'],[.4,'whoosh']],in:[[.08,'whoosh']]},
     out(p){
-      wave({s:[97,44],up:[7,-14]},(p-.04)/.4);
+      wave({s:[97,44],up:[7,-14]},(TX.rp-.03)/.3);
       const q=ease(cl((p-.3)/.4));tunnel(22,22+Math.round(116*q),p);
       dim(.55*q);
     },
@@ -152,9 +148,9 @@ const TXS={
     }},
 
   /* diner: a wave with the coffee pot, then the OPEN neon buzzes and flickers out; on arrival the door bell rings and it buzzes on */
-  diner:{col:{sl:[70,48],pw:[84,34]},t0:{out:.03,in:.58},snd:{out:[[.34,'buzz']],in:[[0,'ding'],[.2,'buzz']]},
+  diner:{col:{sl:[70,48],pw:[84,33]},t0:{out:.03,in:.58},snd:{out:[[.34,'buzz']],in:[[0,'ding'],[.2,'buzz']]},
     out(p){
-      wave({s:[91,44],up:[9,-14]},(p-.04)/.4);
+      wave({s:[91,44],up:[9,-14]},(TX.rp-.03)/.3);
       if(p>=.34&&(p>=.62||Math.floor(p*40)%3))sign(0);
       dim(.7*ease(cl((p-.5)/.3)));
     },
@@ -165,9 +161,9 @@ const TXS={
     }},
 
   /* lighthouse: a tug of the cap, then the beam sweeps across and the night follows it; on arrival it sweeps back and reveals the gallery */
-  lighthouse:{self:1,col:{sl:[104,62],pw:[100,48]},t0:{out:.03,in:.6},snd:{out:[[.36,'whoosh']],in:[[.1,'whoosh']]},
+  lighthouse:{self:1,col:{sl:[104,62],pw:[100,43]},t0:{out:.03,in:.6},snd:{out:[[.36,'whoosh']],in:[[.1,'whoosh']]},
     out(p){
-      wave({s:[114,56],up:[8,-14]},(p-.04)/.34);
+      wave({s:[114,56],up:[8,-14]},(TX.rp-.03)/.3);
       const fx=-10+210*ease(cl((p-.34)/.56));
       dither((x)=>cl((fx-x)/24+.3));beam(fx);
     },
@@ -178,9 +174,9 @@ const TXS={
     }},
 
   /* kitchen and the rest are above; rooftop: the string lights go out one after another along the line, only the lantern stays; on arrival they come on in a twinkling chain */
-  rooftop:{col:{sl:[90,56],pw:[80,56]},t0:{out:.03,in:.58},snd:{out:[[.4,'chime']],in:[[.4,'chime']]},
+  rooftop:{col:{sl:[90,56],pw:[70,56]},t0:{out:.03,in:.58},snd:{out:[[.4,'chime']],in:[[.4,'chime']]},
     out(p){
-      wave({s:[95,50],up:[8,-16]},(p-.04)/.4);
+      wave({s:[95,50],up:[8,-16]},(TX.rp-.03)/.3);
       const fx=-20+200*ease(cl((p-.34)/.4));
       dither((x,y)=>(y<60?.88:.5)*cl((fx-x)/20+.3)*(1-cl((16-Math.hypot(x-138,y-72))/10)));
     },
@@ -234,12 +230,16 @@ function txOver(){
   const out=TX.ph==='out',p=cl(e/(out?D.out:D.inn));
   if(TX.calm){cover(out?ease(p):1-ease(p));return}
   const sp=out?TX.spO:TX.spI;
-  if(sp.col&&TX.colK!==TX.ph&&p>=sp.t0[TX.ph]-.015){TX.colK=TX.ph;const sl=samp(sp.col.sl);TX.col={sl,pw:sp.col.pw?samp(sp.col.pw):mix(sl,'#ffffff',.3)}} /* sampled before anything is drawn this frame */
-  sp[out?'out':'in'](p);
+  if(sp.col&&TX.colK!==TX.ph&&p>=sp.t0[TX.ph]-.015){TX.colK=TX.ph;const sl=samp(sp.col.sl),pw=sp.col.pw?samp(sp.col.pw):sl,b=placeHand(out?TX.from:TX.to);TX.col={sl,pw};TX.hs=hspec(pw,b.k,b.sl?sl:null)} /* sampled before anything is drawn this frame */
+  TX.rp=p;sp[out?'out':'in'](out?txQ(p):p); /* the wave uses the real time; the action after it uses the warped time */
   if(out){if(!sp.self)cover(ease(cl((p-.84)/.16)))}
   else cover(1-ease(cl(p/.14)));
 }
-function txSounds(list,dur){list.forEach(([p,n])=>TX.tm.push(setTimeout(()=>{try{sfxPlay(n)}catch(e){}},p*dur)))}
+/* A beat between the wave and what follows: the wave plays in the first third, the paw comes down, the room holds still for a moment, then the action
+   (dimming, blinds, lamp, fire) starts. Real progress p 0..1 -> q, which is what each scene's out() sees. */
+const txQ=p=>p<.34?p:p<.52?.34:.34+(p-.52)*(.66/.48);
+const txRaw=q=>q<=.34?q:.52+(q-.34)*(.48/.66); /* the inverse, for sound cues written in q */
+function txSounds(list,dur,warp){list=warp?list.map(([p,n])=>[txRaw(p),n]):list;list.forEach(([p,n])=>TX.tm.push(setTimeout(()=>{try{sfxPlay(n)}catch(e){}},p*dur)))}
 function txStep(){
   const e=Date.now()-TX.t0,D=TX.d;
   if(TX.ph==='out'&&e>=D.out){TX.ph='gap';TX.t0=Date.now();if(!TX.calm)for(let i=0;i<5;i++)TX.tm.push(setTimeout(()=>{try{sfxPlay('step')}catch(e){}},i*120))}
@@ -253,11 +253,11 @@ function txEnd(){
 }
 function txStart(k){
   const from=cfg.place,calm=cfg.motion==='calm';
-  Object.assign(TX,{on:1,ph:'out',t0:Date.now(),from,to:k,calm:calm?1:0,d:calm?TXD.calm:TXD.normal,colK:'',col:null,went:0,tm:[],
+  Object.assign(TX,{on:1,ph:'out',t0:Date.now(),from,to:k,calm:calm?1:0,d:calm?TXD.calm:TXD.normal,colK:'',col:null,hs:null,went:0,tm:[],
     spO:TXS[from]||TXG,spI:TXS[k]||TXG});
   const pc=cfg.cast[from]&&charById(cfg.cast[from]);
   if(!busy&&!actBusy())say(pc||!FAREWELL[from]?'*waves* See you soon.':FAREWELL[from]);
-  if(!calm)txSounds(TX.spO.snd.out,TX.d.out);
+  if(!calm)txSounds(TX.spO.snd.out,TX.d.out,1);
   TX.iv=setInterval(txStep,45);
 }
 const _goT=goScene;

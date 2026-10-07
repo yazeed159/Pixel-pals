@@ -88,15 +88,15 @@ function drawBed(s){
   for(let x=0;x<160;x+=1){const y=83-breath+Math.round(3*Math.sin(x/9));px(x,y,1,1,PJH)}
 
   /* ---- arms: sleeves from the bottom corners, left hand resting by the dog, right hand stroking its side ---- */
-  const hand=(x,y,rt)=>handH(rt?x-2:x,y-7,rt,SK,SKH,SK2); /* a real hand: four fingers, knuckles, thumb, wrist */
+  const hand=(x,y,rt)=>povHand(px,x,y,rt,{s:SK,h:SKH,d:SK2,n:mix(SK,'#e08a8a',.4)}); /* your own hands: art/hands.js */
   const armAway=typeof TX!=='undefined'&&TX.on&&TX.hl; /* switching the lamp: this same left arm is the one reaching, so it is not also resting by the dog */
   if(!armAway){blob([[6,92,9],[26,83,8],[44,76,6.5],[54,72,5.5]],PJ,PJH,PJ2);
   px(48,70,12,2,SH);px(48,70,12,1,SH3);
-  hand(53,62+pt,0)}
+  hand(52,57+pt,0)}
   const wig=[0,1,2,1][tick%4];
   blob([[154,92,9],[134,83,8],[116,74,6.5],[104,68,5.5]],PJ,PJH,PJ2);
   px(98+wig,66,12,2,SH);px(98+wig,66,12,1,SH3);
-  hand(95+wig,57,1);
+  hand(94+wig,52,1);
 
   /* ---- idle: the dog snores (Zzz), a moth circles the lamp ---- */
   if(zz>=0){const z=(a,y,w)=>{px(a,y,w,1,'#f3e3c8');px(a+w-1,y+1,1,1,'#f3e3c8');px(a+w-2,y+2,1,1,'#f3e3c8');px(a,y+3,w,1,'#f3e3c8')};

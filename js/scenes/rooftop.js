@@ -72,7 +72,7 @@ function drawRooftop(s){
   if(tick%6<3){px(48,63,1,2,'#ffffff66');px(50,62,1,2,'#ffffff44')}
   px(96,70,16,2,'#e8e0d0');px(99,67+fj,7,3,'#7a9ad8');px(106,66+fj,2,5,'#7a9ad8');px(100,68+fj,1,1,DK);px(99,69+fj,5,1,'#a8c0f0');   /* a little fish on a plate */
   px(114,68,6,4,'#b5654a');px(115,64,4,4,'#6fbf6f');px(116,62,2,2,'#8acb7a');                                    /* a seedling pot */
-  if(rg>=0){const d=[0,2,4,6,7,7,7,7,5,3,1,0][rg];px(91,64,3+d,3,PC?PC.c1:F);px(92+d,64,3,3,PC?PC.c2:W)}
+  if(rg>=0){const d=[0,2,4,6,7,7,7,7,5,3,1,0][rg],hd=placeHand();armHand(84,60,89+d,66,hd,'rest',{hand:PC?hd:hspec(W,'paw')})} /* the front paw reaches out and taps the fish */
   /* a lantern and a folded blanket */
   const fl=tick%4<2;
   px(136,66,4,1,'#2a2a3a');px(134,67,8,13,'#2a2a3a');px(135,69,6,9,fl?'#ffd27a':'#ffbe6e');px(133,80,10,2,'#3a3a4a');

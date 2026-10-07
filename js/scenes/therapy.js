@@ -12,11 +12,13 @@ function drawTherapy(s){
   px(140,58,10,8,'#a85a4a');px(138,46,14,12,'#4a8a5a');px(142,42,6,6,'#5ca06c');px(136,50,4,6,'#5ca06c');
   px(34,72,92,12,'#8a4a5a');px(37,74,86,8,'#a85a6a');
   px(60,26,40,40,'#8a4a4a');px(56,46,8,22,'#a05a5a');px(96,46,8,22,'#a05a5a');px(60,60,40,8,'#a05a5a');
+  const hd=placeHand();
   if(PC)drawChar(PC,64,34,2);else{
   px(66,54,28,7,'#3a3f5a');px(68,61,8,11,'#3a3f5a');px(84,61,8,11,'#3a3f5a');px(66,72,12,3,DK);px(82,72,12,3,DK);
-  px(68,38,24,18,'#5a8a9a');px(76,38,8,3,'#f3e3c8');px(62,40,7,14,'#5a8a9a');px(91,40,7,14,'#5a8a9a');
+  px(68,38,24,18,'#5a8a9a');px(76,38,8,3,'#f3e3c8');
   px(76,46,12,10,'#f3e3c8');px(78,49,8,1,'#b8a888');px(78,52,6,1,'#b8a888');
-  px(64,53,6,5,SK);px(90,52+(wr?tick%2:0),6,5,SK);
+  if(ts<0)px(62,40,7,14,'#5a8a9a'); /* just the sleeves, no hands */                         /* left arm resting on the knee; down while a tissue is offered */
+  if(sp<0)px(91,40,7,14,'#5a8a9a');     /* right arm resting, or writing a note */
   px(77,36,6,3,SK);px(73,26,14,12,SK);px(72,22,16,6,'#4a3a3a');px(71,25,3,10,'#4a3a3a');px(86,25,3,10,'#4a3a3a');
   px(74,30,5,3,DK);px(75,31,3,1,SK);px(81,30,5,3,DK);px(82,31,3,1,SK);px(79,31,2,1,DK);
   if(!blink){px(76+(wr?1:0),31,1,1,DK);px(83+(wr?1:0),31,1,1,DK)}
@@ -26,10 +28,10 @@ function drawTherapy(s){
   px(52,76,56,4,'#5a3a2a');px(56,80,4,6,'#5a3a2a');px(100,80,4,6,'#5a3a2a');
   px(60,71,10,5,'#7a9ad8');px(63,69,4,2,'#fff');if(sp<0){px(90,71,6,5,'#f3e3c8');px(96,72,2,3,'#f3e3c8')}
   else{const mx=[90,90,89,87,84,82,80,80,80,84,88,90,90][sp],my=[71,66,58,50,42,36,35,35,35,42,52,64,71][sp];
-    arm(93,58,mx+5,my+3,2,PC?PC.c1:SK);px(mx,my,6,5,'#f3e3c8');px(mx+6,my+1,2,3,'#f3e3c8');px(mx,my,6,1,'#b8a888');
+    armHand(PC?88:94,PC?58:43,mx+7,my+2,hd,null,{bend:.6});px(mx,my,6,5,'#f3e3c8');px(mx+6,my+1,2,3,'#f3e3c8');px(mx,my,6,1,'#b8a888');handAt(mx+7,my+2,hd,'grip');
     if(sp>3&&sp<9)px(mx+2+(tick%2),my-3,1,2,'#ffffff77')}
   if(ts>=0){const up=[0,1,3,5,6,6,6,5,3,1,0,0][ts]; /* idle: offers a tissue */
-    arm(66,58,64,Math.max(62,67-(up>>1)),2,PC?PC.c1:SK);px(63,69-up,4,2+up,'#fff');px(63,69-up,4,1,'#dfe6f4');px(62,66-up,6,4,PC?PC.c1:SK)}
+    armHand(PC?70:65,PC?58:43,65,67-up,hd);px(63,69-up,4,2+up,'#fff');px(63,69-up,4,1,'#dfe6f4');handAt(65,67-up,hd,'grip')}
   px(0,64,16,26,'#6a5aa0');px(144,64,16,26,'#6a5aa0');px(16,80,128,10,'#5a4a90');px(16,80,128,1,'#7a6ab8');
 }
 SCENES.therapy={label:"Therapy session",icon:"🛋️",name:"Dr. Sage",win:[115,13,32,26],setting:"in a quiet therapy office, with the person on the couch and you in the armchair across from them",
