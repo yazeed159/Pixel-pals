@@ -85,6 +85,7 @@ const poke=()=>{lastAct=Date.now();nudged=0};
 ['pointerdown','keydown','input','touchstart'].forEach(e=>document.addEventListener(e,poke,true));
 const NUDGE_MS={'2':2*6e4,'5':5*6e4,'10':10*6e4};
 function nudge(){
+  return; /* the reply on screen is never replaced by an idle line */
   const v=voice(),pool=cfg.weather==='rain'&&v.rain?[...v.rain,...v.idle]:cfg.weather==='snow'&&v.snow?[...v.snow,...v.idle]:v.idle;
   const line=pool[Math.floor(Math.random()*pool.length)];
   lastNudge={text:line,t:Date.now()};
@@ -106,10 +107,11 @@ ambient=function(){
 };
 function setSit(on){
   sit=on;$('#app').classList.toggle('sit',on);
-  const b=$('#sitb');b.textContent=on?'↩ Leave':'🪑 Sit';b.setAttribute('aria-pressed',on);
+  const b=$('#sitb');b.textContent='↩ Leave';b.setAttribute('aria-pressed',on);
   if(on){clearInterval(timer);typing=talking=false}else poke();
   ambient();
 }
-$('#sitb').onclick=e=>{e.stopPropagation();setSit(!sit)};
+$('#sitb').onclick=e=>{e.stopPropagation();setSit(false)};
+$('#sitm').onclick=e=>{e.stopPropagation();setSit(true)};
 /* no tap reactions from props while sitting, but the time / place / color buttons still work */
 $('#stage').addEventListener('click',e=>{if(sit&&e.target.tagName!=='BUTTON'){e.stopImmediatePropagation();e.stopPropagation()}},true);

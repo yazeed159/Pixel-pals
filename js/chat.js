@@ -133,15 +133,16 @@ async function ask(onDelta){
   return complete(sys(),h,onDelta,TOK[cfg.len]);
 }
 /* the model ends its reply with [[quick: a | b | c]]; split that off, and hide it while streaming */
+const QRE=/\[{1,2}[\s*_]*quick(?:\s*(?:repl(?:y|ies)|options?|responses?))?[\s*_]*:?/ig; /* also catches [quick: ...], **[[Quick replies: ...]]** and the like, which other models sometimes write */
 function splitQ(t){
-  const i=t.lastIndexOf('[[');if(i<0)return {text:t.trim(),quick:[]};
-  const m=t.slice(i).match(/^\[\[\s*quick\s*:?\s*([^\]]*)/i);
-  if(!m)return {text:t.trim(),quick:[]};
-  return {text:t.slice(0,i).trim(),quick:m[1].split('|').map(s=>s.trim()).filter(Boolean).slice(0,3).map(x=>x.slice(0,300))};
+  let at=-1,len=0,m;QRE.lastIndex=0;while((m=QRE.exec(t))){at=m.index;len=m[0].length}
+  if(at<0)return {text:t.trim(),quick:[]};
+  const quick=t.slice(at+len).replace(/[\]*_\s]+$/,'').replace(/\]+.*$/s,'').split('|').map(s=>s.trim().replace(/^[*_"]+|[*_"]+$/g,'')).filter(Boolean).slice(0,3).map(x=>x.slice(0,300));
+  return {text:t.slice(0,at).replace(/[\s*_]+$/,''),quick}
 }
 /* the options come inside the reply itself; there is no separate call for them (it would cost an extra request) */
 function fillQR(){}
-const vis=t=>{const i=t.lastIndexOf('[[');return (i>=0?t.slice(0,i):t.replace(/\[$/,'')).trimEnd()};
+const vis=t=>{QRE.lastIndex=0;let i=-1,m;while((m=QRE.exec(t)))i=m.index;return (i>=0?t.slice(0,i):t.replace(/\[+[\s*_]*(q(u(i(ck?)?)?)?)?$/i,'')).trimEnd()}; /* hide the options line, even half-typed, while streaming */
 function setMood(t){const l=t.toLowerCase();mood=/sorry|hard|heavy|lonely|hurt|tough|painful|sad/.test(l)?'sad':/tired|sleep|rest|yawn|cozy|drowsy/.test(l)?'sleepy':/haha|glad|wonderful|love|great|happy|proud|yay|lovely/.test(l)?'happy':'';moodT=mood?50:0}
 
 /* ---- long-term memory ----

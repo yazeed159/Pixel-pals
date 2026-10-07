@@ -27,6 +27,9 @@ html[dir=rtl] #ftime{left:auto;right:10px}
 
 #qr{margin:0;padding:8px 12px 0;flex:none;flex-wrap:nowrap;overflow-x:auto;gap:8px}
 #qr .chip{flex:none;max-width:78vw}
+/* a long suggested reply shows two lines at most (tapping still sends all of it), so the row can't swallow the dialogue box */
+#qr{max-height:24dvh;overflow-y:auto}
+#qr .chip{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
 #row{margin:0;padding:10px 12px;flex:none;background:#150f26}
 #msg{font-size:17px;padding:12px}
 #send{padding:12px 18px;font-size:17px}
@@ -34,7 +37,7 @@ html[dir=rtl] #ftime{left:auto;right:10px}
 /* the dock: big, evenly spaced buttons along the bottom */
 #tools{margin:0;padding:10px 12px calc(10px);flex:none;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px;background:#150f26;border-top:3px solid #ffffff1f}
 #tools button,#more summary{white-space:nowrap;width:100%;height:52px;padding:0 4px;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0}
-#tools #gear,#tools #sitb{margin-inline-start:0}
+#tools #more,#tools #sitb{margin-inline-start:0}
 #more{display:block}
 #more summary{box-shadow:3px 3px 0 var(--ink)}
 #app.sit #tools{grid-template-columns:1fr}
@@ -70,7 +73,7 @@ html[dir=rtl] #ftime{left:auto;right:10px}
    with the dialogue, text box and button dock underneath. */
 @media (min-width:700px) and (min-height:521px){
   body{background:radial-gradient(ellipse at 50% 40%,#2a2044,#0f0b1a 75%)}
-  #app{width:min(100vw,max(560px,calc((100dvh - 270px)*1.7778)));margin:0 auto;box-shadow:0 0 0 3px #ffffff14,0 0 80px #000}
+  #app{width:min(100vw,max(560px,calc((100dvh - 330px)*1.7778)));margin:0 auto;box-shadow:0 0 0 3px #ffffff14,0 0 80px #000}
   #stage{height:auto;aspect-ratio:16/9}
   #cv{position:static;width:100%;height:auto}
   #box,#dbox.over #box{font-size:calc(clamp(16px,1.5vw,21px)*var(--ts,1))}

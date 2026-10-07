@@ -220,10 +220,7 @@ function lifeOver(s){
     if(!LIFE.drawn)drawVisitor(v,p,s);
     LIFE.drawn=false;
     if(!v.said&&p>.12&&p<.9&&quiet()){
-      v.said=true;const line=pick(v.def.say);
-      lastNudge={text:line,t:Date.now(),ctx:', unprompted, because '+v.def.phrase};
-      qr=[];
-      say(line);fillQR(line);
+      v.said=true; /* visitors still pass by, but never replace the text on screen */
     }
   }catch(e){LIFE.drawn=false}
 }

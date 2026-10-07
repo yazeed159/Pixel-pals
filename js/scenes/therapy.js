@@ -12,7 +12,7 @@ function drawTherapy(s){
   px(140,58,10,8,'#a85a4a');px(138,46,14,12,'#4a8a5a');px(142,42,6,6,'#5ca06c');px(136,50,4,6,'#5ca06c');
   px(34,72,92,12,'#8a4a5a');px(37,74,86,8,'#a85a6a');
   px(60,26,40,40,'#8a4a4a');px(56,46,8,22,'#a05a5a');px(96,46,8,22,'#a05a5a');px(60,60,40,8,'#a05a5a');
-  const hd=placeHand(),pad=(x,y)=>{px(x,y,12,10,'#f3e3c8');px(x+2,y+3,8,1,'#b8a888');px(x+2,y+6,6,1,'#b8a888')}, /* the notepad in the lap */
+  const hd=placeHand(),pad=(x,y)=>{px(x,y,12,10,'#b08458');px(x,y+9,12,1,'#8a6440');px(x+11,y,1,10,'#9a7248');px(x+4,y-1,4,2,'#c8c8d0')}, /* the notepad in the lap: he writes on the side facing him, so we see its back (a board with a clip) */
     padX=PC?74:76,padY=PC?54:46;
   if(PC){drawChar(PC,64,34,2);pad(padX,padY)}else{
   px(66,54,28,7,'#3a3f5a');px(68,61,8,11,'#3a3f5a');px(84,61,8,11,'#3a3f5a');px(66,72,12,3,DK);px(82,72,12,3,DK);
@@ -38,12 +38,10 @@ function drawTherapy(s){
     px(63,69-up,4,2+up,'#fff');px(63,69-up,4,1,'#dfe6f4');arm(L,[65,67-up],-1)}
   /* right hand: holds a pen over the notepad and jots notes; (tea gesture) sets the pen down and fetches the cup */
   if(sp<0){
-    const k=wr?wrR:0,ln=evS%2,tx=padX+2+(ln?0:1)+k,ty=padY+(wr?3+3*ln-(tick%2):4); /* nib position; it bobs a pixel while writing */
-    if(wr)for(let i=0;i<=k;i++)px(padX+2+(ln?0:1)+i,padY+3+3*ln,1,1,'#3a2e4a'); /* the ink trail */
-    arm(R,[tx+3,ty-2],1);
-    for(let i=0;i<=6;i++)px(tx+i,ty-i,1,1,PEN)} /* the pen, one dark line across the hand: nib down, end poking out above */
+    const k=wr?wrR:0,hx=padX+10+(wr?k%2:0),hy=padY+2+(wr?(k>>1)%2:0); /* his hand rests on the top corner of the board; the pen stands up out of it and nods as he writes */
+    arm(R,[hx,hy],1);
+    for(let i=0;i<=4;i++)px(hx+1+i,hy-1-i-(wr&&k%2?1:0),1,1,i==4?PEN:'#e8c46a')}
   else{const mx=[90,90,89,87,84,82,80,80,80,84,88,90,90][sp],my=[71,66,58,50,42,36,35,35,35,42,52,64,71][sp];
-    px(padX+2,padY+8,7,1,PEN); /* the pen waits on the notepad */
     arm(R,[mx+7,my+2],1);px(mx,my,6,5,'#f3e3c8');px(mx+6,my+1,2,3,'#f3e3c8');px(mx,my,6,1,'#b8a888');hand(mx+7,my+2,1);
     if(sp>3&&sp<9)px(mx+2+(tick%2),my-3,1,2,'#ffffff77')}
   px(0,64,16,26,'#6a5aa0');px(144,64,16,26,'#6a5aa0');px(16,80,128,10,'#5a4a90');px(16,80,128,1,'#7a6ab8');

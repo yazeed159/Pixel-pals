@@ -161,7 +161,8 @@ function comeBack(){
   if(!away)return;const a=away;away=null;document.title=a.title;
   const idle=!busy&&!msg.value&&!document.querySelector('dialog[open]')&&!(typeof act!=='undefined'&&act);
   if(a.el)a.el.remove();
-  if(Date.now()-a.t>=GAP&&idle){greet();return} /* back after a long while: a fresh greeting, which can carry a milestone */
+  const hl=hh(),ans=hl.length&&hl[hl.length-1].role==='assistant';
+  if(Date.now()-a.t>=GAP&&idle&&!ans){greet();return} /* back after a long while: a fresh greeting, which can carry a milestone */
   if(a.old!==null&&txt.id==='txt'&&txt.textContent===a.line)txt.textContent=a.old;
   if(a.old!==null)arrow.style.visibility=ci<chunks.length-1?'visible':'hidden';
 }
