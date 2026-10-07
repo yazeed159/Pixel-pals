@@ -261,19 +261,44 @@ function txStart(k){
   TX.iv=setInterval(txStep,45);
 }
 const _goT=goScene;
+/* SCENE SWITCH: the old picture slides away and the new scene slides in beside it, like turning a page. Forward goes left, back goes right.
+   It is quick (well under a second), stepped to whole pixels, with a little shade at the seam; calm motion cross-fades instead. */
+const SL={on:0,t0:0,dur:0,dir:1,old:null,scratch:null,iv:0,calm:0};
+const slEase=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+function slEnd(){clearInterval(SL.iv);SL.on=0;draw()}
+function slStart(k){
+  const keys=Object.keys(SCENES),calm=cfg.motion==='calm';
+  if(!SL.old){SL.old=document.createElement('canvas');SL.old.width=160;SL.old.height=90;SL.scratch=document.createElement('canvas');SL.scratch.width=160;SL.scratch.height=90}
+  const og=SL.old.getContext('2d');og.imageSmoothingEnabled=false;og.clearRect(0,0,160,90);og.drawImage($('#cv'),0,0,160,90); /* freeze what is on screen */
+  SL.dir=keys.indexOf(k)>=keys.indexOf(cfg.place)?1:-1;SL.calm=calm?1:0;SL.dur=calm?320:700;SL.t0=Date.now();SL.on=1;
+  if(!calm)try{sfxPlay('whoosh')}catch(e){}
+  _goT(k); /* the new scene is drawn underneath while the pictures slide */
+  clearInterval(SL.iv);SL.iv=setInterval(()=>{if(Date.now()-SL.t0>=SL.dur)slEnd();else draw()},33);
+}
+function slOver(){
+  const t=Math.min(1,(Date.now()-SL.t0)/SL.dur),e=slEase(t),g=SL.scratch.getContext('2d');
+  g.imageSmoothingEnabled=false;g.clearRect(0,0,160,90);g.drawImage($('#cv'),0,0,160,90); /* the new scene as just drawn */
+  ctx.clearRect(0,0,160,90);
+  if(SL.calm){ctx.drawImage(SL.old,0,0);ctx.globalAlpha=e;ctx.drawImage(SL.scratch,0,0);ctx.globalAlpha=1;return}
+  const x=Math.round(160*e/2)*2*SL.dir;           /* whole-pixel steps, two at a time, so it moves like pixel art */
+  ctx.drawImage(SL.old,-x,0);ctx.drawImage(SL.scratch,SL.dir*160-x,0);
+  const sx=SL.dir>0?160-x:-x; /* the seam between the two pictures */
+  ctx.fillStyle='#07050f';ctx.fillRect(SL.dir>0?sx-1:sx-1,0,2,90);
+  dim(.4*Math.sin(Math.PI*t));                    /* a little shade while it moves */
+}
 goScene=function(k){
-  if(TX.on)txEnd();
+  if(SL.on)slEnd();
   if(!SCENES[k]||k===cfg.place)return;
   if(still()||document.hidden)return _goT(k);
-  txStart(k);
+  slStart(k);
 };
 const _drawT=draw;
-draw=function(){_drawT();if(TX.on){try{txOver()}catch(err){TX.on=0;clearInterval(TX.iv)}}};
+draw=function(){_drawT();if(SL.on){try{slOver()}catch(err){SL.on=0;clearInterval(SL.iv)}}else if(TX.on){try{txOver()}catch(err){TX.on=0;clearInterval(TX.iv)}}};
 /* nothing in the scene fidgets while someone is leaving */
 const _gestStepT=gestStep;
 gestStep=function(){if(TX.on&&TX.ph==='out'&&!TX.calm){GS.name='';GS.next=Math.max(GS.next,tick+10);return}_gestStepT()};
 /* tap the picture to skip the walk */
-$('#stage').addEventListener('click',e=>{if(TX.on){e.stopImmediatePropagation();e.stopPropagation();txEnd()}},true);
+$('#stage').addEventListener('click',e=>{if(SL.on){e.stopImmediatePropagation();e.stopPropagation();slEnd()}},true);
 /* two little sounds of its own */
 FX.click=()=>{sfT(2200,.02,.05,'square');setTimeout(()=>{if(AC2.state==='running')sfT(1200,.03,.04,'square')},45)};
 FX.step=()=>{sfT(95,.1,.07,'sine',55);sfN(.05,.025,'lowpass',500)};

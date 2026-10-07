@@ -1,0 +1,68 @@
+/* GAME LAYOUT. The app fills the whole screen like a game instead of a web page; nothing scrolls.
+   Phone upright: a big scene on top (cropped around the character), the dialogue under it, the text box and a button dock at the bottom.
+   Wide screens and phones on their side: the scene fills the left, and a side panel on the right holds the dialogue, text box and dock. */
+html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;touch-action:manipulation}
+#app{max-width:none;margin:0;width:100%;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);display:flex;flex-direction:column;background:#0f0b1a;overflow:hidden}
+#play{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+#app.bub #play{flex:none}
+
+/* the scene: edge to edge, the canvas is cropped around the character (the pan is set in main.js) */
+#stage{flex:none;border:0;outline:0;height:min(108vw,52dvh);overflow:hidden;background:#000;border-bottom:4px solid var(--cream)}
+#cv{position:absolute;top:0;left:0;height:100%;width:auto;aspect-ratio:16/9}
+
+/* the four stage buttons: a tidy column of icons down the right edge */
+#tb,#pb,#kb,#phb{left:auto;right:10px;width:48px;height:48px;font-size:22px;padding:0;border-width:3px;border-top-width:3px;border-top-color:var(--bc,var(--cream));box-shadow:0 0 0 3px #0f0b1a99,3px 3px 0 var(--ink)}
+#tb::after,#pb::after,#kb::after,#phb::after{display:none}
+#tb{top:10px}#pb{top:66px}#kb{top:122px}#phb{top:178px}
+html[dir=rtl] #tb,html[dir=rtl] #pb,html[dir=rtl] #kb,html[dir=rtl] #phb{right:auto;left:10px}
+#ftime{top:10px;left:10px;right:auto;font-size:15px}
+html[dir=rtl] #ftime{left:auto;right:10px}
+#you{top:auto;bottom:10px;inset-inline-end:auto;inset-inline-start:10px;max-width:78%;font-size:15px}
+
+/* the dialogue panel fills the space under the scene */
+#dbox,#dbox.over{position:static;margin:0;padding:12px 12px 0;flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+#name{align-self:flex-start;margin:0 0 -4px 12px;font-size:16px;flex:none}
+#box,#dbox.over #box{flex:1 1 auto;min-height:0;overflow:auto;background:#1c1730;border-width:3px;padding:12px 14px 22px;font-size:calc(clamp(16px,4.6vw,21px)*var(--ts,1));line-height:1.4}
+#app.bub #chat{flex:1 1 auto;min-height:0;max-height:none;margin:0;padding:12px}
+
+#qr{margin:0;padding:8px 12px 0;flex:none;flex-wrap:nowrap;overflow-x:auto;gap:8px}
+#qr .chip{flex:none;max-width:78vw}
+#row{margin:0;padding:10px 12px;flex:none;background:#150f26}
+#msg{font-size:17px;padding:12px}
+#send{padding:12px 18px;font-size:17px}
+
+/* the dock: big, evenly spaced buttons along the bottom */
+#tools{margin:0;padding:10px 12px calc(10px);flex:none;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px;background:#150f26;border-top:3px solid #ffffff1f}
+#tools button,#more summary{white-space:nowrap;width:100%;height:52px;padding:0 4px;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0}
+#tools #gear,#tools #sitb{margin-inline-start:0}
+#more{display:block}
+#more summary{box-shadow:3px 3px 0 var(--ink)}
+#app.sit #tools{grid-template-columns:1fr}
+
+/* windows open as sheets from the bottom on a phone, so you can still tap above to close them */
+@media (max-width:640px){
+  dialog{width:100vw;max-width:100vw;margin:auto 0 0;max-height:90dvh;border-width:4px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+}
+
+/* wide screens and phones on their side: scene left, panel right */
+@media (min-width:900px),(orientation:landscape) and (max-height:520px){
+  :root{--side:clamp(290px,28vw,390px)}
+  #app{display:grid;grid-template-columns:minmax(0,1fr) var(--side);grid-template-rows:minmax(0,1fr) auto auto auto;background:linear-gradient(90deg,transparent calc(100% - var(--side)),#150f26 calc(100% - var(--side))),radial-gradient(ellipse at 35% 50%,#2a2044,#0f0b1a 75%)}
+  #play{display:contents}
+  #stage{grid-column:1;grid-row:1/-1;align-self:center;justify-self:center;height:auto;width:min(calc(100% - 20px),calc((100dvh - 20px)*1.7778));aspect-ratio:16/9;border:4px solid var(--cream);outline:4px solid var(--ink);box-shadow:0 0 0 8px #0f0b1a,0 0 40px #000}
+  #cv{position:static;width:100%;height:auto}
+  #dbox,#dbox.over{grid-column:2;grid-row:1;align-self:stretch;justify-content:flex-end;background:#150f26;border-left:3px solid #ffffff1f;padding:12px 12px 8px}
+  #app.bub #chat{grid-column:2;grid-row:1;background:#150f26;border-left:3px solid #ffffff1f}
+  #qr{grid-column:2;grid-row:2;background:#150f26;border-left:3px solid #ffffff1f;flex-wrap:wrap}
+  #row{grid-column:2;grid-row:3;border-left:3px solid #ffffff1f}
+  #tools{grid-column:2;grid-row:4;border-left:3px solid #ffffff1f}
+  #box,#dbox.over #box{font-size:calc(clamp(15px,1.5vw,20px)*var(--ts,1));flex:0 1 auto;max-height:100%}
+  #tb,#pb,#kb,#phb{width:44px;height:44px;font-size:20px}
+  #pb{top:60px}#kb{top:110px}#phb{top:160px}
+}
+@media (orientation:landscape) and (max-height:520px){
+  #tb,#pb,#kb,#phb{width:40px;height:40px;font-size:18px}
+  #pb{top:54px}#kb{top:98px}#phb{top:142px}
+  #tools button,#more summary{height:44px;font-size:14px}
+  #msg{font-size:15px;padding:8px}#send{padding:8px 12px;font-size:15px}
+}

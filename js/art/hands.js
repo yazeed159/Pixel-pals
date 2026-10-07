@@ -121,7 +121,6 @@ const POV=[
 "...ddddd..."];
 const POVT=[".hs",".hs","hss","hsd","ssd","dd."]; /* the thumb, drawn to the left; mirrored for the other side */
 function povHand(P,x,y,rt,pal){
-  return; /* switched off */
   const c={s:pal.s,h:pal.h,d:pal.d,n:pal.n};
   POV.forEach((row,j)=>{[...row].forEach((ch,i)=>{if(ch!=='.')P(x+(rt?i:i),y+j,1,1,c[ch])})});
   /* the thumb: three pixels out from the side of the palm, angled up toward the fingers */

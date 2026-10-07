@@ -30,5 +30,8 @@ function openScenePicker(){
   });
   $('#scenedlg').showModal();
 }
-$('#pb').onclick=e=>{e.stopPropagation();openScenePicker()};
+/* the Scene button on the stage simply steps to the next scene, then wraps around; the picture menu lives in More and in Settings */
+$('#pb').onclick=e=>{e.stopPropagation();const ks=Object.keys(SCENES);goScene(ks[(ks.indexOf(cfg.place)+1)%ks.length])};
+$('#scb').onclick=()=>{$('#more').open=false;openScenePicker()};
+$('#scpick').onclick=()=>openScenePicker();
 $('#spx').onclick=()=>$('#scenedlg').close();

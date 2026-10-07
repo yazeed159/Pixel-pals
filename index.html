@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Pixel Companion</title>
 <meta name="description" content="A tiny pixel-art scene where you chat with an AI character.">
 <meta name="theme-color" content="#2a2140">
@@ -16,6 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&text=0123456789%3A%2F%25&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/game.css">
 </head>
 <body>
 <div id="app">
@@ -37,6 +38,7 @@
         <button id="redo" aria-label="Redo the last reply">↻ Redo</button>
         <button id="edit" aria-label="Edit your last message">✎ Edit</button>
         <button id="logb" aria-label="Chat log">Log</button>
+        <button id="scb" aria-label="Choose a scene from pictures">🖼 Scenes</button>
         <button id="jrb" aria-label="Journal">Journal</button>
         <button id="ltb" aria-label="Letters">✉ Letters</button>
         <button id="dbgb" aria-label="Behind the scenes: model, key and request details">🔍 Details</button>
@@ -72,7 +74,7 @@
       <div><label for="season">Seasons</label><select id="season"><option value="n">Snow in winter (north)</option><option value="s">Snow in winter (south)</option><option value="off">Off</option></select></div>
     </div>
 
-    <div class="foot"><button id="chman" class="ghost" type="button">Create or edit your own characters…</button><button id="bgman" class="ghost" type="button">Import your own scenes…</button></div>
+    <div class="foot"><button id="scpick" class="ghost" type="button">Choose a scene from pictures…</button><button id="chman" class="ghost" type="button">Create or edit your own characters…</button><button id="bgman" class="ghost" type="button">Import your own scenes…</button></div>
   </details>
   <details><summary>You &amp; the personality</summary>
     <div class="g">
